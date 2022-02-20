@@ -85,6 +85,7 @@ name = "hb"
 version = "0.1.0"
 dependencies = [
  "dirs",
+ "lazy_static",
  "structopt",
 ]
 

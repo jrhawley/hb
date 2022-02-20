@@ -21,7 +21,7 @@ fn default_cfg_dir() -> PathBuf {
 }
 
 /// The default configuration file
-fn default_cfg_file() -> PathBuf {
+pub fn default_cfg_file() -> PathBuf {
     default_cfg_dir().join("config.toml")
 }
 
