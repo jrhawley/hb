@@ -8,6 +8,8 @@ description = "Query your HomeBank transactions from the command line."
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anyhow = "1.0.54"
 dirs = "4.0.0"
 lazy_static = "1.4.0"
 structopt = "0.3.26"
+thiserror = "1.0.30"
