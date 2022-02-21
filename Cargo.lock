@@ -92,6 +92,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "dirs",
+ "homebank_db",
  "lazy_static",
  "serde",
  "structopt",
@@ -115,6 +116,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "62b467343b94ba476dcb2500d242dadbb39557df889310ac77c5d99100aaac33"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "homebank_db"
+version = "0.1.0"
+dependencies = [
+ "semver",
 ]
 
 [[package]]
@@ -189,6 +197,12 @@ dependencies = [
  "getrandom",
  "redox_syscall",
 ]
+
+[[package]]
+name = "semver"
+version = "1.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0486718e92ec9a68fbed73bb5ef687d71103b142595b406835649bebd33f72c7"
 
 [[package]]
 name = "serde"
