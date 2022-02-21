@@ -1,4 +1,4 @@
 //! Payees
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Payee {}

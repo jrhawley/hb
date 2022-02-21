@@ -1,4 +1,4 @@
 //! Currencies
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Currency {}

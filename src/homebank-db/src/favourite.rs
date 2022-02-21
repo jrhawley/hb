@@ -1,4 +1,4 @@
 //! Favourites
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Favourite {}

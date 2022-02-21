@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 semver = "1.0.5"
+thiserror = "1.0.30"
+xml-rs = "0.8.4"

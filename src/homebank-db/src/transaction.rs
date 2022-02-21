@@ -1,4 +1,4 @@
 //! Transactions
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Transaction {}

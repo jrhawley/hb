@@ -1,4 +1,4 @@
 //! Groups
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Group {}

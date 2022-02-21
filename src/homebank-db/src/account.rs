@@ -1,4 +1,4 @@
 //! Accounts
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Account {}
