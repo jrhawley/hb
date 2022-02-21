@@ -77,8 +77,6 @@ pub fn default_cfg_file() -> PathBuf {
 
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
-
     use super::*;
     use dirs::home_dir;
 
@@ -163,21 +161,22 @@ mod tests {
         check_new(input, expected);
     }
 
+    #[track_caller]
+    fn check_try_from_cli(input: CliOpts, expected: Config) {
+        let observed = Config::try_from(input).unwrap();
+
+        assert_eq!(expected, observed);
+    }
+
     #[test]
     #[should_panic]
     fn try_from_directory_config() {
         let cli_opts = CliOpts {
             path: PathBuf::from("./src"),
         };
+        let expected = Config::new(Path::new("path"));
 
-        let _observed = Config::try_from(cli_opts).unwrap();
-    }
-
-    #[track_caller]
-    fn check_try_from_cli(input: CliOpts, expected: Config) {
-        let observed = Config::try_from(input).unwrap();
-
-        assert_eq!(expected, observed);
+        check_try_from_cli(cli_opts, expected);
     }
 
     #[test]
