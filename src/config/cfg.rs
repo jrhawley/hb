@@ -1,6 +1,6 @@
 //! The configuration struct and related items
 
-use super::{toml::file_to_string, ConfigError};
+use super::{parse::file_to_string, ConfigError};
 use crate::cli::CliOpts;
 use dirs::config_dir;
 use serde::Deserialize;

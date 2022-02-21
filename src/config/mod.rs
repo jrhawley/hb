@@ -2,7 +2,7 @@
 
 pub mod cfg;
 pub mod error;
-pub mod toml;
+pub mod parse;
 
 pub use cfg::{default_cfg_file, Config};
 pub use error::ConfigError;
