@@ -12,6 +12,11 @@ lazy_static! {
 #[derive(Debug, StructOpt)]
 #[structopt(author, about)]
 pub struct CliOpts {
-    #[structopt(short = "c", long = "config", help = "Path to hb configuration file", default_value = &DEFAULT_CFG)]
+    #[structopt(
+        short = "c",
+        long = "config",
+        help = "Path to hb configuration file",
+        default_value = &DEFAULT_CFG
+    )]
     pub path: PathBuf,
 }
