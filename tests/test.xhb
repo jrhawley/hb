@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<homebank v="1.3999999999999999" d="050504">
+<properties title="name" curr="1" car_category="1" auto_smode="1" auto_weekday="1"/>
+<cur key="1" flags="0" iso="USD" name="US Dollar" symb="$" syprf="0" dchar="." gchar="," frac="2" rate="0.78715999999999997" mdate="738204"/>
+<grp key="1" name="Active"/>
+<account key="1" flags="96" pos="7" type="2" curr="2" name="Wallet" initial="0" minimum="0" maximum="0" grp="1" rdate="738191"/>
+<pay key="1" name="Rexall"/>
+<cat key="1" flags="8" name="Personal" b0="-400"/>
+<fav key="30" amount="0" paymode="1" st="1" flags="512" payee="35" category="104" nextdate="737836" every="1" unit="2"/>
+<ope date="733588" amount="339.01999999999998" account="14" paymode="9" flags="2" payee="156" category="52" wording="Initial contribution"/>
+</homebank>

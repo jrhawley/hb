@@ -1,14 +1,19 @@
 //! The configuration struct and related items
 
-use super::ConfigError;
+use super::{toml::file_to_string, ConfigError};
 use crate::cli::CliOpts;
 use dirs::config_dir;
-use std::path::{Path, PathBuf};
+use serde::Deserialize;
+use std::{
+    path::{Path, PathBuf},
+    string::ParseError,
+};
 use structopt::clap::crate_name;
+use toml::Value;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub struct Config {
-    // path to the configuration TOML file
+    // path to the HomeBank transactions file
     path: PathBuf,
 }
 
@@ -29,9 +34,28 @@ impl TryFrom<CliOpts> for Config {
         if !opts.path.exists() {
             return Err(ConfigError::DoesNotExist(opts.path));
         } else if !opts.path.is_file() {
+            // check that the config is a file
             return Err(ConfigError::NotAFile(opts.path));
         } else {
-            Ok(Self::new(&opts.path))
+            // read the file and parse its contents
+            let file_contents = match file_to_string(&opts.path) {
+                Ok(s) => s,
+                Err(_) => return Err(ConfigError::ParseError(opts.path)),
+            };
+
+            // try to deserialize from its contents via toml
+            Config::try_from(file_contents.as_str())
+        }
+    }
+}
+
+impl TryFrom<&str> for Config {
+    type Error = ConfigError;
+
+    fn try_from(s: &str) -> Result<Self, Self::Error> {
+        match toml::from_str(s) {
+            Ok(cfg) => Ok(cfg),
+            Err(_) => Err(ConfigError::MissingHomeBankPath),
         }
     }
 }
@@ -53,6 +77,8 @@ pub fn default_cfg_file() -> PathBuf {
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use super::*;
     use dirs::home_dir;
 
@@ -147,32 +173,57 @@ mod tests {
         let _observed = Config::try_from(cli_opts).unwrap();
     }
 
-    #[test]
-    #[should_panic]
-    fn try_from_nonexistent_config() {
-        let cli_opts = CliOpts {
-            path: PathBuf::from("path/to/nonexistent/directory/file.toml"),
-        };
-
-        let _observed = Config::try_from(cli_opts).unwrap();
-    }
-
     #[track_caller]
-    fn check_try_from(input: CliOpts, expected: Config) {
+    fn check_try_from_cli(input: CliOpts, expected: Config) {
         let observed = Config::try_from(input).unwrap();
 
         assert_eq!(expected, observed);
     }
 
     #[test]
+    #[should_panic]
+    fn try_from_nonexistent_config() {
+        let cli_opts = CliOpts {
+            path: PathBuf::from("path/to/nonexistent/directory/file.toml"),
+        };
+        let expected = Config::new(Path::new(""));
+
+        check_try_from_cli(cli_opts, expected)
+    }
+
+    #[test]
     fn try_from_existing_config() {
         let input = CliOpts {
-            path: PathBuf::from("Cargo.toml"),
+            path: PathBuf::from("tests/test.toml"),
         };
         let expected = Config {
-            path: PathBuf::from("Cargo.toml"),
+            path: PathBuf::from("test.xhb"),
         };
 
-        check_try_from(input, expected);
+        check_try_from_cli(input, expected);
+    }
+
+    #[track_caller]
+    fn check_try_from_toml(input: &str, expected: Config) {
+        let observed = Config::try_from(input).unwrap();
+
+        assert_eq!(expected, observed);
+    }
+
+    #[test]
+    #[should_panic]
+    fn try_from_str_without_path() {
+        let input = "";
+        let expected = Config::new(Path::new(""));
+
+        check_try_from_toml(input, expected);
+    }
+
+    #[test]
+    fn try_from_str_with_path() {
+        let input = "path = 'tests/test.xhb'";
+        let expected = Config::new(Path::new("tests/test.xhb"));
+
+        check_try_from_toml(&input, expected);
     }
 }

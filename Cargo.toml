@@ -11,5 +11,7 @@ description = "Query your HomeBank transactions from the command line."
 anyhow = "1.0.54"
 dirs = "4.0.0"
 lazy_static = "1.4.0"
+serde = { version = "1.0.136", features = ["derive"] }
 structopt = "0.3.26"
 thiserror = "1.0.30"
+toml = "0.5.8"
