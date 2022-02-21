@@ -4,12 +4,8 @@ use super::{toml::file_to_string, ConfigError};
 use crate::cli::CliOpts;
 use dirs::config_dir;
 use serde::Deserialize;
-use std::{
-    path::{Path, PathBuf},
-    string::ParseError,
-};
+use std::path::{Path, PathBuf};
 use structopt::clap::crate_name;
-use toml::Value;
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Config {
@@ -23,6 +19,11 @@ impl Config {
         Config {
             path: path.to_path_buf(),
         }
+    }
+
+    // Retrieve the path to the HomeBank XHB file
+    pub fn path(&self) -> &Path {
+        &self.path
     }
 }
 
@@ -53,10 +54,19 @@ impl TryFrom<&str> for Config {
     type Error = ConfigError;
 
     fn try_from(s: &str) -> Result<Self, Self::Error> {
-        match toml::from_str(s) {
-            Ok(cfg) => Ok(cfg),
-            Err(_) => Err(ConfigError::MissingHomeBankPath),
+        let cfg: Config = match toml::from_str(s) {
+            Ok(cfg) => cfg,
+            Err(_) => return Err(ConfigError::MissingHomeBankPath),
+        };
+
+        // check that the HomeBank XHB file exists
+        if !cfg.path().exists() {
+            return Err(ConfigError::HomeBankFileDoesNotExist(
+                cfg.path().to_path_buf(),
+            ));
         }
+
+        Ok(cfg)
     }
 }
 
@@ -196,7 +206,7 @@ mod tests {
             path: PathBuf::from("tests/test.toml"),
         };
         let expected = Config {
-            path: PathBuf::from("test.xhb"),
+            path: PathBuf::from("tests/test.xhb"),
         };
 
         check_try_from_cli(input, expected);
