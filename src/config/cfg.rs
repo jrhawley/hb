@@ -1,6 +1,9 @@
 //! The configuration struct and related items
 
-use super::{parse::file_to_string, ConfigError};
+use super::{
+    parse::{expand_tilde, file_to_string},
+    ConfigError,
+};
 use crate::cli::CliOpts;
 use dirs::config_dir;
 use serde::Deserialize;
@@ -54,10 +57,15 @@ impl TryFrom<&str> for Config {
     type Error = ConfigError;
 
     fn try_from(s: &str) -> Result<Self, Self::Error> {
-        let cfg: Config = match toml::from_str(s) {
+        let mut cfg: Config = match toml::from_str(s) {
             Ok(cfg) => cfg,
             Err(_) => return Err(ConfigError::MissingHomeBankPath),
         };
+
+        // if the path is tilded, fix it
+        if let Some(d) = expand_tilde(cfg.path()) {
+            cfg.path = d;
+        }
 
         // check that the HomeBank XHB file is a file
         if !cfg.path().is_file() {
