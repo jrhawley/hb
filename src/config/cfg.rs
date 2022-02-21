@@ -59,9 +59,16 @@ impl TryFrom<&str> for Config {
             Err(_) => return Err(ConfigError::MissingHomeBankPath),
         };
 
-        // check that the HomeBank XHB file exists
-        if !cfg.path().exists() {
+        // check that the HomeBank XHB file is a file
+        if !cfg.path().is_file() {
             return Err(ConfigError::HomeBankFileDoesNotExist(
+                cfg.path().to_path_buf(),
+            ));
+        }
+
+        // check that the HomeBank XHB file is absolute
+        if cfg.path().is_relative() {
+            return Err(ConfigError::HomeBankFileIsRelative(
                 cfg.path().to_path_buf(),
             ));
         }
@@ -162,7 +169,18 @@ mod tests {
     }
 
     #[test]
-    fn new() {
+    #[cfg(target_os = "linux")]
+    fn new_absolute_paths_stay_absolute() {
+        let input = Path::new("/usr/bin/cat");
+        let expected = Config {
+            path: PathBuf::from("/usr/bin/cat"),
+        };
+
+        check_new(input, expected);
+    }
+
+    #[test]
+    fn new_existing() {
         let input = Path::new("Cargo.toml");
         let expected = Config {
             path: PathBuf::from("Cargo.toml"),
@@ -201,12 +219,41 @@ mod tests {
     }
 
     #[test]
-    fn try_from_existing_config() {
+    #[cfg(target_os = "linux")]
+    fn try_from_existing_config_absolute_existing_xhb() {
         let input = CliOpts {
-            path: PathBuf::from("tests/test.toml"),
+            path: PathBuf::from("tests/absolute_existing_linux.toml"),
         };
         let expected = Config {
-            path: PathBuf::from("tests/test.xhb"),
+            path: PathBuf::from("/usr/bin/cat"),
+        };
+
+        check_try_from_cli(input, expected);
+    }
+
+    #[test]
+    #[cfg(target_os = "linux")]
+    #[should_panic]
+    fn try_from_existing_config_relative_existing_xhb() {
+        let input = CliOpts {
+            path: PathBuf::from("tests/relative_existing_linux.toml"),
+        };
+        let expected = Config {
+            path: PathBuf::from("/usr/bin/cat"),
+        };
+
+        check_try_from_cli(input, expected);
+    }
+
+    #[test]
+    #[cfg(target_os = "linux")]
+    #[should_panic]
+    fn try_from_existing_config_absolute_missing_xhb() {
+        let input = CliOpts {
+            path: PathBuf::from("tests/absolute_missing_linux.toml"),
+        };
+        let expected = Config {
+            path: PathBuf::from("/usr/bin/cat"),
         };
 
         check_try_from_cli(input, expected);
@@ -229,9 +276,10 @@ mod tests {
     }
 
     #[test]
+    #[cfg(target_os = "linux")]
     fn try_from_str_with_path() {
-        let input = "path = 'tests/test.xhb'";
-        let expected = Config::new(Path::new("tests/test.xhb"));
+        let input = "path = '/usr/bin/cat'";
+        let expected = Config::new(Path::new("/usr/bin/cat"));
 
         check_try_from_toml(&input, expected);
     }
