@@ -61,9 +61,7 @@ impl TryFrom<&str> for Config {
 
         // check that the HomeBank XHB file is a file
         if !cfg.path().is_file() {
-            return Err(ConfigError::HomeBankFileDoesNotExist(
-                cfg.path().to_path_buf(),
-            ));
+            return Err(ConfigError::HomeBankFileNotAFile(cfg.path().to_path_buf()));
         }
 
         // check that the HomeBank XHB file is absolute

@@ -13,8 +13,8 @@ pub enum ConfigError {
     MissingHomeBankPath,
     #[error("Error parsing configuration file `{0}`.")]
     ParseError(PathBuf),
-    #[error("HomeBank file `{0}` does not exist.")]
-    HomeBankFileDoesNotExist(PathBuf),
+    #[error("HomeBank file `{0}` is not a file.")]
+    HomeBankFileNotAFile(PathBuf),
     #[error("HomeBank file `{0}` is given as a relative path. Please specify it absolutely.")]
     HomeBankFileIsRelative(PathBuf),
 }
