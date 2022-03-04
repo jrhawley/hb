@@ -1,11 +1,16 @@
 //! Data structure for the HomeBank database.
 
-use std::path::Path;
-
 use crate::{
     currency::Currency, Account, Category, Favourite, Group, HomeBankDbError, Payee, Transaction,
 };
 use semver::Version;
+use serde::{Deserialize, Serialize};
+use std::{
+    fs::File,
+    io::{BufReader, Read},
+    path::Path,
+};
+use xml::{reader::XmlEvent, EventReader};
 
 #[derive(Debug, PartialEq)]
 pub struct HomeBankDbProperties {
@@ -35,34 +40,58 @@ impl Default for HomeBankDbProperties {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
+pub struct HomeBankDbVersion {
+    #[serde(rename = "v")]
+    version: String,
+    #[serde(rename = "d")]
+    date: String,
+}
+
+impl HomeBankDbVersion {
+    /// Create an empty, default set of properties
+    fn empty() -> Self {
+        Self {
+            // version: Version::new(1, 4, 0),
+            version: String::from("1.3999999999999999"),
+            date: String::from("050504"),
+        }
+    }
+}
+
+impl Default for HomeBankDbVersion {
+    fn default() -> Self {
+        Self::empty()
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize, PartialEq)]
 pub struct HomeBankDb {
-    xml_schema: Version,
-    homebank_version: Version,
-    properties: HomeBankDbProperties,
-    currencies: Vec<Currency>,
-    groups: Vec<Group>,
-    accounts: Vec<Account>,
-    payees: Vec<Payee>,
-    categories: Vec<Category>,
-    favourites: Vec<Favourite>,
-    transactions: Vec<Transaction>,
+    // #[serde(rename = "homebank")]
+// homebank_version: HomeBankDbVersion,
+// properties: HomeBankDbProperties,
+// currencies: Vec<Currency>,
+// groups: Vec<Group>,
+// accounts: Vec<Account>,
+// payees: Vec<Payee>,
+// categories: Vec<Category>,
+// favourites: Vec<Favourite>,
+// transactions: Vec<Transaction>,
 }
 
 impl HomeBankDb {
     /// Create an empty, default, HomeBank database
     fn empty() -> Self {
         Self {
-            xml_schema: Version::new(1, 0, 0),
-            homebank_version: Version::new(1, 4, 0),
-            properties: HomeBankDbProperties::empty(),
-            currencies: vec![],
-            groups: vec![],
-            accounts: vec![],
-            payees: vec![],
-            categories: vec![],
-            favourites: vec![],
-            transactions: vec![],
+            // homebank_version: HomeBankDbVersion::empty(),
+            // properties: HomeBankDbProperties::empty(),
+            // currencies: vec![],
+            // groups: vec![],
+            // accounts: vec![],
+            // payees: vec![],
+            // categories: vec![],
+            // favourites: vec![],
+            // transactions: vec![],
         }
     }
 }
@@ -75,7 +104,58 @@ impl TryFrom<&Path> for HomeBankDb {
             return Err(HomeBankDbError::DoesNotExist(path.to_path_buf()));
         }
 
-        Ok(Self::empty())
+        let xhb_file = match File::open(path) {
+            Ok(f) => f,
+            Err(_) => return Err(HomeBankDbError::CouldNotOpen(path.to_path_buf())),
+        };
+
+        let xhb_buf = BufReader::new(xhb_file);
+        let parser = EventReader::new(xhb_buf);
+
+        // create the default HomeBankDb
+        let mut db = HomeBankDb::empty();
+        // check if the XML is parsing the HomeBank data or not
+        let mut in_info = false;
+
+        // using xml manual parsing to read in the file
+        // not using some type of string parsing serde coersion because we
+        // don't know how large the database is going to be
+        for event in parser {
+            match event {
+                Ok(XmlEvent::StartElement {
+                    name, attributes, ..
+                }) => {
+                    if name.local_name == "homebank" {
+                        in_info = true;
+                    } else if in_info {
+                        // only add data if we're within the `<homebank></homebank>` tags
+                        match name.local_name.as_str() {
+                            "properties" => {}
+                            "cur" => {}
+                            "grp" => {}
+                            "account" => {}
+                            "pay" => {}
+                            "cat" => {}
+                            "fav" => {}
+                            "ope" => {
+                                println!("{:#?}", attributes);
+                                println!("{:#?}", Transaction::try_from(attributes));
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+                Ok(XmlEvent::EndElement { name }) => {
+                    if name.local_name == "homebank" {
+                        in_info = false;
+                    }
+                }
+                Ok(_) => {}
+                Err(_) => {}
+            }
+        }
+
+        Ok(db)
     }
 }
 
@@ -98,30 +178,38 @@ mod tests {
     }
 
     #[test]
-    fn empty_hdb() {
+    fn empty_hbdb_is_expected() {
         let observed = HomeBankDb::empty();
         let expected = HomeBankDb {
-            xml_schema: Version::new(1, 0, 0),
-            homebank_version: Version::new(1, 4, 0),
-            properties: HomeBankDbProperties::empty(),
-            currencies: vec![],
-            groups: vec![],
-            accounts: vec![],
-            payees: vec![],
-            categories: vec![],
-            favourites: vec![],
-            transactions: vec![],
+            // homebank_version: HomeBankDbVersion::empty(),
+            // properties: HomeBankDbProperties::empty(),
+            // currencies: vec![],
+            // groups: vec![],
+            // accounts: vec![],
+            // payees: vec![],
+            // categories: vec![],
+            // favourites: vec![],
+            // transactions: vec![],
         };
 
         assert_eq!(expected, observed);
     }
 
     #[test]
-    fn minimal_db() {
-        let path = Path::new("tests/minimal.xhb");
-        let observed = HomeBankDb::try_from(path).unwrap();
+    fn parse_empty_db() {
+        let path = Path::new("tests/empty.xhb");
+        let observed = HomeBankDb::try_from(path);
         let expected = HomeBankDb::empty();
 
-        assert_eq!(expected, observed);
+        assert_eq!(Ok(expected), observed);
     }
+
+    // #[test]
+    // fn parse_minimal_db() {
+    //     let path = Path::new("tests/minimal.xhb");
+    //     let observed = HomeBankDb::try_from(path);
+    //     let expected = HomeBankDb::empty();
+
+    //     assert_eq!(Ok(expected), observed);
+    // }
 }
