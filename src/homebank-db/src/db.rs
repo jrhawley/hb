@@ -65,7 +65,7 @@ impl Default for HomeBankDbVersion {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub struct HomeBankDb {
     // #[serde(rename = "homebank")]
 // homebank_version: HomeBankDbVersion,
@@ -76,7 +76,7 @@ pub struct HomeBankDb {
 // payees: Vec<Payee>,
 // categories: Vec<Category>,
 // favourites: Vec<Favourite>,
-// transactions: Vec<Transaction>,
+    transactions: Vec<Transaction>,
 }
 
 impl HomeBankDb {
@@ -91,8 +91,13 @@ impl HomeBankDb {
             // payees: vec![],
             // categories: vec![],
             // favourites: vec![],
-            // transactions: vec![],
+            transactions: vec![],
         }
+    }
+
+    /// Retrieve the mutable transactions
+    fn mut_transactions(&mut self) -> &mut Vec<Transaction> {
+        &mut self.transactions
     }
 }
 
@@ -138,8 +143,9 @@ impl TryFrom<&Path> for HomeBankDb {
                             "cat" => {}
                             "fav" => {}
                             "ope" => {
-                                println!("{:#?}", attributes);
-                                println!("{:#?}", Transaction::try_from(attributes));
+                                if let Ok(tr) = Transaction::try_from(attributes) {
+                                    db.mut_transactions().push(tr);
+                                }
                             }
                             _ => {}
                         }

@@ -15,5 +15,8 @@ fn main() -> Result<(), anyhow::Error> {
         Err(e) => return Err(e).with_context(|| "Error parsing HomeBank file."),
     };
 
+    println!("{:#?}", db);
+
     Ok(())
 }
+
