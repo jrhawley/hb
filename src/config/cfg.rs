@@ -207,6 +207,7 @@ mod tests {
     fn try_from_directory_config() {
         let cli_opts = CliOpts {
             path: PathBuf::from("./src"),
+            cmd: None,
         };
         let expected = Config::new(Path::new("path"));
 
@@ -218,6 +219,7 @@ mod tests {
     fn try_from_nonexistent_config() {
         let cli_opts = CliOpts {
             path: PathBuf::from("path/to/nonexistent/directory/file.toml"),
+            cmd: None,
         };
         let expected = Config::new(Path::new(""));
 
