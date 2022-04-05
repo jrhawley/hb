@@ -1,8 +1,7 @@
 //! Transactions
 
-use std::str::FromStr;
-
 use chrono::{Duration, NaiveDate};
+use std::str::FromStr;
 use thiserror::Error;
 use xml::attribute::OwnedAttribute;
 
@@ -22,7 +21,6 @@ pub enum TransactionError {
     MissingStatus,
 }
 
-// <ope date="733588" amount="339.01999999999998" account="14" paymode="9" flags="2" payee="156" category="52" wording="Initial contribution"/>
 #[derive(Debug, PartialEq)]
 pub struct Transaction {
     date: NaiveDate,

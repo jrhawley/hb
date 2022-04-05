@@ -1,15 +1,8 @@
 //! Data structure for the HomeBank database.
 
-use crate::{
-    currency::Currency, Account, Category, Favourite, Group, HomeBankDbError, Payee, Transaction,
-};
-use semver::Version;
+use crate::{HomeBankDbError, Transaction};
 use serde::{Deserialize, Serialize};
-use std::{
-    fs::File,
-    io::{BufReader, Read},
-    path::Path,
-};
+use std::{fs::File, io::BufReader, path::Path};
 use xml::{reader::XmlEvent, EventReader};
 
 #[derive(Debug, PartialEq)]
@@ -68,14 +61,14 @@ impl Default for HomeBankDbVersion {
 #[derive(Debug, PartialEq)]
 pub struct HomeBankDb {
     // #[serde(rename = "homebank")]
-// homebank_version: HomeBankDbVersion,
-// properties: HomeBankDbProperties,
-// currencies: Vec<Currency>,
-// groups: Vec<Group>,
-// accounts: Vec<Account>,
-// payees: Vec<Payee>,
-// categories: Vec<Category>,
-// favourites: Vec<Favourite>,
+    // homebank_version: HomeBankDbVersion,
+    // properties: HomeBankDbProperties,
+    // currencies: Vec<Currency>,
+    // groups: Vec<Group>,
+    // accounts: Vec<Account>,
+    // payees: Vec<Payee>,
+    // categories: Vec<Category>,
+    // favourites: Vec<Favourite>,
     transactions: Vec<Transaction>,
 }
 
@@ -195,7 +188,7 @@ mod tests {
             // payees: vec![],
             // categories: vec![],
             // favourites: vec![],
-            // transactions: vec![],
+            transactions: vec![],
         };
 
         assert_eq!(expected, observed);
