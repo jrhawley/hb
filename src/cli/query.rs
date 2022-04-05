@@ -5,7 +5,7 @@ use std::str::FromStr;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "query", about = "Query the database")]
+#[structopt(name = "query", alias = "q", about = "Query the database")]
 pub struct QueryOpts {
     #[structopt(subcommand)]
     query_type: QueryType,
@@ -23,39 +23,43 @@ pub enum QueryType {
 }
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "accounts", alias = "a", about = "Accounts")]
+#[structopt(name = "accounts", alias = "a", about = "Query accounts")]
 pub struct QueryAccounts {}
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "categories", alias = "c", about = "Transaction categories")]
+#[structopt(
+    name = "categories",
+    alias = "c",
+    about = "Query transaction categories"
+)]
 pub struct QueryCategories {}
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "currencies", alias = "C", about = "Currencies used")]
+#[structopt(name = "currencies", alias = "C", about = "Query currencies used")]
 pub struct QueryCurrencies {}
 
 #[derive(Debug, StructOpt)]
 #[structopt(
     name = "favourites",
     aliases = &["f", "favorites"],
-    about = "Templates and scheduled transactions"
+    about = "Query templates and scheduled transactions"
 )]
 pub struct QueryFavourites {}
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "groups", alias = "g", about = "Account groups")]
+#[structopt(name = "groups", alias = "g", about = "Query account groups")]
 pub struct QueryGroups {}
 
 #[derive(Debug, StructOpt)]
 #[structopt(
     name = "payees",
     alias = "p",
-    about = "Transaction payees, to and from"
+    about = "Query transaction payees, to and from"
 )]
 pub struct QueryPayees {}
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "transactions", alias = "t", about = "Transactions")]
+#[structopt(name = "transactions", alias = "t", about = "Query transactions")]
 pub struct QueryTransactions {
     #[structopt(
         short = "f",
