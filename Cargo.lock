@@ -110,6 +110,7 @@ name = "hb"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "dirs",
  "homebank_db",
  "lazy_static",
