@@ -36,6 +36,12 @@ pub struct Transaction {
     info: Option<String>,
 }
 
+impl Transaction {
+    pub fn date(&self) -> &NaiveDate {
+        &self.date
+    }
+}
+
 impl Default for Transaction {
     fn default() -> Self {
         Self {

@@ -88,6 +88,11 @@ impl HomeBankDb {
         }
     }
 
+    /// Retrieve the list of transactions
+    pub fn transactions(&self) -> &Vec<Transaction> {
+        &self.transactions
+    }
+
     /// Retrieve the mutable transactions
     fn mut_transactions(&mut self) -> &mut Vec<Transaction> {
         &mut self.transactions

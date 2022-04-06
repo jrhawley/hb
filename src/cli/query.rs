@@ -12,6 +12,13 @@ pub struct QueryOpts {
     query_type: QueryType,
 }
 
+impl QueryOpts {
+    /// Retrieve the type of query being made
+    pub fn qtype(&self) -> &QueryType {
+        &self.query_type
+    }
+}
+
 #[derive(Debug, StructOpt)]
 pub enum QueryType {
     Accounts(QueryAccounts),
@@ -84,4 +91,14 @@ pub struct QueryTransactions {
         value_name = "status"
     )]
     status: Option<Vec<TransactionStatus>>,
+}
+
+impl QueryTransactions {
+    pub fn date_from(&self) -> &Option<NaiveDate> {
+        &self.date_from
+    }
+
+    pub fn date_to(&self) -> &Option<NaiveDate> {
+        &self.date_to
+    }
 }
