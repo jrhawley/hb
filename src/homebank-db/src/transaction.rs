@@ -1,5 +1,6 @@
 //! Transactions
 
+use super::TransactionStatus;
 use chrono::{Duration, NaiveDate};
 use std::str::FromStr;
 use thiserror::Error;
@@ -17,8 +18,8 @@ pub enum TransactionError {
     MissingPayMode,
     #[error("Missing payee from transaction.")]
     MissingPayee,
-    #[error("Missing status from transaction.")]
-    MissingStatus,
+    #[error("Invalid transaction status. Must be 0-4 or the status name.")]
+    InvalidStatus,
 }
 
 #[derive(Debug, PartialEq)]
@@ -27,11 +28,12 @@ pub struct Transaction {
     amount: f32,
     account: usize,
     paymode: usize,
-    status: usize,
+    status: TransactionStatus,
     flags: Option<usize>,
     payee: usize,
     category: Option<usize>,
-    wording: Option<String>,
+    memo: Option<String>,
+    info: Option<String>,
 }
 
 impl Default for Transaction {
@@ -41,11 +43,12 @@ impl Default for Transaction {
             amount: 0.0,
             account: 0,
             paymode: 0,
-            status: 0,
+            status: TransactionStatus::None,
             flags: None,
             payee: 0,
             category: None,
-            wording: None,
+            memo: None,
+            info: None,
         }
     }
 }
@@ -58,6 +61,24 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
 
         for i in v {
             match i.name.local_name.as_str() {
+                "account" => {
+                    tr.account = match usize::from_str(&i.value) {
+                        Ok(a) => a,
+                        Err(_) => return Err(TransactionError::MissingAccount),
+                    }
+                }
+                "amount" => {
+                    tr.amount = match f32::from_str(&i.value) {
+                        Ok(a) => a,
+                        Err(_) => return Err(TransactionError::MissingAmount),
+                    };
+                }
+                "category" => {
+                    tr.category = match usize::from_str(&i.value) {
+                        Ok(c) => Some(c),
+                        Err(_) => None,
+                    }
+                }
                 "date" => {
                     tr.date = match u32::from_str(&i.value) {
                         Ok(d) => {
@@ -68,18 +89,6 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                         Err(_) => return Err(TransactionError::MissingDate),
                     }
                 }
-                "amount" => {
-                    tr.amount = match f32::from_str(&i.value) {
-                        Ok(a) => a,
-                        Err(_) => return Err(TransactionError::MissingAmount),
-                    };
-                }
-                "account" => {
-                    tr.account = match usize::from_str(&i.value) {
-                        Ok(a) => a,
-                        Err(_) => return Err(TransactionError::MissingAccount),
-                    }
-                }
                 "paymode" => {
                     tr.paymode = match usize::from_str(&i.value) {
                         Ok(pm) => pm,
@@ -88,8 +97,11 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 }
                 "status" => {
                     tr.status = match usize::from_str(&i.value) {
-                        Ok(st) => st,
-                        Err(_) => return Err(TransactionError::MissingStatus),
+                        Ok(st) => match TransactionStatus::try_from(st) {
+                            Ok(t_stat) => t_stat,
+                            Err(e) => return Err(TransactionError::InvalidStatus),
+                        },
+                        Err(_) => TransactionStatus::None,
                     }
                 }
                 "flags" => {
@@ -104,14 +116,8 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                         Err(_) => return Err(TransactionError::MissingPayee),
                     }
                 }
-                "category" => {
-                    tr.category = match usize::from_str(&i.value) {
-                        Ok(c) => Some(c),
-                        Err(_) => None,
-                    }
-                }
                 "wording" => {
-                    tr.wording = match i.value.as_str() {
+                    tr.memo = match i.value.as_str() {
                         "" => None,
                         s => Some(s.to_string()),
                     }
