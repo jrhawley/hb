@@ -1,7 +1,7 @@
 //! CLI argument parsing and configuration
 
-mod main;
+mod command;
 mod query;
 
-pub use main::CliOpts;
+pub use command::CliOpts;
 pub use query::QueryOpts;
