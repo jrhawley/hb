@@ -30,21 +30,21 @@ impl Config {
     }
 }
 
-impl TryFrom<CliOpts> for Config {
+impl TryFrom<&CliOpts> for Config {
     type Error = ConfigError;
 
-    fn try_from(opts: CliOpts) -> Result<Self, Self::Error> {
+    fn try_from(opts: &CliOpts) -> Result<Self, Self::Error> {
         // check that the config file exists
         if !opts.path.exists() {
-            return Err(ConfigError::DoesNotExist(opts.path));
+            return Err(ConfigError::DoesNotExist(opts.path().to_path_buf()));
         } else if !opts.path.is_file() {
             // check that the config is a file
-            return Err(ConfigError::NotAFile(opts.path));
+            return Err(ConfigError::NotAFile(opts.path().to_path_buf()));
         } else {
             // read the file and parse its contents
             let file_contents = match file_to_string(&opts.path) {
                 Ok(s) => s,
-                Err(_) => return Err(ConfigError::ParseError(opts.path)),
+                Err(_) => return Err(ConfigError::ParseError(opts.path().to_path_buf())),
             };
 
             // try to deserialize from its contents via toml
@@ -197,7 +197,7 @@ mod tests {
 
     #[track_caller]
     fn check_try_from_cli(input: CliOpts, expected: Config) {
-        let observed = Config::try_from(input).unwrap();
+        let observed = Config::try_from(&input).unwrap();
 
         assert_eq!(expected, observed);
     }
@@ -207,7 +207,7 @@ mod tests {
     fn try_from_directory_config() {
         let cli_opts = CliOpts {
             path: PathBuf::from("./src"),
-            cmd: None,
+            subcmd: None,
         };
         let expected = Config::new(Path::new("path"));
 
@@ -219,7 +219,7 @@ mod tests {
     fn try_from_nonexistent_config() {
         let cli_opts = CliOpts {
             path: PathBuf::from("path/to/nonexistent/directory/file.toml"),
-            cmd: None,
+            subcmd: None,
         };
         let expected = Config::new(Path::new(""));
 

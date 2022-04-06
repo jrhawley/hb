@@ -1,7 +1,10 @@
 //! CLI argument parsing and configuration
 
-mod command;
-mod query;
+pub mod command;
+pub mod query;
 
-pub use command::CliOpts;
-pub use query::QueryOpts;
+pub use command::{CliOpts, SubCommand};
+pub use query::{
+    QueryAccounts, QueryCategories, QueryCurrencies, QueryFavourites, QueryGroups, QueryOpts,
+    QueryPayees, QueryTransactions, QueryType,
+};

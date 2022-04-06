@@ -3,7 +3,7 @@
 use super::QueryOpts;
 use crate::config::default_cfg_file;
 use lazy_static::lazy_static;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use structopt::StructOpt;
 
 lazy_static! {
@@ -23,7 +23,22 @@ pub struct CliOpts {
 
     // make optional subcommands
     #[structopt(subcommand)]
-    pub cmd: Option<SubCommand>,
+    pub subcmd: Option<SubCommand>,
+}
+
+impl CliOpts {
+    /// Retrieve the CLI config path
+    pub fn path(&self) -> &Path {
+        &self.path
+    }
+
+    /// Retrieve the subcommand given, if any
+    pub fn subcommand(&self) -> Option<&SubCommand> {
+        match &self.subcmd {
+            Some(sc) => Some(sc),
+            None => None,
+        }
+    }
 }
 
 #[derive(Debug, StructOpt)]
