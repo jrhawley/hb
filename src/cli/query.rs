@@ -1,6 +1,7 @@
 //! Query the HomeBank database from the command line.
 
 use chrono::NaiveDate;
+use homebank_db::TransactionStatus;
 use std::str::FromStr;
 use structopt::StructOpt;
 
@@ -62,7 +63,7 @@ pub struct QueryPayees {}
 #[structopt(name = "transactions", alias = "t", about = "Query transactions")]
 pub struct QueryTransactions {
     #[structopt(
-        short = "f",
+        short = "d",
         help = "Include transactions starting from (and including) this date",
         parse(try_from_str = NaiveDate::from_str),
         value_name = "date"
@@ -70,10 +71,17 @@ pub struct QueryTransactions {
     date_from: Option<NaiveDate>,
 
     #[structopt(
-        short = "t",
+        short = "D",
         help = "Include transactions up to (and excluding) this date",
         parse(try_from_str = NaiveDate::from_str),
         value_name = "date"
     )]
     date_to: Option<NaiveDate>,
+
+    #[structopt(
+        short = "s",
+        help = "Include transactions with a certain status",
+        value_name = "status"
+    )]
+    status: Option<Vec<TransactionStatus>>,
 }
