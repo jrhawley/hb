@@ -94,11 +94,18 @@ pub struct QueryTransactions {
 }
 
 impl QueryTransactions {
+    /// Select the lower bound date for querying
     pub fn date_from(&self) -> &Option<NaiveDate> {
         &self.date_from
     }
 
+    /// Select the upper bound date for querying
     pub fn date_to(&self) -> &Option<NaiveDate> {
         &self.date_to
+    }
+
+    /// Select the status(es) for including in the query
+    pub fn status(&self) -> &Option<Vec<TransactionStatus>> {
+        &self.status
     }
 }
