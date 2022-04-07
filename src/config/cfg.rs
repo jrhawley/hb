@@ -229,9 +229,7 @@ mod tests {
     #[test]
     #[cfg(target_os = "linux")]
     fn try_from_existing_config_absolute_existing_xhb() {
-        let input = CliOpts {
-            path: PathBuf::from("tests/absolute_existing_linux.toml"),
-        };
+        let input = CliOpts::new(Path::new("tests/absolute_existing_linux.toml"), None);
         let expected = Config {
             path: PathBuf::from("/usr/bin/cat"),
         };
@@ -243,9 +241,7 @@ mod tests {
     #[cfg(target_os = "linux")]
     #[should_panic]
     fn try_from_existing_config_relative_existing_xhb() {
-        let input = CliOpts {
-            path: PathBuf::from("tests/relative_existing_linux.toml"),
-        };
+        let input = CliOpts::new(Path::new("tests/relative_existing_linux.toml"), None);
         let expected = Config {
             path: PathBuf::from("/usr/bin/cat"),
         };
@@ -257,9 +253,7 @@ mod tests {
     #[cfg(target_os = "linux")]
     #[should_panic]
     fn try_from_existing_config_absolute_missing_xhb() {
-        let input = CliOpts {
-            path: PathBuf::from("tests/absolute_missing_linux.toml"),
-        };
+        let input = CliOpts::new(Path::new("tests/absolute_missing_linux.toml"), None);
         let expected = Config {
             path: PathBuf::from("/usr/bin/cat"),
         };
