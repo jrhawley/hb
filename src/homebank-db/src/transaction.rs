@@ -1,5 +1,6 @@
 //! Transactions
 
+use super::PayMode;
 use super::TransactionStatus;
 use chrono::{Duration, NaiveDate};
 use std::str::FromStr;
@@ -20,6 +21,8 @@ pub enum TransactionError {
     MissingPayee,
     #[error("Invalid transaction status. Must be 0-4 or the status name 'None', 'Cleared', 'Reconciled', 'Remind', or 'Void'.")]
     InvalidStatus,
+    #[error("Invalid transaction payment method. Must be 0-10, 'None', 'CreditCard', 'Cheque', 'Cash', 'BankTransfer', 'DebitCard', 'StandingOrder', 'ElectronicPayment', 'Deposit', 'FIFee', or 'DirectDebit'.")]
+    InvalidPayMode,
 }
 
 #[derive(Debug, PartialEq)]
@@ -27,7 +30,7 @@ pub struct Transaction {
     date: NaiveDate,
     amount: f32,
     account: usize,
-    paymode: usize,
+    paymode: PayMode,
     status: TransactionStatus,
     flags: Option<usize>,
     payee: usize,
@@ -46,6 +49,11 @@ impl Transaction {
     pub fn status(&self) -> &TransactionStatus {
         &self.status
     }
+
+    /// Retrieve the payment method of the `Transaction`
+    pub fn paymode(&self) -> &PayMode {
+        &self.paymode
+    }
 }
 
 impl Default for Transaction {
@@ -54,7 +62,7 @@ impl Default for Transaction {
             date: NaiveDate::from_ymd(2000, 1, 1),
             amount: 0.0,
             account: 0,
-            paymode: 0,
+            paymode: PayMode::None,
             status: TransactionStatus::None,
             flags: None,
             payee: 0,
@@ -103,7 +111,10 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 }
                 "paymode" => {
                     tr.paymode = match usize::from_str(&i.value) {
-                        Ok(pm) => pm,
+                        Ok(pm) => match PayMode::try_from(pm) {
+                            Ok(t_pm) => t_pm,
+                            Err(e) => return Err(e),
+                        },
                         Err(_) => return Err(TransactionError::MissingPayMode),
                     }
                 }
@@ -205,7 +216,7 @@ mod tests {
                     namespace: None,
                     prefix: None,
                 },
-                value: "1".to_string(),
+                value: "0".to_string(),
             },
             OwnedAttribute {
                 name: OwnedName {
@@ -309,7 +320,7 @@ mod tests {
             flags: None,
             info: None,
             memo: None,
-            paymode: 1,
+            paymode: PayMode::None,
             payee: 1,
             status: TransactionStatus::None,
         });
