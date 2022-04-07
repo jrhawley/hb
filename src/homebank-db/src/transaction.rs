@@ -72,7 +72,6 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
         let mut tr = Self::default();
 
         for i in v {
-            println!("{i:#?}");
             match i.name.local_name.as_str() {
                 "account" => {
                     tr.account = match usize::from_str(&i.value) {
