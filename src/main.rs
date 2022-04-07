@@ -1,5 +1,5 @@
 use anyhow::Context;
-use cli::{CliOpts, QueryOpts, SubCommand};
+use cli::{CliOpts, SubCommand};
 use config::Config;
 use homebank_db::{HomeBankDb, Transaction};
 use structopt::StructOpt;
@@ -32,6 +32,11 @@ fn main() -> Result<(), anyhow::Error> {
                     // filter out dates on or after the given date
                     .filter(|&t| match query.date_to() {
                         Some(d) => t.date() < d,
+                        None => true,
+                    })
+                    // filter out certain statuses
+                    .filter(|&t| match query.status() {
+                        Some(v) => v.contains(t.status()),
                         None => true,
                     })
                     .collect();
