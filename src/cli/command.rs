@@ -27,6 +27,14 @@ pub struct CliOpts {
 }
 
 impl CliOpts {
+    /// Create a new `CliOpts`
+    pub fn new(path: &Path, subcmd: Option<SubCommand>) -> Self {
+        Self {
+            path: path.to_path_buf(),
+            subcmd,
+        }
+    }
+
     /// Retrieve the CLI config path
     pub fn path(&self) -> &Path {
         &self.path
@@ -37,6 +45,15 @@ impl CliOpts {
         match &self.subcmd {
             Some(sc) => Some(sc),
             None => None,
+        }
+    }
+}
+
+impl Default for CliOpts {
+    fn default() -> Self {
+        CliOpts {
+            path: default_cfg_file(),
+            subcmd: None,
         }
     }
 }
