@@ -18,7 +18,7 @@ pub enum TransactionError {
     MissingPayMode,
     #[error("Missing payee from transaction.")]
     MissingPayee,
-    #[error("Invalid transaction status. Must be 0-4 or the status name.")]
+    #[error("Invalid transaction status. Must be 0-4 or the status name 'None', 'Cleared', 'Reconciled', 'Remind', or 'Void'.")]
     InvalidStatus,
 }
 
@@ -157,7 +157,6 @@ mod tests {
         input: Vec<OwnedAttribute>,
         expected: Result<Transaction, TransactionError>,
     ) {
-        println!("{:#?}", input);
         let observed = Transaction::try_from(input);
 
         assert_eq!(expected, observed);
@@ -189,7 +188,8 @@ mod tests {
                     namespace: None,
                     prefix: None,
                 },
-                value: "2020-03-11".to_string(),
+                // corresponds to 2020-03-11
+                value: "737860".to_string(),
             },
             OwnedAttribute {
                 name: OwnedName {
@@ -294,6 +294,25 @@ mod tests {
         // drop the account from the template
         let input = template_all_but(5);
         let expected = Err(TransactionError::InvalidStatus);
+
+        check_try_from_vec_ownedatt(input, expected)
+    }
+
+    #[test]
+    fn try_from_template() {
+        let input = template_vec_ownedatt();
+        let expected = Ok(Transaction {
+            account: 1,
+            amount: 1.0,
+            category: None,
+            date: NaiveDate::from_ymd(2020, 03, 11),
+            flags: None,
+            info: None,
+            memo: None,
+            paymode: 1,
+            payee: 1,
+            status: TransactionStatus::None,
+        });
 
         check_try_from_vec_ownedatt(input, expected)
     }
