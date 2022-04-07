@@ -1,7 +1,7 @@
 //! Query the HomeBank database from the command line.
 
 use chrono::NaiveDate;
-use homebank_db::TransactionStatus;
+use homebank_db::{PayMode, TransactionStatus};
 use std::str::FromStr;
 use structopt::StructOpt;
 
@@ -91,6 +91,13 @@ pub struct QueryTransactions {
         value_name = "status"
     )]
     status: Option<Vec<TransactionStatus>>,
+
+    #[structopt(
+        short = "M",
+        help = "Include transactions with a certain payment method",
+        value_name = "method"
+    )]
+    paymode: Option<Vec<PayMode>>,
 }
 
 impl QueryTransactions {
@@ -107,5 +114,10 @@ impl QueryTransactions {
     /// Select the status(es) for including in the query
     pub fn status(&self) -> &Option<Vec<TransactionStatus>> {
         &self.status
+    }
+
+    /// Select the payment method(s) for including in the query
+    pub fn paymode(&self) -> &Option<Vec<PayMode>> {
+        &self.paymode
     }
 }

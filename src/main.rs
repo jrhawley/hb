@@ -39,6 +39,11 @@ fn main() -> Result<(), anyhow::Error> {
                         Some(v) => v.contains(t.status()),
                         None => true,
                     })
+                    // filter out certain payment methods
+                    .filter(|&t| match query.paymode() {
+                        Some(v) => v.contains(t.paymode()),
+                        None => true,
+                    })
                     .collect();
                 println!("{:#?}", query);
                 println!("{:#?}", filt_transactions);
