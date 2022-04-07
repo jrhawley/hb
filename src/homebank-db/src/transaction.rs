@@ -8,12 +8,12 @@ use xml::attribute::OwnedAttribute;
 
 #[derive(Debug, Error, PartialEq)]
 pub enum TransactionError {
-    #[error("Missing date from transaction.")]
-    MissingDate,
-    #[error("Missing amount from transaction.")]
-    MissingAmount,
     #[error("Missing account from transaction.")]
     MissingAccount,
+    #[error("Missing amount from transaction.")]
+    MissingAmount,
+    #[error("Missing date from transaction.")]
+    MissingDate,
     #[error("Missing pay mode from transaction.")]
     MissingPayMode,
     #[error("Missing payee from transaction.")]
@@ -72,6 +72,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
         let mut tr = Self::default();
 
         for i in v {
+            println!("{i:#?}");
             match i.name.local_name.as_str() {
                 "account" => {
                     tr.account = match usize::from_str(&i.value) {
@@ -111,7 +112,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                     tr.status = match usize::from_str(&i.value) {
                         Ok(st) => match TransactionStatus::try_from(st) {
                             Ok(t_stat) => t_stat,
-                            Err(e) => return Err(TransactionError::InvalidStatus),
+                            Err(e) => return Err(e),
                         },
                         Err(_) => TransactionStatus::None,
                     }
@@ -144,6 +145,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use xml::name::OwnedName;
 
     #[test]
     fn it_works() {
@@ -162,6 +164,138 @@ mod tests {
         assert_eq!(expected, observed);
     }
 
+    /// Create a template `Vec<OwnedAttribute>` quickly for less repetition
+    #[track_caller]
+    fn template_vec_ownedatt() -> Vec<OwnedAttribute> {
+        vec![
+            OwnedAttribute {
+                name: OwnedName {
+                    local_name: "account".to_string(),
+                    namespace: None,
+                    prefix: None,
+                },
+                value: "1".to_string(),
+            },
+            OwnedAttribute {
+                name: OwnedName {
+                    local_name: "amount".to_string(),
+                    namespace: None,
+                    prefix: None,
+                },
+                value: "1".to_string(),
+            },
+            OwnedAttribute {
+                name: OwnedName {
+                    local_name: "date".to_string(),
+                    namespace: None,
+                    prefix: None,
+                },
+                value: "2020-03-11".to_string(),
+            },
+            OwnedAttribute {
+                name: OwnedName {
+                    local_name: "payee".to_string(),
+                    namespace: None,
+                    prefix: None,
+                },
+                value: "1".to_string(),
+            },
+            OwnedAttribute {
+                name: OwnedName {
+                    local_name: "paymode".to_string(),
+                    namespace: None,
+                    prefix: None,
+                },
+                value: "1".to_string(),
+            },
+            OwnedAttribute {
+                name: OwnedName {
+                    local_name: "st".to_string(),
+                    namespace: None,
+                    prefix: None,
+                },
+                value: "0".to_string(),
+            },
+        ]
+    }
+
+    /// Create a template `Vec<OwnedAttribute>` that is missing one element
+    #[track_caller]
+    fn template_all_but(i: usize) -> Vec<OwnedAttribute> {
+        template_vec_ownedatt()
+            .iter()
+            .enumerate()
+            .filter(|&(j, _)| i != j)
+            .map(|(_, v)| v.clone())
+            .collect()
+    }
+
     #[test]
-    fn try_from_empty() {}
+    #[should_panic]
+    fn try_from_empty() {
+        let input = vec![];
+        let expected = Err(TransactionError::MissingAccount);
+
+        check_try_from_vec_ownedatt(input, expected)
+    }
+
+    #[test]
+    #[should_panic]
+    fn try_from_missing_acct() {
+        // drop the account from the template
+        let input = template_all_but(0);
+        let expected = Err(TransactionError::MissingAccount);
+
+        check_try_from_vec_ownedatt(input, expected)
+    }
+
+    #[test]
+    #[should_panic]
+    fn try_from_missing_amount() {
+        // drop the account from the template
+        let input = template_all_but(1);
+        let expected = Err(TransactionError::MissingAmount);
+
+        check_try_from_vec_ownedatt(input, expected)
+    }
+
+    #[test]
+    #[should_panic]
+    fn try_from_missing_date() {
+        // drop the account from the template
+        let input = template_all_but(2);
+        let expected = Err(TransactionError::MissingDate);
+
+        check_try_from_vec_ownedatt(input, expected)
+    }
+
+    #[test]
+    #[should_panic]
+    fn try_from_missing_paymode() {
+        // drop the account from the template
+        let input = template_all_but(3);
+        let expected = Err(TransactionError::MissingPayMode);
+
+        check_try_from_vec_ownedatt(input, expected)
+    }
+
+    #[test]
+    #[should_panic]
+    fn try_from_missing_payee() {
+        // drop the account from the template
+        let input = template_all_but(4);
+        let expected = Err(TransactionError::MissingPayee);
+
+        check_try_from_vec_ownedatt(input, expected)
+    }
+
+    #[test]
+    #[should_panic]
+    fn try_from_missing_status() {
+        // drop the account from the template
+        let input = template_all_but(5);
+        let expected = Err(TransactionError::InvalidStatus);
+
+        check_try_from_vec_ownedatt(input, expected)
+    }
 }
