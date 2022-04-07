@@ -37,8 +37,14 @@ pub struct Transaction {
 }
 
 impl Transaction {
+    /// Retrieve the date of the `Transaction`
     pub fn date(&self) -> &NaiveDate {
         &self.date
+    }
+
+    /// Retrieve the status of the `Transaction`
+    pub fn status(&self) -> &TransactionStatus {
+        &self.status
     }
 }
 
