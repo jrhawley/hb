@@ -1,7 +1,6 @@
 //! Transactions
 
-use super::PayMode;
-use super::TransactionStatus;
+use super::{PayMode, TransactionStatus, TransactionType};
 use chrono::{Duration, NaiveDate};
 use std::str::FromStr;
 use thiserror::Error;
@@ -37,6 +36,7 @@ pub struct Transaction {
     category: Option<usize>,
     memo: Option<String>,
     info: Option<String>,
+    transaction_type: TransactionType,
 }
 
 impl Transaction {
@@ -54,6 +54,21 @@ impl Transaction {
     pub fn paymode(&self) -> &PayMode {
         &self.paymode
     }
+
+    /// Retrieve the memo for the `Transaction`
+    pub fn memo(&self) -> &Option<String> {
+        &self.memo
+    }
+
+    /// Retrieve the info field for the `Transaction`
+    pub fn info(&self) -> &Option<String> {
+        &self.info
+    }
+
+    /// Retrieve the type for the `Transaction`
+    pub fn ttype(&self) -> &TransactionType {
+        &self.transaction_type
+    }
 }
 
 impl Default for Transaction {
@@ -69,6 +84,7 @@ impl Default for Transaction {
             category: None,
             memo: None,
             info: None,
+            transaction_type: TransactionType::Expense,
         }
     }
 }
@@ -88,8 +104,19 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                     }
                 }
                 "amount" => {
-                    tr.amount = match f32::from_str(&i.value) {
-                        Ok(a) => a,
+                    match f32::from_str(&i.value) {
+                        Ok(a) => {
+                            tr.amount = a;
+                            // if the transaction already appears to be a transfer, then leave the type alone
+                            // if it's not a transfer then it's an expense positive if the amount is negative, otherwise an income
+                            if *tr.ttype() != TransactionType::Transfer {
+                                if a > 0.0 {
+                                    tr.transaction_type = TransactionType::Income;
+                                } else {
+                                    tr.transaction_type = TransactionType::Expense;
+                                }
+                            }
+                        }
                         Err(_) => return Err(TransactionError::MissingAmount),
                     };
                 }
@@ -323,6 +350,7 @@ mod tests {
             paymode: PayMode::None,
             payee: 1,
             status: TransactionStatus::None,
+            transaction_type: TransactionType::Income,
         });
 
         check_try_from_vec_ownedatt(input, expected)

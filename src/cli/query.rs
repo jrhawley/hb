@@ -2,6 +2,7 @@
 
 use chrono::NaiveDate;
 use homebank_db::{PayMode, TransactionStatus};
+use regex::Regex;
 use std::str::FromStr;
 use structopt::StructOpt;
 
@@ -98,6 +99,20 @@ pub struct QueryTransactions {
         value_name = "method"
     )]
     paymode: Option<Vec<PayMode>>,
+
+    #[structopt(
+        short = "m",
+        help = "Include transactions whose memos match this regular expression",
+        value_name = "regex"
+    )]
+    memo: Option<Regex>,
+
+    #[structopt(
+        short = "i",
+        help = "Include transactions whose info fields match this regular expression",
+        value_name = "regex"
+    )]
+    info: Option<Regex>,
 }
 
 impl QueryTransactions {
@@ -119,5 +134,15 @@ impl QueryTransactions {
     /// Select the payment method(s) for including in the query
     pub fn paymode(&self) -> &Option<Vec<PayMode>> {
         &self.paymode
+    }
+
+    /// Select the memo regex for including in the query
+    pub fn memo(&self) -> &Option<Regex> {
+        &self.memo
+    }
+
+    /// Select the info regex for including in the query
+    pub fn info(&self) -> &Option<Regex> {
+        &self.info
     }
 }

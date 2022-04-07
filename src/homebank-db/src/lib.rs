@@ -9,6 +9,7 @@ pub mod payee;
 pub mod paymode;
 pub mod transaction;
 pub mod transaction_status;
+pub mod transaction_type;
 
 pub use account::Account;
 pub use category::Category;
@@ -21,6 +22,7 @@ pub use payee::Payee;
 pub use paymode::PayMode;
 pub use transaction::{Transaction, TransactionError};
 pub use transaction_status::TransactionStatus;
+pub use transaction_type::TransactionType;
 
 #[cfg(test)]
 mod tests {
