@@ -67,6 +67,11 @@ impl Currency {
             mdate,
         }
     }
+
+    /// Retrieve the `Currency` key
+    pub fn key(&self) -> usize {
+        self.key
+    }
 }
 
 impl Default for Currency {

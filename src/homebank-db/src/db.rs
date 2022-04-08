@@ -1,7 +1,7 @@
 //! Data structure for the HomeBank database.
 
 use crate::{Currency, HomeBankDbError, HomeBankDbProperties, Transaction};
-use std::{fs::File, io::BufReader, path::Path};
+use std::{collections::HashMap, fs::File, io::BufReader, path::Path};
 use xml::{reader::XmlEvent, EventReader};
 
 #[derive(Debug, PartialEq)]
@@ -9,7 +9,7 @@ pub struct HomeBankDb {
     // #[serde(rename = "homebank")]
     // homebank_version: HomeBankDbVersion,
     properties: HomeBankDbProperties,
-    currencies: Vec<Currency>,
+    currencies: HashMap<usize, Currency>,
     // groups: Vec<Group>,
     // accounts: Vec<Account>,
     // payees: Vec<Payee>,
@@ -24,7 +24,7 @@ impl HomeBankDb {
         Self {
             // homebank_version: HomeBankDbVersion::empty(),
             properties: HomeBankDbProperties::empty(),
-            currencies: vec![],
+            currencies: HashMap::new(),
             // groups: vec![],
             // accounts: vec![],
             // payees: vec![],
@@ -45,12 +45,12 @@ impl HomeBankDb {
     }
 
     /// Retrieve the database properties
-    pub fn currencies(&self) -> &Vec<Currency> {
+    pub fn currencies(&self) -> &HashMap<usize, Currency> {
         &self.currencies
     }
 
     /// Retrieve the mutable transactions
-    fn mut_currencies(&mut self) -> &mut Vec<Currency> {
+    fn mut_currencies(&mut self) -> &mut HashMap<usize, Currency> {
         &mut self.currencies
     }
 
@@ -106,7 +106,7 @@ impl TryFrom<&Path> for HomeBankDb {
                             }
                             "cur" => {
                                 if let Ok(curr) = Currency::try_from(attributes) {
-                                    db.mut_currencies().push(curr);
+                                    db.mut_currencies().insert(curr.key(), curr);
                                 }
                             }
                             "grp" => {}
@@ -155,7 +155,7 @@ mod tests {
         let expected = HomeBankDb {
             // homebank_version: HomeBankDbVersion::empty(),
             properties: HomeBankDbProperties::empty(),
-            currencies: vec![],
+            currencies: HashMap::new(),
             // groups: vec![],
             // accounts: vec![],
             // payees: vec![],
