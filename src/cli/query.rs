@@ -1,7 +1,7 @@
 //! Query the HomeBank database from the command line.
 
 use chrono::NaiveDate;
-use homebank_db::{PayMode, TransactionStatus, TransactionType};
+use homebank_db::{HomeBankDb, PayMode, Transaction, TransactionStatus, TransactionType};
 use regex::Regex;
 use std::str::FromStr;
 use structopt::StructOpt;
@@ -156,5 +156,52 @@ impl QueryTransactions {
     /// Select the transaction type for including in the query
     pub fn ttype(&self) -> &Option<Vec<TransactionType>> {
         &self.transaction_type
+    }
+
+    /// Execute the query the transactions from a `HomeBankDb`
+    pub fn exec<'a>(&self, db: &'a HomeBankDb) -> Vec<&'a Transaction> {
+        let filt_transactions: Vec<&Transaction> = db
+            .transactions()
+            .iter()
+            // filter out dates before the given date
+            .filter(|&t| match self.date_from() {
+                Some(d) => t.date() >= d,
+                None => true,
+            })
+            // filter out dates on or after the given date
+            .filter(|&t| match self.date_to() {
+                Some(d) => t.date() < d,
+                None => true,
+            })
+            // filter out certain statuses
+            .filter(|&t| match self.status() {
+                Some(v) => v.contains(t.status()),
+                None => true,
+            })
+            // filter out certain payment methods
+            .filter(|&t| match self.paymode() {
+                Some(v) => v.contains(t.paymode()),
+                None => true,
+            })
+            // filter out transaction types
+            .filter(|&t| match self.ttype() {
+                Some(v) => v.contains(t.ttype()),
+                None => true,
+            })
+            // filter out the memo regex
+            .filter(|&t| match (self.memo(), t.memo()) {
+                (Some(re), Some(memo)) => (*re).is_match(memo),
+                (Some(_), None) => false,
+                (None, _) => true,
+            })
+            // filter out the memo regex
+            .filter(|&t| match (self.info(), t.info()) {
+                (Some(re), Some(info)) => (*re).is_match(info),
+                (Some(_), None) => false,
+                (None, _) => true,
+            })
+            .collect();
+
+        filt_transactions
     }
 }
