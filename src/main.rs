@@ -2,7 +2,7 @@ use crate::cli::QueryType;
 use anyhow::Context;
 use cli::{CliOpts, SubCommand};
 use config::Config;
-use homebank_db::{HomeBankDb, Transaction};
+use homebank_db::HomeBankDb;
 use structopt::StructOpt;
 
 pub mod cli;

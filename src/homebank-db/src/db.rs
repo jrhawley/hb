@@ -1,68 +1,14 @@
 //! Data structure for the HomeBank database.
 
-use crate::{HomeBankDbError, Transaction};
-use serde::{Deserialize, Serialize};
+use crate::{HomeBankDbError, HomeBankDbProperties, Transaction};
 use std::{fs::File, io::BufReader, path::Path};
 use xml::{reader::XmlEvent, EventReader};
-
-#[derive(Debug, PartialEq)]
-pub struct HomeBankDbProperties {
-    title: String,
-    currency_idx: usize,
-    car_category_idx: usize,
-    auto_smode: usize,
-    auto_weekday: usize,
-}
-
-impl HomeBankDbProperties {
-    /// Create an empty, default set of properties
-    fn empty() -> Self {
-        Self {
-            title: String::from(""),
-            currency_idx: 1,
-            car_category_idx: 1,
-            auto_smode: 1,
-            auto_weekday: 1,
-        }
-    }
-}
-
-impl Default for HomeBankDbProperties {
-    fn default() -> Self {
-        Self::empty()
-    }
-}
-
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
-pub struct HomeBankDbVersion {
-    #[serde(rename = "v")]
-    version: String,
-    #[serde(rename = "d")]
-    date: String,
-}
-
-impl HomeBankDbVersion {
-    /// Create an empty, default set of properties
-    fn empty() -> Self {
-        Self {
-            // version: Version::new(1, 4, 0),
-            version: String::from("1.3999999999999999"),
-            date: String::from("050504"),
-        }
-    }
-}
-
-impl Default for HomeBankDbVersion {
-    fn default() -> Self {
-        Self::empty()
-    }
-}
 
 #[derive(Debug, PartialEq)]
 pub struct HomeBankDb {
     // #[serde(rename = "homebank")]
     // homebank_version: HomeBankDbVersion,
-    // properties: HomeBankDbProperties,
+    properties: HomeBankDbProperties,
     // currencies: Vec<Currency>,
     // groups: Vec<Group>,
     // accounts: Vec<Account>,
@@ -77,7 +23,7 @@ impl HomeBankDb {
     fn empty() -> Self {
         Self {
             // homebank_version: HomeBankDbVersion::empty(),
-            // properties: HomeBankDbProperties::empty(),
+            properties: HomeBankDbProperties::empty(),
             // currencies: vec![],
             // groups: vec![],
             // accounts: vec![],
@@ -86,6 +32,16 @@ impl HomeBankDb {
             // favourites: vec![],
             transactions: vec![],
         }
+    }
+
+    /// Retrieve the database properties
+    pub fn properties(&self) -> &HomeBankDbProperties {
+        &self.properties
+    }
+
+    /// Retrieve the mutable transactions
+    fn mut_properties(&mut self) -> &mut HomeBankDbProperties {
+        &mut self.properties
     }
 
     /// Retrieve the list of transactions
@@ -133,7 +89,11 @@ impl TryFrom<&Path> for HomeBankDb {
                     } else if in_info {
                         // only add data if we're within the `<homebank></homebank>` tags
                         match name.local_name.as_str() {
-                            "properties" => {}
+                            "properties" => {
+                                if let Ok(props) = HomeBankDbProperties::try_from(attributes) {
+                                    *db.mut_properties() = props;
+                                }
+                            }
                             "cur" => {}
                             "grp" => {}
                             "account" => {}
@@ -170,13 +130,7 @@ mod tests {
     #[test]
     fn empty_hdb_props() {
         let observed = HomeBankDbProperties::empty();
-        let expected = HomeBankDbProperties {
-            title: String::from(""),
-            currency_idx: 1,
-            car_category_idx: 1,
-            auto_smode: 1,
-            auto_weekday: 1,
-        };
+        let expected = HomeBankDbProperties::new("", 1, 1, 1, 1);
 
         assert_eq!(expected, observed);
     }
@@ -186,7 +140,7 @@ mod tests {
         let observed = HomeBankDb::empty();
         let expected = HomeBankDb {
             // homebank_version: HomeBankDbVersion::empty(),
-            // properties: HomeBankDbProperties::empty(),
+            properties: HomeBankDbProperties::empty(),
             // currencies: vec![],
             // groups: vec![],
             // accounts: vec![],
