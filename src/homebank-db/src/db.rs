@@ -155,7 +155,7 @@ mod tests {
         let expected = HomeBankDb {
             // homebank_version: HomeBankDbVersion::empty(),
             properties: HomeBankDbProperties::empty(),
-            // currencies: vec![],
+            currencies: vec![],
             // groups: vec![],
             // accounts: vec![],
             // payees: vec![],
