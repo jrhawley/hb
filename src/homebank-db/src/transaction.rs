@@ -22,6 +22,8 @@ pub enum TransactionError {
     InvalidStatus,
     #[error("Invalid transaction payment method. Must be 0-10, 'None', 'CreditCard', 'Cheque', 'Cash', 'BankTransfer', 'DebitCard', 'StandingOrder', 'ElectronicPayment', 'Deposit', 'FIFee', or 'DirectDebit'.")]
     InvalidPayMode,
+    #[error("Invalid transaction type. Must be 'Expense', 'Income', or 'Transfer'.")]
+    InvalidType,
 }
 
 #[derive(Debug, PartialEq)]

@@ -1,7 +1,7 @@
 //! Query the HomeBank database from the command line.
 
 use chrono::NaiveDate;
-use homebank_db::{PayMode, TransactionStatus};
+use homebank_db::{PayMode, TransactionStatus, TransactionType};
 use regex::Regex;
 use std::str::FromStr;
 use structopt::StructOpt;
@@ -113,6 +113,13 @@ pub struct QueryTransactions {
         value_name = "regex"
     )]
     info: Option<Regex>,
+
+    #[structopt(
+        short = "T",
+        help = "Include 'Expense', 'Income', or 'Transfer' transactions",
+        value_name = "type"
+    )]
+    transaction_type: Option<Vec<TransactionType>>,
 }
 
 impl QueryTransactions {
