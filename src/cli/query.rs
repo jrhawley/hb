@@ -152,4 +152,9 @@ impl QueryTransactions {
     pub fn info(&self) -> &Option<Regex> {
         &self.info
     }
+
+    /// Select the transaction type for including in the query
+    pub fn ttype(&self) -> &Option<Vec<TransactionType>> {
+        &self.transaction_type
+    }
 }

@@ -44,6 +44,11 @@ fn main() -> Result<(), anyhow::Error> {
                         Some(v) => v.contains(t.paymode()),
                         None => true,
                     })
+                    // filter out transaction types
+                    .filter(|&t| match query.ttype() {
+                        Some(v) => v.contains(t.ttype()),
+                        None => true,
+                    })
                     .collect();
                 println!("{:#?}", query);
                 println!("{:#?}", filt_transactions);
