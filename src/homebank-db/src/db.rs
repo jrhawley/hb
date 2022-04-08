@@ -1,6 +1,6 @@
 //! Data structure for the HomeBank database.
 
-use crate::{HomeBankDbError, HomeBankDbProperties, Transaction};
+use crate::{Currency, HomeBankDbError, HomeBankDbProperties, Transaction};
 use std::{fs::File, io::BufReader, path::Path};
 use xml::{reader::XmlEvent, EventReader};
 
@@ -9,7 +9,7 @@ pub struct HomeBankDb {
     // #[serde(rename = "homebank")]
     // homebank_version: HomeBankDbVersion,
     properties: HomeBankDbProperties,
-    // currencies: Vec<Currency>,
+    currencies: Vec<Currency>,
     // groups: Vec<Group>,
     // accounts: Vec<Account>,
     // payees: Vec<Payee>,
@@ -24,7 +24,7 @@ impl HomeBankDb {
         Self {
             // homebank_version: HomeBankDbVersion::empty(),
             properties: HomeBankDbProperties::empty(),
-            // currencies: vec![],
+            currencies: vec![],
             // groups: vec![],
             // accounts: vec![],
             // payees: vec![],
@@ -42,6 +42,16 @@ impl HomeBankDb {
     /// Retrieve the mutable transactions
     fn mut_properties(&mut self) -> &mut HomeBankDbProperties {
         &mut self.properties
+    }
+
+    /// Retrieve the database properties
+    pub fn currencies(&self) -> &Vec<Currency> {
+        &self.currencies
+    }
+
+    /// Retrieve the mutable transactions
+    fn mut_currencies(&mut self) -> &mut Vec<Currency> {
+        &mut self.currencies
     }
 
     /// Retrieve the list of transactions
@@ -94,7 +104,11 @@ impl TryFrom<&Path> for HomeBankDb {
                                     *db.mut_properties() = props;
                                 }
                             }
-                            "cur" => {}
+                            "cur" => {
+                                if let Ok(curr) = Currency::try_from(attributes) {
+                                    db.mut_currencies().push(curr);
+                                }
+                            }
                             "grp" => {}
                             "account" => {}
                             "pay" => {}
