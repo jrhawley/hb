@@ -53,6 +53,13 @@ pub struct QueryTransactions {
     info: Option<Regex>,
 
     #[structopt(
+        short = "t",
+        help = "Include transactions whose tags match this regular expression",
+        value_name = "regex"
+    )]
+    tags: Option<Regex>,
+
+    #[structopt(
         short = "T",
         help = "Include 'Expense', 'Income', or 'Transfer' transactions",
         value_name = "type"
@@ -89,6 +96,11 @@ impl QueryTransactions {
     /// Select the info regex for including in the query
     pub fn info(&self) -> &Option<Regex> {
         &self.info
+    }
+
+    /// Select the tags regex for including in the query
+    pub fn tags(&self) -> &Option<Regex> {
+        &self.tags
     }
 
     /// Select the transaction type for including in the query
@@ -131,13 +143,23 @@ impl Query for QueryTransactions {
             })
             // filter out the memo regex
             .filter(|&t| match (self.memo(), t.memo()) {
-                (Some(re), Some(memo)) => (*re).is_match(memo),
+                (Some(re), Some(memo)) => re.is_match(memo),
+                (Some(_), None) => false,
+                (None, _) => true,
+            })
+            .filter(|&t| match (self.tags(), t.tags()) {
+                (Some(re), Some(tags)) => {
+                    // combine all the tags back into a single string to perform a single regex match
+                    // this avoids performing the costly match multiple times
+                    let combined_tr_tags = tags.join(",");
+                    re.is_match(&combined_tr_tags)
+                }
                 (Some(_), None) => false,
                 (None, _) => true,
             })
             // filter out the memo regex
             .filter(|&t| match (self.info(), t.info()) {
-                (Some(re), Some(info)) => (*re).is_match(info),
+                (Some(re), Some(info)) => re.is_match(info),
                 (Some(_), None) => false,
                 (None, _) => true,
             })

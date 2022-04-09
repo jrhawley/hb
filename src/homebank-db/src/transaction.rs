@@ -38,7 +38,7 @@ pub struct Transaction {
     category: Option<usize>,
     memo: Option<String>,
     info: Option<String>,
-    // tags: Option<Vec<String>>,
+    tags: Option<Vec<String>>,
     transaction_type: TransactionType,
     // destination_account_idx: Option<usize>,
     // // I don't know what this is
@@ -77,6 +77,11 @@ impl Transaction {
         &self.info
     }
 
+    /// Retrieve the tags for the `Transaction`
+    pub fn tags(&self) -> &Option<Vec<String>> {
+        &self.tags
+    }
+
     /// Retrieve the type for the `Transaction`
     pub fn ttype(&self) -> &TransactionType {
         &self.transaction_type
@@ -96,6 +101,7 @@ impl Default for Transaction {
             category: None,
             memo: None,
             info: None,
+            tags: None,
             transaction_type: TransactionType::Expense,
         }
     }
@@ -183,6 +189,12 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                         "" => None,
                         s => Some(s.to_string()),
                     }
+                }
+                "tags" => {
+                    // split the tags string by commas
+                    let tags: Vec<String> =
+                        i.value.as_str().split(',').map(|s| s.to_string()).collect();
+                    tr.tags = Some(tags);
                 }
                 _ => {}
             }
@@ -359,6 +371,7 @@ mod tests {
             flags: None,
             info: None,
             memo: None,
+            tags: None,
             pay_mode: PayMode::None,
             payee: 1,
             status: TransactionStatus::None,
