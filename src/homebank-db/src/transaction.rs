@@ -67,6 +67,11 @@ impl Transaction {
         &self.status
     }
 
+    /// Retrieve the category of the `Transaction`
+    pub fn category(&self) -> &Option<usize> {
+        &self.category
+    }
+
     /// Retrieve the payment method of the `Transaction`
     pub fn pay_mode(&self) -> &PayMode {
         &self.pay_mode

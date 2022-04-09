@@ -5,7 +5,12 @@
         "filt",
         "hbdb",
         "homebank",
+        "kxfer",
+        "ownedatt",
+        "paymode",
         "qtype",
+        "samt",
+        "smem",
         "structopt",
         "thiserror",
         "ttype"
