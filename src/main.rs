@@ -1,4 +1,4 @@
-use crate::cli::QueryType;
+use crate::cli::{Query, QueryType};
 use anyhow::Context;
 use cli::{CliOpts, SubCommand};
 use config::Config;
