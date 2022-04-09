@@ -5,6 +5,7 @@
         "filt",
         "hbdb",
         "homebank",
+        "qtype",
         "structopt",
         "thiserror",
         "ttype"
