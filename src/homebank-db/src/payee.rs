@@ -10,7 +10,7 @@ pub enum PayeeError {
     InvalidKey,
     #[error("Invalid category key.")]
     InvalidCategoryKey,
-    #[error("Invalid paymode key.")]
+    #[error("Invalid pay mode key.")]
     InvalidPayModeKey,
 }
 
@@ -18,8 +18,8 @@ pub enum PayeeError {
 pub struct Payee {
     key: usize,
     name: String,
-    category_idx: usize,
-    paymode_idx: usize,
+    category_idx: Option<usize>,
+    paymode_idx: Option<usize>,
 }
 
 impl Payee {
@@ -27,12 +27,12 @@ impl Payee {
         Self {
             key: 0,
             name: "".to_string(),
-            category_idx: 0,
-            paymode_idx: 0,
+            category_idx: None,
+            paymode_idx: None,
         }
     }
 
-    pub fn new(key: usize, name: &str, category: usize, paymode: usize) -> Self {
+    pub fn new(key: usize, name: &str, category: Option<usize>, paymode: Option<usize>) -> Self {
         Self {
             key,
             name: name.to_string(),
@@ -49,11 +49,11 @@ impl Payee {
         &self.name
     }
 
-    pub fn category(&self) -> usize {
+    pub fn category(&self) -> Option<usize> {
         self.category_idx
     }
 
-    pub fn paymode(&self) -> usize {
+    pub fn paymode(&self) -> Option<usize> {
         self.paymode_idx
     }
 }
@@ -82,14 +82,14 @@ impl TryFrom<Vec<OwnedAttribute>> for Payee {
                     payee.name = i.value.as_str().to_string();
                 }
                 "category" => {
-                    payee.key = match usize::from_str(&i.value) {
-                        Ok(idx) => idx,
+                    payee.category_idx = match usize::from_str(&i.value) {
+                        Ok(idx) => Some(idx),
                         Err(_) => return Err(PayeeError::InvalidCategoryKey),
                     }
                 }
                 "paymode" => {
-                    payee.key = match usize::from_str(&i.value) {
-                        Ok(idx) => idx,
+                    payee.paymode_idx = match usize::from_str(&i.value) {
+                        Ok(idx) => Some(idx),
                         Err(_) => return Err(PayeeError::InvalidPayModeKey),
                     }
                 }
