@@ -10,13 +10,13 @@ use structopt::StructOpt;
     about = "Query transaction payees, to and from"
 )]
 pub struct QueryPayees {
-    #[structopt(about = "Name of the payee", value_name = "regex")]
-    name: Regex,
+    #[structopt(help = "Name of the payee", value_name = "regex")]
+    name: Option<Regex>,
 }
 
 impl QueryPayees {
     /// Retrieve the regular expression for the payee name
-    pub fn name(&self) -> &Regex {
+    pub fn name(&self) -> &Option<Regex> {
         &self.name
     }
 }
@@ -29,7 +29,10 @@ impl Query for QueryPayees {
             .payees()
             .values()
             // filter out payees that don't match the regex
-            .filter(|&p| self.name().is_match(p.name()))
+            .filter(|&p| match self.name() {
+                Some(re) => re.is_match(p.name()),
+                None => true,
+            })
             .collect();
 
         filt_payees
