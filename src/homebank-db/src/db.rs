@@ -1,6 +1,8 @@
 //! Data structure for the HomeBank database.
 
-use crate::{Category, Currency, Group, HomeBankDbError, HomeBankDbProperties, Payee, Transaction};
+use crate::{
+    Account, Category, Currency, Group, HomeBankDbError, HomeBankDbProperties, Payee, Transaction,
+};
 use std::{collections::HashMap, fs::File, io::BufReader, path::Path};
 use xml::{reader::XmlEvent, EventReader};
 
@@ -11,7 +13,7 @@ pub struct HomeBankDb {
     properties: HomeBankDbProperties,
     currencies: HashMap<usize, Currency>,
     groups: HashMap<usize, Group>,
-    // accounts: Vec<Account>,
+    accounts: HashMap<usize, Account>,
     payees: HashMap<usize, Payee>,
     categories: HashMap<usize, Category>,
     // favourites: Vec<Favourite>,
@@ -26,7 +28,7 @@ impl HomeBankDb {
             properties: HomeBankDbProperties::empty(),
             currencies: HashMap::new(),
             groups: HashMap::new(),
-            // accounts: vec![],
+            accounts: HashMap::new(),
             payees: HashMap::new(),
             categories: HashMap::new(),
             // favourites: vec![],
@@ -42,6 +44,16 @@ impl HomeBankDb {
     /// Retrieve the mutable transactions
     fn mut_properties(&mut self) -> &mut HomeBankDbProperties {
         &mut self.properties
+    }
+
+    /// Retrieve the database accounts
+    pub fn accounts(&self) -> &HashMap<usize, Account> {
+        &self.accounts
+    }
+
+    /// Retrieve the mutable accounts
+    fn mut_accounts(&mut self) -> &mut HashMap<usize, Account> {
+        &mut self.accounts
     }
 
     /// Retrieve the database properties
@@ -144,7 +156,11 @@ impl TryFrom<&Path> for HomeBankDb {
                                     db.mut_groups().insert(grp.key(), grp);
                                 }
                             }
-                            "account" => {}
+                            "account" => {
+                                if let Ok(acct) = Account::try_from(attributes) {
+                                    db.mut_accounts().insert(acct.key(), acct);
+                                }
+                            }
                             "pay" => {
                                 if let Ok(payee) = Payee::try_from(attributes) {
                                     db.mut_payees().insert(payee.key(), payee);
@@ -199,7 +215,7 @@ mod tests {
             properties: HomeBankDbProperties::empty(),
             currencies: HashMap::new(),
             groups: HashMap::new(),
-            // accounts: vec![],
+            accounts: HashMap::new(),
             payees: HashMap::new(),
             categories: HashMap::new(),
             // favourites: vec![],

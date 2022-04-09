@@ -18,7 +18,7 @@ pub use category::Category;
 pub use currency::Currency;
 pub use db::HomeBankDb;
 pub use db_properties::HomeBankDbProperties;
-pub use error::{CategoryError, CurrencyError, HomeBankDbError};
+pub use error::{AccountError, CategoryError, CurrencyError, HomeBankDbError};
 pub use group::Group;
 pub use payee::Payee;
 pub use paymode::PayMode;
