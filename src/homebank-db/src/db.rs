@@ -55,7 +55,7 @@ impl HomeBankDb {
     }
 
     /// Retrieve the groups in the database
-    fn groups(&self) -> &HashMap<usize, Group> {
+    pub fn groups(&self) -> &HashMap<usize, Group> {
         &self.groups
     }
 
@@ -65,7 +65,7 @@ impl HomeBankDb {
     }
 
     /// Retrieve the payees in the database
-    fn payees(&self) -> &HashMap<usize, Payee> {
+    pub fn payees(&self) -> &HashMap<usize, Payee> {
         &self.payees
     }
 
