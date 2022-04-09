@@ -5,6 +5,6 @@ pub mod query;
 
 pub use command::{CliOpts, SubCommand};
 pub use query::{
-    QueryAccounts, QueryCategories, QueryCurrencies, QueryFavourites, QueryGroups, QueryOpts,
-    QueryPayees, QueryTransactions, QueryType,
+    Query, QueryAccounts, QueryCategories, QueryCurrencies, QueryGroups, QueryOpts, QueryPayees,
+    QueryTemplates, QueryTransactions, QueryType,
 };
