@@ -1,6 +1,6 @@
 //! Categories
 
-use crate::CategoryError;
+use crate::{CategoryError, HomeBankDb};
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
@@ -47,6 +47,19 @@ impl Category {
 
     pub fn name(&self) -> &str {
         &self.name
+    }
+
+    /// This includes the parent category, if one exists.
+    pub fn full_name(&self, db: &HomeBankDb) -> String {
+        if let Some(idx) = self.parent_key {
+            if let Some(parent_cat) = db.categories().get(&idx) {
+                format!("{}:{}", parent_cat.name(), self.name())
+            } else {
+                self.name().to_string()
+            }
+        } else {
+            self.name().to_string()
+        }
     }
 
     pub(crate) fn flags(&self) -> usize {
