@@ -36,7 +36,7 @@ pub struct Transaction {
     pay_mode: PayMode,
     status: TransactionStatus,
     flags: Option<usize>,
-    payee: usize,
+    payee: Option<usize>,
     category: Option<usize>,
     memo: Option<String>,
     info: Option<String>,
@@ -89,6 +89,25 @@ impl Transaction {
         }
     }
 
+    /// Retrieve the payee for the `Transaction`
+    pub fn payee(&self) -> &Option<usize> {
+        &self.payee
+    }
+
+    /// Retrieve the payee name.
+    pub fn payee_name(&self, db: &HomeBankDb) -> Option<String> {
+        match self.payee() {
+            Some(idx) => {
+                if let Some(payee) = db.payees().get(idx) {
+                    Some(payee.name().to_string())
+                } else {
+                    None
+                }
+            }
+            None => None,
+        }
+    }
+
     /// Retrieve the payment method of the `Transaction`
     pub fn pay_mode(&self) -> &PayMode {
         &self.pay_mode
@@ -124,7 +143,7 @@ impl Default for Transaction {
             pay_mode: PayMode::None,
             status: TransactionStatus::None,
             flags: None,
-            payee: 0,
+            payee: None,
             category: None,
             memo: None,
             info: None,
@@ -207,7 +226,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 }
                 "payee" => {
                     tr.payee = match usize::from_str(&i.value) {
-                        Ok(p) => p,
+                        Ok(p) => Some(p),
                         Err(_) => return Err(TransactionError::MissingPayee),
                     }
                 }
@@ -400,7 +419,7 @@ mod tests {
             memo: None,
             tags: None,
             pay_mode: PayMode::None,
-            payee: 1,
+            payee: Some(1),
             status: TransactionStatus::None,
             transaction_type: TransactionType::Income,
         });
