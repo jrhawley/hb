@@ -1,6 +1,6 @@
 //! Data structure for the HomeBank database.
 
-use crate::{Currency, Group, HomeBankDbError, HomeBankDbProperties, Transaction};
+use crate::{Currency, Group, HomeBankDbError, HomeBankDbProperties, Payee, Transaction};
 use std::{collections::HashMap, fs::File, io::BufReader, path::Path};
 use xml::{reader::XmlEvent, EventReader};
 
@@ -12,7 +12,7 @@ pub struct HomeBankDb {
     currencies: HashMap<usize, Currency>,
     groups: HashMap<usize, Group>,
     // accounts: Vec<Account>,
-    // payees: Vec<Payee>,
+    payees: HashMap<usize, Payee>,
     // categories: Vec<Category>,
     // favourites: Vec<Favourite>,
     transactions: Vec<Transaction>,
@@ -27,7 +27,7 @@ impl HomeBankDb {
             currencies: HashMap::new(),
             groups: HashMap::new(),
             // accounts: vec![],
-            // payees: vec![],
+            payees: HashMap::new(),
             // categories: vec![],
             // favourites: vec![],
             transactions: vec![],
@@ -62,6 +62,16 @@ impl HomeBankDb {
     /// Retrieve the mutable currencies
     fn mut_groups(&mut self) -> &mut HashMap<usize, Group> {
         &mut self.groups
+    }
+
+    /// Retrieve the payees in the database
+    fn payees(&self) -> &HashMap<usize, Payee> {
+        &self.payees
+    }
+
+    /// Retrieve the mutable map of payees
+    fn mut_payees(&mut self) -> &mut HashMap<usize, Payee> {
+        &mut self.payees
     }
 
     /// Retrieve the list of transactions
@@ -125,7 +135,11 @@ impl TryFrom<&Path> for HomeBankDb {
                                 }
                             }
                             "account" => {}
-                            "pay" => {}
+                            "pay" => {
+                                if let Ok(payee) = Payee::try_from(attributes) {
+                                    db.mut_payees().insert(payee.key(), payee);
+                                }
+                            }
                             "cat" => {}
                             "fav" => {}
                             "ope" => {
@@ -172,7 +186,7 @@ mod tests {
             currencies: HashMap::new(),
             groups: HashMap::new(),
             // accounts: vec![],
-            // payees: vec![],
+            payees: HashMap::new(),
             // categories: vec![],
             // favourites: vec![],
             transactions: vec![],
