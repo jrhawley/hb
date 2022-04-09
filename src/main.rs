@@ -29,6 +29,11 @@ fn main() -> Result<(), anyhow::Error> {
 
                 println!("{:#?}", filt_payees);
             }
+            QueryType::Currencies(query) => {
+                let filt_currencies = query.exec(&db);
+
+                println!("{:#?}", filt_currencies);
+            }
             _ => {}
         },
         None => {}
