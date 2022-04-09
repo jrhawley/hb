@@ -17,17 +17,17 @@ fn main() -> Result<(), anyhow::Error> {
         Err(e) => return Err(e).with_context(|| "Error parsing HomeBank file."),
     };
 
-    println!("{:#?}", db.groups());
-    println!("{:#?}", db.payees());
-    println!("{:#?}", db.categories());
-    println!("{:#?}", db.accounts());
-
     match &cli_opts.subcommand() {
         Some(SubCommand::Query(q_opts)) => match q_opts.qtype() {
             QueryType::Transactions(query) => {
                 let filt_transactions = query.exec(&db);
 
                 println!("{:#?}", filt_transactions);
+            }
+            QueryType::Payees(query) => {
+                let filt_payees = query.exec(&db);
+
+                println!("{:#?}", filt_payees);
             }
             _ => {}
         },
