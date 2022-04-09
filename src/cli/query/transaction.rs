@@ -25,6 +25,20 @@ pub struct QueryTransactions {
     date_to: Option<NaiveDate>,
 
     #[structopt(
+        short = "l",
+        help = "Include transactions greater than (and including) this amount",
+        value_name = "amount"
+    )]
+    amount_from: Option<f32>,
+
+    #[structopt(
+        short = "u",
+        help = "Include transactions less than (and excluding) this amount",
+        value_name = "amount"
+    )]
+    amount_to: Option<f32>,
+
+    #[structopt(
         short = "s",
         help = "Include transactions with a certain status",
         value_name = "status"
@@ -78,6 +92,16 @@ impl QueryTransactions {
         &self.date_to
     }
 
+    /// Select the lower bound amount for querying
+    pub fn amount_from(&self) -> &Option<f32> {
+        &self.amount_from
+    }
+
+    /// Select the upper bound amount for querying
+    pub fn amount_to(&self) -> &Option<f32> {
+        &self.amount_to
+    }
+
     /// Select the status(es) for including in the query
     pub fn status(&self) -> &Option<Vec<TransactionStatus>> {
         &self.status
@@ -124,6 +148,16 @@ impl Query for QueryTransactions {
             // filter out dates on or after the given date
             .filter(|&t| match self.date_to() {
                 Some(d) => t.date() < d,
+                None => true,
+            })
+            // filter out amounts less than the lower bound
+            .filter(|&t| match self.amount_from() {
+                Some(a) => t.amount() >= a,
+                None => true,
+            })
+            // filter out amounts greater than the upper bound
+            .filter(|&t| match self.amount_to() {
+                Some(a) => t.amount() < a,
                 None => true,
             })
             // filter out certain statuses

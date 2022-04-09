@@ -57,6 +57,11 @@ impl Transaction {
         &self.date
     }
 
+    /// Retrieve the amount of the `Transaction`
+    pub fn amount(&self) -> &f32 {
+        &self.amount
+    }
+
     /// Retrieve the status of the `Transaction`
     pub fn status(&self) -> &TransactionStatus {
         &self.status
