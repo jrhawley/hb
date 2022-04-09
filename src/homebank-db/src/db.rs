@@ -1,6 +1,6 @@
 //! Data structure for the HomeBank database.
 
-use crate::{Currency, HomeBankDbError, HomeBankDbProperties, Transaction};
+use crate::{Currency, Group, HomeBankDbError, HomeBankDbProperties, Transaction};
 use std::{collections::HashMap, fs::File, io::BufReader, path::Path};
 use xml::{reader::XmlEvent, EventReader};
 
@@ -10,7 +10,7 @@ pub struct HomeBankDb {
     // homebank_version: HomeBankDbVersion,
     properties: HomeBankDbProperties,
     currencies: HashMap<usize, Currency>,
-    // groups: Vec<Group>,
+    groups: HashMap<usize, Group>,
     // accounts: Vec<Account>,
     // payees: Vec<Payee>,
     // categories: Vec<Category>,
@@ -25,7 +25,7 @@ impl HomeBankDb {
             // homebank_version: HomeBankDbVersion::empty(),
             properties: HomeBankDbProperties::empty(),
             currencies: HashMap::new(),
-            // groups: vec![],
+            groups: HashMap::new(),
             // accounts: vec![],
             // payees: vec![],
             // categories: vec![],
@@ -52,6 +52,16 @@ impl HomeBankDb {
     /// Retrieve the mutable transactions
     fn mut_currencies(&mut self) -> &mut HashMap<usize, Currency> {
         &mut self.currencies
+    }
+
+    /// Retrieve the groups in the database
+    fn groups(&self) -> &HashMap<usize, Group> {
+        &self.groups
+    }
+
+    /// Retrieve the mutable currencies
+    fn mut_groups(&mut self) -> &mut HashMap<usize, Group> {
+        &mut self.groups
     }
 
     /// Retrieve the list of transactions
@@ -109,7 +119,11 @@ impl TryFrom<&Path> for HomeBankDb {
                                     db.mut_currencies().insert(curr.key(), curr);
                                 }
                             }
-                            "grp" => {}
+                            "grp" => {
+                                if let Ok(grp) = Group::try_from(attributes) {
+                                    db.mut_groups().insert(grp.key(), grp);
+                                }
+                            }
                             "account" => {}
                             "pay" => {}
                             "cat" => {}
@@ -156,7 +170,7 @@ mod tests {
             // homebank_version: HomeBankDbVersion::empty(),
             properties: HomeBankDbProperties::empty(),
             currencies: HashMap::new(),
-            // groups: vec![],
+            groups: HashMap::new(),
             // accounts: vec![],
             // payees: vec![],
             // categories: vec![],
