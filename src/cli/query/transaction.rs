@@ -46,6 +46,13 @@ pub struct QueryTransactions {
     status: Option<Vec<TransactionStatus>>,
 
     #[structopt(
+        short = "c",
+        help = "Include transactions with categories that match the regular expression",
+        value_name = "regex"
+    )]
+    category: Option<Regex>,
+
+    #[structopt(
         short = "M",
         help = "Include transactions with a certain payment method",
         value_name = "method"
@@ -105,6 +112,11 @@ impl QueryTransactions {
     /// Select the status(es) for including in the query
     pub fn status(&self) -> &Option<Vec<TransactionStatus>> {
         &self.status
+    }
+
+    /// Select the category regex for including in the query
+    pub fn category(&self) -> &Option<Regex> {
+        &self.category
     }
 
     /// Select the payment method(s) for including in the query
@@ -181,6 +193,7 @@ impl Query for QueryTransactions {
                 (Some(_), None) => false,
                 (None, _) => true,
             })
+            // filter out tags that don't match the regex
             .filter(|&t| match (self.tags(), t.tags()) {
                 (Some(re), Some(tags)) => {
                     // combine all the tags back into a single string to perform a single regex match
@@ -191,7 +204,7 @@ impl Query for QueryTransactions {
                 (Some(_), None) => false,
                 (None, _) => true,
             })
-            // filter out the memo regex
+            // filter out the info regex
             .filter(|&t| match (self.info(), t.info()) {
                 (Some(re), Some(info)) => re.is_match(info),
                 (Some(_), None) => false,
