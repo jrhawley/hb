@@ -64,6 +64,20 @@ impl Transaction {
         &self.amount
     }
 
+    /// Retrieve the account where the `Transaction` takes place
+    pub fn account(&self) -> usize {
+        self.account
+    }
+
+    /// Retrieve the account name
+    pub fn account_name(&self, db: &HomeBankDb) -> Option<String> {
+        if let Some(acct) = db.accounts().get(&self.account()) {
+            Some(acct.name().to_string())
+        } else {
+            None
+        }
+    }
+
     /// Retrieve the status of the `Transaction`
     pub fn status(&self) -> &TransactionStatus {
         &self.status

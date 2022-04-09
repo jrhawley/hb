@@ -60,6 +60,13 @@ pub struct QueryTransactions {
     payee: Option<Regex>,
 
     #[structopt(
+        short = "a",
+        help = "Include transactions involving accounts that match the regular expression",
+        value_name = "regex"
+    )]
+    account: Option<Regex>,
+
+    #[structopt(
         short = "M",
         help = "Include transactions with a certain payment method",
         value_name = "method"
@@ -129,6 +136,11 @@ impl QueryTransactions {
     /// Select the payee regex for including in the query
     pub fn payee(&self) -> &Option<Regex> {
         &self.payee
+    }
+
+    /// Select the account regex for including in the query
+    pub fn account(&self) -> &Option<Regex> {
+        &self.account
     }
 
     /// Select the payment method(s) for including in the query
@@ -202,6 +214,15 @@ impl Query for QueryTransactions {
             .filter(|&t| match (self.payee(), t.payee_name(db)) {
                 // if there is a regex and there is a category name
                 (Some(re), Some(t_payee_name)) => re.is_match(&t_payee_name),
+                // if there is a regex but no category
+                (Some(_), None) => false,
+                // if there is no regex
+                (None, _) => true,
+            })
+            // filter out certain accounts
+            .filter(|&t| match (self.payee(), t.account_name(db)) {
+                // if there is a regex and there is a category name
+                (Some(re), Some(t_account_name)) => re.is_match(&t_account_name),
                 // if there is a regex but no category
                 (Some(_), None) => false,
                 // if there is no regex
