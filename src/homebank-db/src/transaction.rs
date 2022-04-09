@@ -31,7 +31,7 @@ pub struct Transaction {
     date: NaiveDate,
     amount: f32,
     account: usize,
-    paymode: PayMode,
+    pay_mode: PayMode,
     status: TransactionStatus,
     flags: Option<usize>,
     payee: usize,
@@ -63,8 +63,8 @@ impl Transaction {
     }
 
     /// Retrieve the payment method of the `Transaction`
-    pub fn paymode(&self) -> &PayMode {
-        &self.paymode
+    pub fn pay_mode(&self) -> &PayMode {
+        &self.pay_mode
     }
 
     /// Retrieve the memo for the `Transaction`
@@ -89,7 +89,7 @@ impl Default for Transaction {
             date: NaiveDate::from_ymd(2000, 1, 1),
             amount: 0.0,
             account: 0,
-            paymode: PayMode::None,
+            pay_mode: PayMode::None,
             status: TransactionStatus::None,
             flags: None,
             payee: 0,
@@ -149,7 +149,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                     }
                 }
                 "paymode" => {
-                    tr.paymode = match usize::from_str(&i.value) {
+                    tr.pay_mode = match usize::from_str(&i.value) {
                         Ok(pm) => match PayMode::try_from(pm) {
                             Ok(t_pm) => t_pm,
                             Err(e) => return Err(e),
@@ -359,7 +359,7 @@ mod tests {
             flags: None,
             info: None,
             memo: None,
-            paymode: PayMode::None,
+            pay_mode: PayMode::None,
             payee: 1,
             status: TransactionStatus::None,
             transaction_type: TransactionType::Income,

@@ -129,7 +129,7 @@ impl TryFrom<&Path> for HomeBankDb {
         let mut in_info = false;
 
         // using xml manual parsing to read in the file
-        // not using some type of string parsing serde coersion because we
+        // not using some type of string parsing serde coercion because we
         // don't know how large the database is going to be
         for event in parser {
             match event {
