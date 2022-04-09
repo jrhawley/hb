@@ -177,6 +177,15 @@ impl Query for QueryTransactions {
                 Some(v) => v.contains(t.status()),
                 None => true,
             })
+            // filter out certain categories
+            .filter(|&t| match (self.category(), t.category_name(db)) {
+                // if there is a regex and there is a category name
+                (Some(re), Some(t_cat_name)) => re.is_match(&t_cat_name),
+                // if there is a regex but no category
+                (Some(_), None) => false,
+                // if there is no regex
+                (None, _) => true,
+            })
             // filter out certain payment methods
             .filter(|&t| match self.pay_mode() {
                 Some(v) => v.contains(t.pay_mode()),

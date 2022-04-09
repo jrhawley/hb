@@ -1,5 +1,7 @@
 //! Transactions
 
+use crate::HomeBankDb;
+
 use super::{PayMode, TransactionStatus, TransactionType};
 use chrono::{Duration, NaiveDate};
 use std::str::FromStr;
@@ -70,6 +72,21 @@ impl Transaction {
     /// Retrieve the category of the `Transaction`
     pub fn category(&self) -> &Option<usize> {
         &self.category
+    }
+
+    /// Retrieve the complete category name.
+    /// This includes the parent category, if one exists.
+    pub fn category_name(&self, db: &HomeBankDb) -> Option<String> {
+        match self.category() {
+            Some(idx) => {
+                if let Some(cat) = db.categories().get(idx) {
+                    Some(cat.full_name(db))
+                } else {
+                    None
+                }
+            }
+            None => None,
+        }
     }
 
     /// Retrieve the payment method of the `Transaction`
