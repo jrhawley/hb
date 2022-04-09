@@ -153,10 +153,20 @@ name = "homebank_db"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "kronos",
  "semver",
  "serde",
  "thiserror",
  "xml-rs",
+]
+
+[[package]]
+name = "kronos"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "74d75948c6a45f0a978873c595ebefc320e5413e1f60cd8cc0db08c95f8bbd24"
+dependencies = [
+ "chrono",
 ]
 
 [[package]]
