@@ -1,6 +1,12 @@
 {
     "cSpell.words": [
+        "chrono",
+        "curr",
+        "filt",
+        "hbdb",
+        "homebank",
         "structopt",
-        "thiserror"
+        "thiserror",
+        "ttype"
     ]
 }
