@@ -38,7 +38,17 @@ pub struct Transaction {
     category: Option<usize>,
     memo: Option<String>,
     info: Option<String>,
+    // tags: Option<Vec<String>>,
     transaction_type: TransactionType,
+    // destination_account_idx: Option<usize>,
+    // // I don't know what this is
+    // kxfer: Option<usize>,
+    // // I don't know what this is
+    // scat: Option<String>,
+    // // I don't know what this is
+    // samt: Option<String>,
+    // // I don't know what this is
+    // smem: Option<String>,
 }
 
 impl Transaction {
