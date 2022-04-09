@@ -1,6 +1,6 @@
 //! Data structure for the HomeBank database.
 
-use crate::{Currency, Group, HomeBankDbError, HomeBankDbProperties, Payee, Transaction};
+use crate::{Category, Currency, Group, HomeBankDbError, HomeBankDbProperties, Payee, Transaction};
 use std::{collections::HashMap, fs::File, io::BufReader, path::Path};
 use xml::{reader::XmlEvent, EventReader};
 
@@ -13,7 +13,7 @@ pub struct HomeBankDb {
     groups: HashMap<usize, Group>,
     // accounts: Vec<Account>,
     payees: HashMap<usize, Payee>,
-    // categories: Vec<Category>,
+    categories: HashMap<usize, Category>,
     // favourites: Vec<Favourite>,
     transactions: Vec<Transaction>,
 }
@@ -28,7 +28,7 @@ impl HomeBankDb {
             groups: HashMap::new(),
             // accounts: vec![],
             payees: HashMap::new(),
-            // categories: vec![],
+            categories: HashMap::new(),
             // favourites: vec![],
             transactions: vec![],
         }
@@ -72,6 +72,16 @@ impl HomeBankDb {
     /// Retrieve the mutable map of payees
     fn mut_payees(&mut self) -> &mut HashMap<usize, Payee> {
         &mut self.payees
+    }
+
+    /// Retrieve the payees in the database
+    pub fn categories(&self) -> &HashMap<usize, Category> {
+        &self.categories
+    }
+
+    /// Retrieve the mutable map of payees
+    fn mut_categories(&mut self) -> &mut HashMap<usize, Category> {
+        &mut self.categories
     }
 
     /// Retrieve the list of transactions
@@ -140,7 +150,11 @@ impl TryFrom<&Path> for HomeBankDb {
                                     db.mut_payees().insert(payee.key(), payee);
                                 }
                             }
-                            "cat" => {}
+                            "cat" => {
+                                if let Ok(cat) = Category::try_from(attributes) {
+                                    db.mut_categories().insert(cat.key(), cat);
+                                }
+                            }
                             "fav" => {}
                             "ope" => {
                                 if let Ok(tr) = Transaction::try_from(attributes) {
@@ -187,7 +201,7 @@ mod tests {
             groups: HashMap::new(),
             // accounts: vec![],
             payees: HashMap::new(),
-            // categories: vec![],
+            categories: HashMap::new(),
             // favourites: vec![],
             transactions: vec![],
         };
