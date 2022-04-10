@@ -20,12 +20,12 @@ pub struct Transaction {
     info: Option<String>,
     tags: Option<Vec<String>>,
     transaction_type: TransactionType,
-    // destination_account_idx: Option<usize>,
-    // // I don't know what this is
-    // kxfer: Option<usize>,
-    // split_categories: Option<Vec<usize>>,
-    // split_amounts: Option<Vec<f32>>,
-    // split_memos: Option<Vec<String>>,
+    destination_account_idx: Option<usize>,
+    transfer_key: Option<usize>,
+    num_splits: usize,
+    split_categories: Option<Vec<usize>>,
+    split_amounts: Option<Vec<f32>>,
+    split_memos: Option<Vec<String>>,
 }
 
 impl Transaction {
@@ -121,6 +121,31 @@ impl Transaction {
     pub fn ttype(&self) -> &TransactionType {
         &self.transaction_type
     }
+
+    /// Check if the `Transaction` is a transfer or not
+    pub fn is_transfer(&self) -> bool {
+        self.transfer_key.is_some()
+    }
+
+    /// Retrieve the transfer key for the `Transaction`
+    pub fn transfer_key(&self) -> &Option<usize> {
+        &self.transfer_key
+    }
+
+    /// Retrieve the destination account key for the transfer
+    pub fn transfer_destination_account_key(&self) -> &Option<usize> {
+        &self.destination_account_idx
+    }
+
+    /// Check if the `Transaction` is a split transaction or not
+    pub fn is_split(&self) -> bool {
+        self.num_splits > 0
+    }
+
+    /// Retrieve the number of splits the `Transaction` is divided into
+    pub fn num_splits(&self) -> usize {
+        self.num_splits
+    }
 }
 
 impl Default for Transaction {
@@ -138,6 +163,12 @@ impl Default for Transaction {
             info: None,
             tags: None,
             transaction_type: TransactionType::Expense,
+            destination_account_idx: None,
+            transfer_key: None,
+            num_splits: 0,
+            split_amounts: None,
+            split_categories: None,
+            split_memos: None,
         }
     }
 }
@@ -415,6 +446,12 @@ mod tests {
             payee: Some(1),
             status: TransactionStatus::None,
             transaction_type: TransactionType::Income,
+            destination_account_idx: None,
+            transfer_key: None,
+            num_splits: 0,
+            split_amounts: None,
+            split_categories: None,
+            split_memos: None,
         });
 
         check_try_from_vec_ownedatt(input, expected)
