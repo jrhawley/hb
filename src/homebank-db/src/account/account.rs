@@ -12,6 +12,7 @@ use super::{AccountError, AccountType};
 pub struct Account {
     key: usize,
     flags: usize,
+    // Display position
     pos: usize,
     atype: AccountType,
     currency_idx: usize,
@@ -22,6 +23,7 @@ pub struct Account {
     maximum_amount: f32,
     notes: String,
     group_idx: usize,
+    // Last reconciled date
     rdate: NaiveDate,
 }
 

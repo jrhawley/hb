@@ -210,7 +210,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                         Ok(a) => {
                             tr.amount = a;
                             // if the transaction already appears to be a transfer, then leave the type alone
-                            // if it's not a transfer then it's an expense positive if the amount is negative, otherwise an income
+                            // if it's not a transfer then it's an expense if the amount is negative, otherwise an income
                             if *tr.ttype() != TransactionType::Transfer {
                                 if a > 0.0 {
                                     tr.transaction_type = TransactionType::Income;
@@ -339,7 +339,7 @@ mod tests {
                     prefix: None,
                 },
                 // corresponds to 2020-03-11
-                value: "737860".to_string(),
+                value: "737494".to_string(),
             },
             OwnedAttribute {
                 name: OwnedName {
