@@ -87,6 +87,11 @@ impl Account {
     pub fn atype(&self) -> &AccountType {
         &self.atype
     }
+
+    /// Retrieve the account's group index
+    pub fn group(&self) -> &usize {
+        &self.group_idx
+    }
 }
 
 impl Default for Account {
