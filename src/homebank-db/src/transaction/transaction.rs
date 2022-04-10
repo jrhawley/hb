@@ -558,4 +558,26 @@ mod tests {
 
         check_try_from_single_str(input, expected);
     }
+    #[test]
+    fn parse_good_date() {
+        let input = r#"<ope date="737494">"#;
+        let expected = Ok(Transaction {
+            date: NaiveDate::from_ymd(2020, 03, 11),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    #[should_panic]
+    fn parse_bad_date() {
+        let input = r#"<ope category="5.028s">"#;
+        let expected = Ok(Transaction {
+            category: Some(1),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
 }
