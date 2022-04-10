@@ -6,7 +6,7 @@ pub mod group;
 pub mod payee;
 pub mod paymode;
 pub mod query;
-pub mod template;
+// pub mod template;
 pub mod transaction;
 
 pub use account::{Account, AccountError, AccountType, QueryAccounts};
@@ -17,7 +17,7 @@ pub use group::{Group, QueryGroups};
 pub use payee::{Payee, PayeeError, QueryPayees};
 pub use paymode::PayMode;
 pub use query::{Query, QueryOpts, QueryType};
-pub use template::{QueryTemplates, Template};
+// pub use template::{QueryTemplates, Template};
 pub use transaction::{
     QueryTransactions, Transaction, TransactionError, TransactionStatus, TransactionType,
 };

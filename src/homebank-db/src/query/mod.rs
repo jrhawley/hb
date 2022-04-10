@@ -1,7 +1,7 @@
 //! Query the HomeBank database from the command line.
 
 use crate::{
-    currency::QueryCurrencies, group::QueryGroups, payee::QueryPayees, template::QueryTemplates,
+    currency::QueryCurrencies, group::QueryGroups, payee::QueryPayees,
     transaction::QueryTransactions, HomeBankDb, QueryAccounts, QueryCategories,
 };
 use structopt::StructOpt;
