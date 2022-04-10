@@ -93,7 +93,6 @@ mod tests {
     }
 
     #[test]
-    #[cfg(target_os = "linux")]
     fn tilded_is_changed() {
         let input = Path::new("~");
         let expected = home_dir();

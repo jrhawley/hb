@@ -115,8 +115,6 @@ mod tests {
     #[test]
     #[cfg(target_os = "windows")]
     fn default_windows_config_dir() {
-        use std::path::Path;
-
         let expected = home_dir().unwrap().join("AppData/Roaming/hb/");
         let observed = default_cfg_dir();
 
@@ -146,8 +144,6 @@ mod tests {
     #[test]
     #[cfg(target_os = "windows")]
     fn default_windows_config_file() {
-        use std::path::Path;
-
         let expected = home_dir().unwrap().join("AppData/Roaming/hb/config.toml");
         let observed = default_cfg_file();
 
