@@ -22,4 +22,6 @@ pub enum TransactionError {
     InvalidCategory(String),
     #[error("Mismatched number of splits. Expected {0}, found {1}.")]
     MismatchedSplitNumber(usize, usize),
+    #[error("Invalid transaction flags. Must be a `usize` type.")]
+    InvalidFlags,
 }

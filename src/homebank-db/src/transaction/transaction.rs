@@ -257,7 +257,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 "flags" => {
                     tr.flags = match usize::from_str(&i.value) {
                         Ok(f) => Some(f),
-                        Err(_) => None,
+                        Err(_) => return Err(TransactionError::InvalidFlags),
                     }
                 }
                 "payee" => {
@@ -558,6 +558,7 @@ mod tests {
 
         check_try_from_single_str(input, expected);
     }
+
     #[test]
     fn parse_good_date() {
         let input = r#"<ope date="737494">"#;
@@ -657,6 +658,29 @@ mod tests {
         let input = r#"<ope st="none">"#;
         let expected = Ok(Transaction {
             status: TransactionStatus::None,
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    fn parse_good_flag() {
+        let input = r#"<ope flags="1">"#;
+        let expected = Ok(Transaction {
+            flags: Some(1),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    #[should_panic]
+    fn parse_bad_flags() {
+        let input = r#"<ope flags="somethingelse">"#;
+        let expected = Ok(Transaction {
+            flags: None,
             ..Default::default()
         });
 
