@@ -1,11 +1,10 @@
 //! Transactions
 
+use super::{julian_date_from_u32, parse_split_values, TransactionStatus, TransactionType};
 use crate::{HomeBankDb, PayMode, TransactionError};
-use chrono::{Duration, NaiveDate};
+use chrono::NaiveDate;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
-
-use super::{TransactionStatus, TransactionType};
 
 #[derive(Debug, PartialEq)]
 pub struct Transaction {
@@ -182,11 +181,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 }
                 "date" => {
                     tr.date = match u32::from_str(&i.value) {
-                        Ok(d) => {
-                            // dates are stored as Julian dates, starting from 0001-01-01
-                            let zero = NaiveDate::from_ymd(1, 1, 1);
-                            zero + Duration::days(d.into())
-                        }
+                        Ok(d) => julian_date_from_u32(d),
                         Err(_) => return Err(TransactionError::MissingDate),
                     }
                 }

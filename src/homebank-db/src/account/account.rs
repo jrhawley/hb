@@ -1,8 +1,10 @@
 //! Accounts
 
-use chrono::{Duration, NaiveDate};
+use chrono::NaiveDate;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
+
+use crate::transaction::julian_date_from_u32;
 
 use super::{AccountError, AccountType};
 
@@ -182,11 +184,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Account {
                 }
                 "rdate" => {
                     acct.rdate = match u32::from_str(&i.value) {
-                        Ok(d) => {
-                            // dates are stored as Julian dates starting at 0001-01-01
-                            let zero = NaiveDate::from_ymd(1, 1, 1);
-                            zero + Duration::days(d.into())
-                        }
+                        Ok(d) => julian_date_from_u32(d),
                         Err(_) => return Err(AccountError::InvalidRDate),
                     }
                 }
