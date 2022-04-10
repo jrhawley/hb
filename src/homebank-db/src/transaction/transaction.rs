@@ -686,4 +686,27 @@ mod tests {
 
         check_try_from_single_str(input, expected);
     }
+
+    #[test]
+    fn parse_good_payee() {
+        let input = r#"<ope payee="5">"#;
+        let expected = Ok(Transaction {
+            payee: Some(5),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    #[should_panic]
+    fn parse_bad_payee() {
+        let input = r#"<ope payee="something-other-payee">"#;
+        let expected = Ok(Transaction {
+            payee: None,
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
 }
