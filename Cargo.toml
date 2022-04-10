@@ -14,11 +14,9 @@ members = [
 
 [dependencies]
 anyhow = "1.0.54"
-chrono = "0.4.19"
 dirs = "4.0.0"
 homebank_db = { path = "src/homebank-db" }
 lazy_static = "1.4.0"
-regex = "1.5.5"
 serde = { version = "1.0.136", features = ["derive"] }
 structopt = "0.3.26"
 thiserror = "1.0.30"
