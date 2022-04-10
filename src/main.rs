@@ -48,13 +48,22 @@ fn main() -> Result<(), anyhow::Error> {
 
                 println!("{:#?}", filt_groups);
             }
-            _ => {}
         },
         // QueryType::Templates(query) => {
         //     let filt_templates = query.exec(&db);
 
         //     println!("{:#?}", filt_templates);
         // }
+        Some(SubCommand::Sum(query)) => {
+            let filt_transactions = query.exec(&db);
+
+            // println!("{:#?}", filt_transactions);
+
+            let sum = filt_transactions
+                .iter()
+                .fold(0.0, |sum, &tr| sum + tr.amount());
+            println!("{sum}");
+        }
         None => {}
     }
 

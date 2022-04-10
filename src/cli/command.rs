@@ -1,7 +1,7 @@
 //! Top level CLI command
 
 use crate::config::default_cfg_file;
-use homebank_db::QueryOpts;
+use homebank_db::{QueryOpts, QueryTransactions};
 use lazy_static::lazy_static;
 use std::path::{Path, PathBuf};
 use structopt::StructOpt;
@@ -60,5 +60,8 @@ impl Default for CliOpts {
 
 #[derive(Debug, StructOpt)]
 pub enum SubCommand {
+    #[structopt(about = "Perform a query on the HomeBank database")]
     Query(QueryOpts),
+    #[structopt(about = "Calculate a sum of transactions in a query")]
+    Sum(QueryTransactions),
 }
