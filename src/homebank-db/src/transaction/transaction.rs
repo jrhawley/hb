@@ -474,4 +474,42 @@ mod tests {
 
         check_try_from_vec_ownedatt(input, expected)
     }
+
+    #[track_caller]
+    fn check_try_from_single_str(input: &str, expected: Result<Transaction, TransactionError>) {
+        // set up the reader from the input string
+        let mut reader = EventReader::from_str(input);
+
+        // skip the XML starting header and parse the first event
+        let (_start, first) = (reader.next(), reader.next());
+
+        // get the first event
+        if let Ok(XmlEvent::StartElement {
+            name, attributes, ..
+        }) = first
+        {
+            if "ope" == name.local_name.as_str() {
+                let observed = Transaction::try_from(attributes);
+                assert_eq!(expected, observed);
+            } else {
+                panic!(
+                    "Incorrect transaction string passed into check. Expected `ope`, found `{:#?}`",
+                    name.local_name.as_str()
+                );
+            }
+        } else {
+            panic!("Incorrect string passed into check. `{:#?}`", first);
+        }
+    }
+
+    #[test]
+    fn parse_account() {
+        let input = r#"<ope account="1">"#;
+        let expected = Ok(Transaction {
+            account: 1,
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
 }
