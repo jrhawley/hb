@@ -183,8 +183,8 @@ impl TryFrom<Vec<OwnedAttribute>> for Account {
                 "rdate" => {
                     acct.rdate = match u32::from_str(&i.value) {
                         Ok(d) => {
-                            // dates are stored as Julian dates
-                            let zero = NaiveDate::from_ymd(0, 1, 1);
+                            // dates are stored as Julian dates starting at 0001-01-01
+                            let zero = NaiveDate::from_ymd(1, 1, 1);
                             zero + Duration::days(d.into())
                         }
                         Err(_) => return Err(AccountError::InvalidRDate),

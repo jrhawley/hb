@@ -186,8 +186,8 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 "date" => {
                     tr.date = match u32::from_str(&i.value) {
                         Ok(d) => {
-                            // dates are stored as Julian dates
-                            let zero = NaiveDate::from_ymd(0, 1, 1);
+                            // dates are stored as Julian dates, starting from 0001-01-01
+                            let zero = NaiveDate::from_ymd(1, 1, 1);
                             zero + Duration::days(d.into())
                         }
                         Err(_) => return Err(TransactionError::MissingDate),
