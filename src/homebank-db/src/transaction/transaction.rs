@@ -274,9 +274,12 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 }
                 "tags" => {
                     // split the tags string by commas
-                    let tags: Vec<String> =
-                        i.value.as_str().split(',').map(|s| s.to_string()).collect();
-                    tr.tags = Some(tags);
+                    let tags = split_tags(&i.value);
+                    if tags.is_empty() {
+                        tr.tags = None;
+                    } else {
+                        tr.tags = Some(tags);
+                    }
                 }
                 // handle split categories
                 "scat" => {}
@@ -739,6 +742,50 @@ mod tests {
             memo: Some(String::from(
                 "This & that shouldn't cause a problem, right?",
             )),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    fn parse_empty_tags() {
+        let input = r#"<ope tags="">"#;
+        let expected = Ok(Transaction {
+            tags: None,
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    fn parse_space_tags() {
+        let input = r#"<ope tags=" ">"#;
+        let expected = Ok(Transaction {
+            tags: None,
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    fn parse_single_tag() {
+        let input = r#"<ope tags="this">"#;
+        let expected = Ok(Transaction {
+            tags: Some(vec![String::from("this")]),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    fn parse_multiple_tags() {
+        let input = r#"<ope tags="this that">"#;
+        let expected = Ok(Transaction {
+            tags: Some(vec![String::from("this"), String::from("that")]),
             ..Default::default()
         });
 
