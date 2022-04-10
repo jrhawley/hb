@@ -176,7 +176,9 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 "category" => {
                     tr.category = match usize::from_str(&i.value) {
                         Ok(c) => Some(c),
-                        Err(_) => None,
+                        Err(_) => {
+                            return Err(TransactionError::InvalidCategory(i.value.to_string()))
+                        }
                     }
                 }
                 "date" => {

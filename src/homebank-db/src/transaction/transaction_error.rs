@@ -18,4 +18,8 @@ pub enum TransactionError {
     InvalidPayMode,
     #[error("Invalid transaction type. Must be 'Expense', 'Income', or 'Transfer'.")]
     InvalidType,
+    #[error("Invalid category `{0}`. Must be a `usize` type.")]
+    InvalidCategory(String),
+    #[error("Mismatched number of splits. Expected {0}, found {1}.")]
+    MismatchedSplitNumber(usize, usize),
 }
