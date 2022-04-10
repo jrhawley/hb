@@ -536,4 +536,26 @@ mod tests {
 
         check_try_from_single_str(input, expected);
     }
+    #[test]
+    fn parse_good_category() {
+        let input = r#"<ope category="1">"#;
+        let expected = Ok(Transaction {
+            category: Some(1),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    #[should_panic]
+    fn parse_bad_category() {
+        let input = r#"<ope category="-1">"#;
+        let expected = Ok(Transaction {
+            category: Some(1),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
 }
