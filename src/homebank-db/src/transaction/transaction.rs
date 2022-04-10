@@ -1,6 +1,10 @@
 //! Transactions
 
-use super::{julian_date_from_u32, parse_split_values, TransactionStatus, TransactionType};
+use super::{
+    julian_date_from_u32, parse_split_values, split_tags,
+    transaction_split::{parse_split_amount_vec, parse_split_cat_vec, parse_split_memo_vec},
+    TransactionStatus, TransactionType,
+};
 use crate::{HomeBankDb, PayMode, TransactionError};
 use chrono::NaiveDate;
 use std::str::FromStr;
@@ -39,11 +43,11 @@ pub struct Transaction {
     /// If this transaction is split, how many sub-transactions is it split into
     num_splits: usize,
     /// If this transaction is split, what are the categories for the sub-transactions
-    split_categories: Option<Vec<usize>>,
+    split_categories: Option<Vec<Option<usize>>>,
     /// If this transaction is split, what are the amounts for the sub-transactions
     split_amounts: Option<Vec<f32>>,
     /// If this transaction is split, what are the memos for the sub-transactions
-    split_memos: Option<Vec<String>>,
+    split_memos: Option<Vec<Option<String>>>,
 }
 
 impl Transaction {
@@ -282,11 +286,81 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                     }
                 }
                 // handle split categories
-                "scat" => {}
+                "scat" => {
+                    // convert the category string into split categories
+                    let raw_category_indices = parse_split_values(i);
+                    let cat_indices = match parse_split_cat_vec(&raw_category_indices) {
+                        Ok(v) => v,
+                        Err(e) => return Err(e),
+                    };
+
+                    // if the split hasn't been processed yet by another field, check that they're the same length
+                    if !tr.is_split() {
+                        // update the number of splits
+                        tr.num_splits = raw_category_indices.len();
+                        // store the categories
+                        tr.split_categories = Some(cat_indices);
+                    } else if raw_category_indices.len() != tr.num_splits() {
+                        // if the number of split categories doesn't match the expected number of splits
+                        // throw an error
+                        return Err(TransactionError::MismatchedSplitNumber(
+                            tr.num_splits(),
+                            raw_category_indices.len(),
+                        ));
+                    } else {
+                        // if everything is matching up perfectly, store the split categories
+                        tr.split_categories = Some(cat_indices);
+                    }
+                }
                 // handle split amounts
-                "samt" => {}
+                "samt" => {
+                    let raw_amounts = parse_split_values(i);
+                    let amounts = match parse_split_amount_vec(&raw_amounts) {
+                        Ok(v) => v,
+                        Err(e) => return Err(e),
+                    };
+
+                    // if the split hasn't been processed yet by another field, check that they're the same length
+                    if !tr.is_split() {
+                        // update the number of splits
+                        tr.num_splits = raw_amounts.len();
+                        // store the categories
+                        tr.split_amounts = Some(amounts);
+                    } else if raw_amounts.len() != tr.num_splits() {
+                        // if the number of split amounts doesn't match the expected number of splits
+                        // throw an error
+                        return Err(TransactionError::MismatchedSplitNumber(
+                            tr.num_splits(),
+                            raw_amounts.len(),
+                        ));
+                    } else {
+                        // if everything is matching up perfectly, store the split amounts
+                        tr.split_amounts = Some(amounts);
+                    }
+                }
                 // handle split memos
-                "smem" => {}
+                "smem" => {
+                    let raw_memos = parse_split_values(i);
+                    let memos = parse_split_memo_vec(&raw_memos);
+
+                    // if the split hasn't been processed yet by another field, check that they're the same length
+                    if !tr.is_split() {
+                        // update the number of splits
+                        tr.num_splits = raw_memos.len();
+                        // store the categories
+                        tr.split_memos = Some(memos);
+                    } else if raw_memos.len() != tr.num_splits() {
+                        // if the number of split categories doesn't match the expected number of splits
+                        // throw an error
+                        return Err(TransactionError::MismatchedSplitNumber(
+                            tr.num_splits(),
+                            raw_memos.len(),
+                        ));
+                    } else {
+                        // if everything is matching up perfectly, store the split categories
+                        tr.split_memos = Some(memos);
+                    }
+                }
                 _ => {}
             }
         }
@@ -297,7 +371,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use xml::name::OwnedName;
+    use xml::{name::OwnedName, reader::XmlEvent, EventReader};
 
     #[test]
     fn it_works() {
@@ -786,6 +860,55 @@ mod tests {
         let input = r#"<ope tags="this that">"#;
         let expected = Ok(Transaction {
             tags: Some(vec![String::from("this"), String::from("that")]),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    fn parse_simple_split() {
+        let input = r#"<ope date="736696" amount="-1088.72" account="5" paymode="8" st="2" flags="256" payee="13" scat="83||100" samt="-1119.8||31.079999999999998" smem="January||Internet payment (Dec 1 - Dec 30)"/>"#;
+        let expected = Ok(Transaction {
+            date: NaiveDate::from_ymd(2018, 01, 02),
+            amount: -1088.72,
+            account: 5,
+            pay_mode: PayMode::Deposit,
+            status: TransactionStatus::Reconciled,
+            flags: Some(256),
+            payee: Some(13),
+            num_splits: 2,
+            split_categories: Some(vec![Some(83), Some(100)]),
+            split_amounts: Some(vec![-1119.80, 31.08]),
+            split_memos: Some(vec![
+                Some(String::from("January")),
+                Some(String::from("Internet payment (Dec 1 - Dec 30)")),
+            ]),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    /// This should give the same result at `parse_simple_split`, but the split info is written in a different order to check parser can handle it
+    #[test]
+    fn parse_simple_split_reordered() {
+        let input = r#"<ope date="736696" amount="-1088.72" account="5" paymode="8" st="2" flags="256" payee="13" samt="-1119.8||31.079999999999998" scat="83||100" smem="January||Internet payment (Dec 1 - Dec 30)"/>"#;
+        let expected = Ok(Transaction {
+            date: NaiveDate::from_ymd(2018, 01, 02),
+            amount: -1088.72,
+            account: 5,
+            pay_mode: PayMode::Deposit,
+            status: TransactionStatus::Reconciled,
+            flags: Some(256),
+            payee: Some(13),
+            num_splits: 2,
+            split_categories: Some(vec![Some(83), Some(100)]),
+            split_amounts: Some(vec![-1119.80, 31.08]),
+            split_memos: Some(vec![
+                Some(String::from("January")),
+                Some(String::from("Internet payment (Dec 1 - Dec 30)")),
+            ]),
             ..Default::default()
         });
 
