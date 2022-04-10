@@ -1,17 +1,16 @@
 //! Accounts
 
+use crate::{AccountError, AccountType};
 use chrono::{Duration, NaiveDate};
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
-
-use crate::AccountError;
 
 #[derive(Debug, PartialEq)]
 pub struct Account {
     key: usize,
     flags: usize,
     pos: usize,
-    atype: usize,
+    atype: AccountType,
     currency_idx: usize,
     name: String,
     bank_name: String,
@@ -29,7 +28,7 @@ impl Account {
             key: 0,
             flags: 0,
             pos: 0,
-            atype: 0,
+            atype: AccountType::None,
             currency_idx: 0,
             name: "".to_string(),
             bank_name: "".to_string(),
@@ -46,7 +45,7 @@ impl Account {
         key: usize,
         flags: usize,
         pos: usize,
-        atype: usize,
+        atype: AccountType,
         currency_idx: usize,
         name: &str,
         bank_name: &str,
@@ -69,17 +68,24 @@ impl Account {
             minimum_amount: min,
             maximum_amount: max,
             notes: notes.to_string(),
-            group_idx: group_idx,
+            group_idx,
             rdate: rdate.clone(),
         }
     }
 
+    /// Retrieve the `Account` key
     pub(crate) fn key(&self) -> usize {
         self.key
     }
 
-    pub(crate) fn name(&self) -> &str {
+    /// Retrieve the account name
+    pub fn name(&self) -> &str {
         &self.name
+    }
+
+    /// Retrieve the account type
+    pub fn atype(&self) -> &AccountType {
+        &self.atype
     }
 }
 
@@ -126,7 +132,10 @@ impl TryFrom<Vec<OwnedAttribute>> for Account {
                 }
                 "type" => {
                     acct.atype = match usize::from_str(&i.value) {
-                        Ok(idx) => idx,
+                        Ok(idx) => match AccountType::try_from(idx) {
+                            Ok(atype) => atype,
+                            Err(e) => return Err(e),
+                        },
                         Err(_) => return Err(AccountError::InvalidType),
                     }
                 }

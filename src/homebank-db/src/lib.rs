@@ -1,4 +1,5 @@
 pub mod account;
+pub mod account_type;
 pub mod category;
 pub mod currency;
 pub mod db;
@@ -14,6 +15,7 @@ pub mod transaction_status;
 pub mod transaction_type;
 
 pub use account::Account;
+pub use account_type::AccountType;
 pub use category::Category;
 pub use currency::Currency;
 pub use db::HomeBankDb;
