@@ -92,6 +92,11 @@ impl Account {
     pub fn group(&self) -> &usize {
         &self.group_idx
     }
+
+    /// Retrieve the name of the account's financial institution
+    pub fn institution(&self) -> &str {
+        &self.bank_name
+    }
 }
 
 impl Default for Account {

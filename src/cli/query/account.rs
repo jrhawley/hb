@@ -21,6 +21,13 @@ pub struct QueryAccounts {
         value_name = "regex"
     )]
     group: Option<Regex>,
+
+    #[structopt(
+        short = "i",
+        help = "Include accounts whose institutions match the regular expression",
+        value_name = "regex"
+    )]
+    institution: Option<Regex>,
 }
 
 impl QueryAccounts {
@@ -30,6 +37,10 @@ impl QueryAccounts {
 
     fn group(&self) -> &Option<Regex> {
         &self.group
+    }
+
+    fn institution(&self) -> &Option<Regex> {
+        &self.institution
     }
 }
 
@@ -53,6 +64,11 @@ impl Query for QueryAccounts {
                     (None, _) => true,
                 },
             )
+            // filter the account institution
+            .filter(|&acct| match self.institution() {
+                Some(re) => re.is_match(acct.institution()),
+                None => true,
+            })
             .collect();
 
         filt_accounts
