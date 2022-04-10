@@ -580,4 +580,48 @@ mod tests {
 
         check_try_from_single_str(input, expected);
     }
+
+    /// Check all valid pay modes at the same time
+    #[test]
+    fn parse_paymode_good() {
+        let inputs = vec![
+            PayMode::None,
+            PayMode::CreditCard,
+            PayMode::Cheque,
+            PayMode::Cash,
+            PayMode::BankTransfer,
+            PayMode::DebitCard,
+            PayMode::StandingOrder,
+            PayMode::ElectronicPayment,
+            PayMode::Deposit,
+            PayMode::FinancialInstitutionFee,
+            PayMode::DirectDebit,
+        ];
+
+        // iterate over the pay modes
+        for (i, pay_mode) in inputs.into_iter().enumerate() {
+            // fill in the raw string with the index that matches the pay mode
+            let input = format!(r#"<ope paymode="{}">"#, i);
+            let expected = Ok(Transaction {
+                pay_mode,
+                ..Default::default()
+            });
+            // perform the check
+            check_try_from_single_str(&input, expected);
+        }
+    }
+
+    #[test]
+    #[should_panic]
+    fn parse_paymode_bad() {
+        // use a string that should work in the `from_str` method to make sure that there
+        // isn't confusion between the two parsing methods
+        let input = r#"<ope paymode="none">"#;
+        let expected = Ok(Transaction {
+            pay_mode: PayMode::None,
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
 }
