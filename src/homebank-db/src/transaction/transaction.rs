@@ -8,23 +8,41 @@ use xml::attribute::OwnedAttribute;
 
 #[derive(Debug, PartialEq)]
 pub struct Transaction {
+    /// Date on which the transaction took place
     date: NaiveDate,
+    /// Net sum of the transaction (including any split amounts)
     amount: f32,
+    /// Which account the transaction applied to
     account: usize,
+    /// Payment method transacted
     pay_mode: PayMode,
+    /// Review status of the transaction
     status: TransactionStatus,
+    /// Any flags
     flags: Option<usize>,
+    /// Which payee was involved with the transaction
     payee: Option<usize>,
+    /// Which category does this transaction fall under
     category: Option<usize>,
+    /// Short form text expanding on what the transaction was about
     memo: Option<String>,
+    /// Any info related to the transaction, such as a reference number
     info: Option<String>,
+    /// Tags for the transaction
     tags: Option<Vec<String>>,
+    /// What type of transaction was it? 'Expense', 'Income', or 'Transfer'?
     transaction_type: TransactionType,
+    /// If this is a transfer, what is the corresponding destination account
     destination_account_idx: Option<usize>,
+    /// If this is a transfer, unique identifier for the transfer
     transfer_key: Option<usize>,
+    /// If this transaction is split, how many sub-transactions is it split into
     num_splits: usize,
+    /// If this transaction is split, what are the categories for the sub-transactions
     split_categories: Option<Vec<usize>>,
+    /// If this transaction is split, what are the amounts for the sub-transactions
     split_amounts: Option<Vec<f32>>,
+    /// If this transaction is split, what are the memos for the sub-transactions
     split_memos: Option<Vec<String>>,
 }
 
