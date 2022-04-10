@@ -34,7 +34,7 @@ impl Group {
     }
 
     /// Retrieve the key for the `Group`
-    pub fn key(&self) -> usize {
+    pub(crate) fn key(&self) -> usize {
         self.key
     }
 

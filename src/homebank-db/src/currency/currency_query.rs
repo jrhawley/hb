@@ -12,7 +12,7 @@ pub struct QueryCurrencies {
 
 impl QueryCurrencies {
     /// Retrieve the regular expression for the payee name
-    pub fn name(&self) -> &Option<Regex> {
+    fn name(&self) -> &Option<Regex> {
         &self.name
     }
 }

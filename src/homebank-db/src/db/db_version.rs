@@ -12,7 +12,7 @@ pub struct HomeBankDbVersion {
 
 impl HomeBankDbVersion {
     /// Create an empty, default set of properties
-    pub(crate) fn empty() -> Self {
+    pub fn empty() -> Self {
         Self {
             // version: Version::new(1, 4, 0),
             version: String::from("1.3999999999999999"),

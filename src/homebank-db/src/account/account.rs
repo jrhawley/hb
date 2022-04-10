@@ -24,7 +24,7 @@ pub struct Account {
 }
 
 impl Account {
-    pub(crate) fn empty() -> Self {
+    pub fn empty() -> Self {
         Self {
             key: 0,
             flags: 0,
@@ -42,7 +42,7 @@ impl Account {
         }
     }
 
-    pub(crate) fn new(
+    pub fn new(
         key: usize,
         flags: usize,
         pos: usize,

@@ -15,7 +15,7 @@ pub struct HomeBankDbProperties {
 
 impl HomeBankDbProperties {
     /// Create an empty, default set of properties
-    pub(crate) fn empty() -> Self {
+    pub fn empty() -> Self {
         Self {
             title: String::from(""),
             currency_idx: 1,
@@ -26,7 +26,7 @@ impl HomeBankDbProperties {
     }
 
     /// Create a new properties object
-    pub(crate) fn new(
+    pub fn new(
         title: &str,
         currency: usize,
         car_category: usize,

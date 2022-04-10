@@ -24,7 +24,7 @@ pub struct Currency {
 
 impl Currency {
     /// Create an empty, default set of properties
-    pub(crate) fn empty() -> Self {
+    pub fn empty() -> Self {
         Self {
             key: 0,
             flags: 0,
@@ -41,7 +41,7 @@ impl Currency {
     }
 
     /// Create a new properties object
-    pub(crate) fn new(
+    pub fn new(
         key: usize,
         flags: usize,
         iso: &str,
@@ -70,7 +70,7 @@ impl Currency {
     }
 
     /// Retrieve the `Currency` key
-    pub fn key(&self) -> usize {
+    pub(crate) fn key(&self) -> usize {
         self.key
     }
 

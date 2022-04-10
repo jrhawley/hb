@@ -21,7 +21,7 @@ pub struct HomeBankDb {
 
 impl HomeBankDb {
     /// Create an empty, default, HomeBank database
-    fn empty() -> Self {
+    pub fn empty() -> Self {
         Self {
             // homebank_version: HomeBankDbVersion::empty(),
             properties: HomeBankDbProperties::empty(),

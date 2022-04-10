@@ -17,7 +17,7 @@ pub struct Category {
 }
 
 impl Category {
-    pub(crate) fn empty() -> Self {
+    pub fn empty() -> Self {
         Self {
             key: 0,
             flags: 0,
@@ -27,7 +27,7 @@ impl Category {
         }
     }
 
-    pub(crate) fn new(
+    pub fn new(
         key: usize,
         flags: usize,
         name: &str,
@@ -64,7 +64,7 @@ impl Category {
         }
     }
 
-    pub(crate) fn flags(&self) -> usize {
+    pub fn flags(&self) -> usize {
         self.flags
     }
 }
