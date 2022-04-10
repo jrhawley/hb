@@ -1,8 +1,7 @@
 //! The type of a `Transaction`
 
-use std::str::FromStr;
-
 use crate::TransactionError;
+use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum TransactionType {
