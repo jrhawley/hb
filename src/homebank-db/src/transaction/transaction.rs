@@ -709,4 +709,39 @@ mod tests {
 
         check_try_from_single_str(input, expected);
     }
+
+    #[test]
+    fn parse_empty_memo() {
+        let input = r#"<ope wording="">"#;
+        let expected = Ok(Transaction {
+            memo: None,
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    fn parse_simple_memo() {
+        let input = r#"<ope wording="Simple memo">"#;
+        let expected = Ok(Transaction {
+            memo: Some(String::from("Simple memo")),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    fn parse_memo_with_nontrivial_chars() {
+        let input = r#"<ope wording="This &amp; that shouldn't cause a problem, right?">"#;
+        let expected = Ok(Transaction {
+            memo: Some(String::from(
+                "This & that shouldn't cause a problem, right?",
+            )),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
 }
