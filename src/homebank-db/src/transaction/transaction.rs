@@ -512,4 +512,28 @@ mod tests {
 
         check_try_from_single_str(input, expected);
     }
+
+    #[test]
+    fn parse_positive_amount() {
+        let input = r#"<ope amount="1">"#;
+        let expected = Ok(Transaction {
+            amount: 1.0,
+            transaction_type: TransactionType::Income,
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    fn parse_negative_amount() {
+        let input = r#"<ope amount="-1">"#;
+        let expected = Ok(Transaction {
+            amount: -1.0,
+            transaction_type: TransactionType::Expense,
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
 }
