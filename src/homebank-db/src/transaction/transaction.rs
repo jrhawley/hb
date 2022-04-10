@@ -245,13 +245,13 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                         Err(_) => return Err(TransactionError::MissingPayMode),
                     }
                 }
-                "status" => {
+                "st" => {
                     tr.status = match usize::from_str(&i.value) {
                         Ok(st) => match TransactionStatus::try_from(st) {
                             Ok(t_stat) => t_stat,
                             Err(e) => return Err(e),
                         },
-                        Err(_) => TransactionStatus::None,
+                        Err(_) => return Err(TransactionError::InvalidStatus),
                     }
                 }
                 "flags" => {
@@ -619,6 +619,44 @@ mod tests {
         let input = r#"<ope paymode="none">"#;
         let expected = Ok(Transaction {
             pay_mode: PayMode::None,
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    /// Check all valid pay modes at the same time
+    #[test]
+    fn parse_status_good() {
+        let inputs = vec![
+            TransactionStatus::None,
+            TransactionStatus::Cleared,
+            TransactionStatus::Reconciled,
+            TransactionStatus::Remind,
+            TransactionStatus::Void,
+        ];
+
+        // iterate over the statuses
+        for (i, status) in inputs.into_iter().enumerate() {
+            // fill in the raw string with the index that matches the status
+            let input = format!(r#"<ope st="{}">"#, i);
+            let expected = Ok(Transaction {
+                status,
+                ..Default::default()
+            });
+            // perform the check
+            check_try_from_single_str(&input, expected);
+        }
+    }
+
+    #[test]
+    #[should_panic]
+    fn parse_status_bad() {
+        // use a string that should work in the `from_str` method to make sure that there
+        // isn't confusion between the two parsing methods
+        let input = r#"<ope st="none">"#;
+        let expected = Ok(Transaction {
+            status: TransactionStatus::None,
             ..Default::default()
         });
 
