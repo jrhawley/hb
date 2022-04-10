@@ -39,6 +39,11 @@ fn main() -> Result<(), anyhow::Error> {
 
                 println!("{:#?}", filt_categories);
             }
+            QueryType::Accounts(query) => {
+                let filt_accounts = query.exec(&db);
+
+                println!("{:#?}", filt_accounts);
+            }
             _ => {}
         },
         None => {}
