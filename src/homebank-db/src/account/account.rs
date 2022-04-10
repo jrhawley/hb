@@ -1,9 +1,10 @@
 //! Accounts
 
-use crate::{AccountError, AccountType};
 use chrono::{Duration, NaiveDate};
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
+
+use super::{AccountError, AccountType};
 
 #[derive(Debug, PartialEq)]
 pub struct Account {

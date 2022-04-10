@@ -1,33 +1,26 @@
 pub mod account;
-pub mod account_type;
 pub mod category;
 pub mod currency;
 pub mod db;
-pub mod db_properties;
-pub mod db_version;
-pub mod error;
 pub mod group;
 pub mod payee;
 pub mod paymode;
+pub mod query;
 pub mod template;
 pub mod transaction;
-pub mod transaction_status;
-pub mod transaction_type;
 
-pub use account::Account;
-pub use account_type::AccountType;
-pub use category::Category;
-pub use currency::Currency;
-pub use db::HomeBankDb;
-pub use db_properties::HomeBankDbProperties;
-pub use error::{AccountError, CategoryError, CurrencyError, HomeBankDbError};
-pub use group::Group;
-pub use payee::Payee;
+pub use account::{Account, AccountError, AccountType, QueryAccounts};
+pub use category::{Category, CategoryError, QueryCategories};
+pub use currency::{Currency, CurrencyError, QueryCurrencies};
+pub use db::{HomeBankDb, HomeBankDbProperties, HomeBankDbVersion};
+pub use group::{Group, QueryGroups};
+pub use payee::{Payee, PayeeError, QueryPayees};
 pub use paymode::PayMode;
-pub use template::Template;
-pub use transaction::{Transaction, TransactionError};
-pub use transaction_status::TransactionStatus;
-pub use transaction_type::TransactionType;
+pub use query::{Query, QueryOpts, QueryType};
+pub use template::{QueryTemplates, Template};
+pub use transaction::{
+    QueryTransactions, Transaction, TransactionError, TransactionStatus, TransactionType,
+};
 
 #[cfg(test)]
 mod tests {

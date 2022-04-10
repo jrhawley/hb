@@ -1,4 +1,3 @@
-use super::Query;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]

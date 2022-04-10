@@ -1,7 +1,7 @@
 //! Top level CLI command
 
-use super::QueryOpts;
 use crate::config::default_cfg_file;
+use homebank_db::QueryOpts;
 use lazy_static::lazy_static;
 use std::path::{Path, PathBuf};
 use structopt::StructOpt;

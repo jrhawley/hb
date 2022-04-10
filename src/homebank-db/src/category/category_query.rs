@@ -1,34 +1,34 @@
-use super::Query;
-use homebank_db::{HomeBankDb, Payee};
+use super::Category;
+use crate::{db::HomeBankDb, query::Query};
 use regex::Regex;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 #[structopt(
-    name = "payees",
-    alias = "p",
-    about = "Query transaction payees, to and from"
+    name = "categories",
+    alias = "c",
+    about = "Query transaction categories"
 )]
-pub struct QueryPayees {
-    #[structopt(help = "Name of the payee", value_name = "regex")]
+pub struct QueryCategories {
+    #[structopt(help = "Name of the category", value_name = "regex")]
     name: Option<Regex>,
 }
 
-impl QueryPayees {
+impl QueryCategories {
     /// Retrieve the regular expression for the payee name
     pub fn name(&self) -> &Option<Regex> {
         &self.name
     }
 }
 
-impl Query for QueryPayees {
-    type T = Payee;
+impl Query for QueryCategories {
+    type T = Category;
 
-    fn exec<'a>(&self, db: &'a HomeBankDb) -> Vec<&'a Payee> {
+    fn exec<'a>(&self, db: &'a HomeBankDb) -> Vec<&'a Category> {
         let filt_payees = db
-            .payees()
+            .categories()
             .values()
-            // filter out payees that don't match the regex
+            // filter out categories that don't match the regex
             .filter(|&p| match self.name() {
                 Some(re) => re.is_match(p.name()),
                 None => true,

@@ -1,6 +1,6 @@
-use super::Query;
+use super::{TransactionStatus, TransactionType};
+use crate::{HomeBankDb, PayMode, Query, Transaction};
 use chrono::NaiveDate;
-use homebank_db::{HomeBankDb, PayMode, Transaction, TransactionStatus, TransactionType};
 use regex::Regex;
 use std::str::FromStr;
 use structopt::StructOpt;

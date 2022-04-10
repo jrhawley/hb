@@ -1,18 +1,9 @@
 //! Payees
 
 use std::str::FromStr;
-use thiserror::Error;
 use xml::attribute::OwnedAttribute;
 
-#[derive(Debug, Error)]
-pub enum PayeeError {
-    #[error("Invalid group key.")]
-    InvalidKey,
-    #[error("Invalid category key.")]
-    InvalidCategoryKey,
-    #[error("Invalid pay mode key.")]
-    InvalidPayModeKey,
-}
+use super::PayeeError;
 
 #[derive(Debug, PartialEq)]
 pub struct Payee {

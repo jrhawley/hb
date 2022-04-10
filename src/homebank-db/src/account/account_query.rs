@@ -1,7 +1,6 @@
 //! Query the accounts
 
-use super::Query;
-use homebank_db::{Account, AccountType, HomeBankDb};
+use crate::{db::HomeBankDb, query::Query, Account, AccountType};
 use regex::Regex;
 use structopt::StructOpt;
 

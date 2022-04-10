@@ -1,22 +1,9 @@
 //! Query the HomeBank database from the command line.
 
-mod account;
-mod category;
-mod currency;
-mod group;
-mod payee;
-mod template;
-mod transaction;
-
-pub use account::QueryAccounts;
-pub use category::QueryCategories;
-pub use currency::QueryCurrencies;
-pub use group::QueryGroups;
-pub use payee::QueryPayees;
-pub use template::QueryTemplates;
-pub use transaction::QueryTransactions;
-
-use homebank_db::HomeBankDb;
+use crate::{
+    currency::QueryCurrencies, group::QueryGroups, payee::QueryPayees, template::QueryTemplates,
+    transaction::QueryTransactions, HomeBankDb, QueryAccounts, QueryCategories,
+};
 use structopt::StructOpt;
 
 /// A common way to execute queries of different data types in the HomeBank database.
@@ -50,6 +37,6 @@ pub enum QueryType {
     Currencies(QueryCurrencies),
     Groups(QueryGroups),
     Payees(QueryPayees),
-    Templates(QueryTemplates),
+    // Templates(QueryTemplates),
     Transactions(QueryTransactions),
 }

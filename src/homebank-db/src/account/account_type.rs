@@ -1,6 +1,6 @@
 //! Account types
 
-use crate::AccountError;
+use super::AccountError;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Eq)]

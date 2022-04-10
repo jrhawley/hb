@@ -3,7 +3,7 @@
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
-use crate::CurrencyError;
+use super::CurrencyError;
 
 #[derive(Debug, PartialEq)]
 pub struct Currency {

@@ -1,8 +1,7 @@
 //! Data structure for the HomeBank database.
 
-use crate::{
-    Account, Category, Currency, Group, HomeBankDbError, HomeBankDbProperties, Payee, Transaction,
-};
+use super::{HomeBankDbError, HomeBankDbProperties};
+use crate::{Account, Category, Currency, Group, Payee, Transaction};
 use std::{collections::HashMap, fs::File, io::BufReader, path::Path};
 use xml::{reader::XmlEvent, EventReader};
 

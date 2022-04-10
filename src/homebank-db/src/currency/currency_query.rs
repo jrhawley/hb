@@ -1,7 +1,7 @@
-use super::Query;
-use homebank_db::{Currency, HomeBankDb};
 use regex::Regex;
 use structopt::StructOpt;
+
+use crate::{Currency, HomeBankDb, Query};
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "currencies", alias = "C", about = "Query currencies used")]

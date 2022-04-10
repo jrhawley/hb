@@ -1,8 +1,10 @@
 //! Categories
 
-use crate::{CategoryError, HomeBankDb};
+use crate::HomeBankDb;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
+
+use super::CategoryError;
 
 #[derive(Debug, PartialEq)]
 pub struct Category {

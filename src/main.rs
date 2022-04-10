@@ -1,8 +1,7 @@
-use crate::cli::{Query, QueryType};
 use anyhow::Context;
 use cli::{CliOpts, SubCommand};
 use config::Config;
-use homebank_db::HomeBankDb;
+use homebank_db::{HomeBankDb, Query, QueryType};
 use structopt::StructOpt;
 
 pub mod cli;
@@ -44,8 +43,18 @@ fn main() -> Result<(), anyhow::Error> {
 
                 println!("{:#?}", filt_accounts);
             }
+            QueryType::Groups(query) => {
+                let filt_groups = query.exec(&db);
+
+                println!("{:#?}", filt_groups);
+            }
             _ => {}
         },
+        // QueryType::Templates(query) => {
+        //     let filt_templates = query.exec(&db);
+
+        //     println!("{:#?}", filt_templates);
+        // }
         None => {}
     }
 
