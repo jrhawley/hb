@@ -24,12 +24,9 @@ pub struct Transaction {
     // destination_account_idx: Option<usize>,
     // // I don't know what this is
     // kxfer: Option<usize>,
-    // // I don't know what this is
-    // scat: Option<String>,
-    // // I don't know what this is
-    // samt: Option<String>,
-    // // I don't know what this is
-    // smem: Option<String>,
+    // split_categories: Option<Vec<usize>>,
+    // split_amounts: Option<Vec<f32>>,
+    // split_memos: Option<Vec<String>>,
 }
 
 impl Transaction {
@@ -235,6 +232,12 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                         i.value.as_str().split(',').map(|s| s.to_string()).collect();
                     tr.tags = Some(tags);
                 }
+                // handle split categories
+                "scat" => {}
+                // handle split amounts
+                "samt" => {}
+                // handle split memos
+                "smem" => {}
                 _ => {}
             }
         }
