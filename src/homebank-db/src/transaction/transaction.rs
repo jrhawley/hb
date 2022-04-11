@@ -416,7 +416,7 @@ mod tests {
                     prefix: None,
                 },
                 // corresponds to 2020-03-11
-                value: "737494".to_string(),
+                value: "737495".to_string(),
             },
             OwnedAttribute {
                 name: OwnedName {
@@ -638,7 +638,7 @@ mod tests {
 
     #[test]
     fn parse_good_date() {
-        let input = r#"<ope date="737494">"#;
+        let input = r#"<ope date="737495">"#;
         let expected = Ok(Transaction {
             date: NaiveDate::from_ymd(2020, 03, 11),
             ..Default::default()
