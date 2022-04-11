@@ -9,8 +9,7 @@ edition = "2021"
 chrono = "0.4.19"
 kronos = "0.1.5"
 regex = "1.5.5"
-semver = { version = "1.0.5", features = ["serde"] }
-serde = { version = "1.0.136", features = ["derive"] }
+semver = "1.0.5"
 structopt = "0.3.26"
 thiserror = "1.0.30"
 xml-rs = "0.8.4"
