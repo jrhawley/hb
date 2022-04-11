@@ -12,7 +12,7 @@ pub mod transaction;
 pub use account::{Account, AccountError, AccountType, QueryAccounts};
 pub use category::{Category, CategoryError, QueryCategories};
 pub use currency::{Currency, CurrencyError, QueryCurrencies};
-pub use db::{HomeBankDb, HomeBankDbProperties, HomeBankDbVersion};
+pub use db::{HomeBankDb, HomeBankDbProperties, HomeBankDbSchema};
 pub use group::{Group, QueryGroups};
 pub use payee::{Payee, PayeeError, QueryPayees};
 pub use paymode::PayMode;

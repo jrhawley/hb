@@ -6,4 +6,4 @@ pub mod db_version;
 pub use db::HomeBankDb;
 pub use db_error::HomeBankDbError;
 pub use db_properties::HomeBankDbProperties;
-pub use db_version::HomeBankDbVersion;
+pub use db_version::HomeBankDbSchema;
