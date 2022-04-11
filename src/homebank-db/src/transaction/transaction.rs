@@ -168,6 +168,35 @@ impl Transaction {
     pub fn num_splits(&self) -> usize {
         self.num_splits
     }
+
+    /// Retrieve the categories for a split `Transaction`
+    pub fn split_categories(&self) -> &Option<Vec<Option<usize>>> {
+        &self.split_categories
+    }
+
+    /// Retrieve the names of the split categories
+    pub fn split_category_names(&self, db: &HomeBankDb) -> Option<Vec<Option<String>>> {
+        match self.split_categories() {
+            Some(cats) => {
+                let cat_names = cats
+                    .iter()
+                    .map(|possible_idx| {
+                        if let Some(cat_idx) = possible_idx {
+                            if let Some(cat) = db.categories().get(cat_idx) {
+                                Some(cat.name().to_string())
+                            } else {
+                                None
+                            }
+                        } else {
+                            None
+                        }
+                    })
+                    .collect();
+                Some(cat_names)
+            }
+            None => None,
+        }
+    }
 }
 
 impl Default for Transaction {
