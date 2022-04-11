@@ -1,14 +1,13 @@
 //! Data structure for the HomeBank database.
 
 use super::{HomeBankDbError, HomeBankDbProperties};
-use crate::{Account, Category, Currency, Group, Payee, Transaction};
+use crate::{Account, Category, Currency, Group, HomeBankDbVersion, Payee, Transaction};
 use std::{collections::HashMap, fs::File, io::BufReader, path::Path};
 use xml::{reader::XmlEvent, EventReader};
 
 #[derive(Debug, PartialEq)]
 pub struct HomeBankDb {
-    // #[serde(rename = "homebank")]
-    // homebank_version: HomeBankDbVersion,
+    homebank_version: HomeBankDbVersion,
     properties: HomeBankDbProperties,
     currencies: HashMap<usize, Currency>,
     groups: HashMap<usize, Group>,
@@ -23,7 +22,7 @@ impl HomeBankDb {
     /// Create an empty, default, HomeBank database
     pub fn empty() -> Self {
         Self {
-            // homebank_version: HomeBankDbVersion::empty(),
+            homebank_version: HomeBankDbVersion::empty(),
             properties: HomeBankDbProperties::empty(),
             currencies: HashMap::new(),
             groups: HashMap::new(),
@@ -33,6 +32,11 @@ impl HomeBankDb {
             // favourites: vec![],
             transactions: vec![],
         }
+    }
+
+    /// Retrieve the version of the database
+    pub fn version(&self) -> &HomeBankDbVersion {
+        &self.homebank_version
     }
 
     /// Retrieve the database properties
@@ -210,7 +214,7 @@ mod tests {
     fn empty_hbdb_is_expected() {
         let observed = HomeBankDb::empty();
         let expected = HomeBankDb {
-            // homebank_version: HomeBankDbVersion::empty(),
+            homebank_version: HomeBankDbVersion::empty(),
             properties: HomeBankDbProperties::empty(),
             currencies: HashMap::new(),
             groups: HashMap::new(),

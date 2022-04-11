@@ -11,4 +11,8 @@ pub enum HomeBankDbError {
     CouldNotRead(PathBuf),
     #[error("Error parsing XHB file `{0}`.")]
     CouldNotParse(PathBuf),
+    #[error("Invalid database date.")]
+    InvalidDate,
+    #[error("Invalid database version.")]
+    InvalidVersion,
 }
