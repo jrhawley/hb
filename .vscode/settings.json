@@ -16,5 +16,8 @@
         "structopt",
         "thiserror",
         "ttype"
+    ],
+    "cSpell.ignoreWords": [
+        "somethingelse"
     ]
 }
