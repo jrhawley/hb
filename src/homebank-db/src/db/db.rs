@@ -39,6 +39,11 @@ impl HomeBankDb {
         &self.homebank_version
     }
 
+    /// Retrieve the mutable version of the database
+    fn mut_version(&mut self) -> &mut HomeBankDbSchema {
+        &mut self.homebank_version
+    }
+
     /// Retrieve the database properties
     pub fn properties(&self) -> &HomeBankDbProperties {
         &self.properties
@@ -141,6 +146,9 @@ impl TryFrom<&Path> for HomeBankDb {
                 }) => {
                     if name.local_name == "homebank" {
                         in_info = true;
+                        if let Ok(ver) = HomeBankDbSchema::try_from(attributes) {
+                            *db.mut_version() = ver;
+                        }
                     } else if in_info {
                         // only add data if we're within the `<homebank></homebank>` tags
                         match name.local_name.as_str() {
