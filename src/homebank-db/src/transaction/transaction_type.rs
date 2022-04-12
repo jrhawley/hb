@@ -19,6 +19,18 @@ impl TransactionType {
             _ => false,
         }
     }
+
+    /// Determine if two `Transaction`s are of a similar type.
+    /// Useful for comparing if two `TransactionType`s are both `Transfer`s or
+    /// not, without checking the values within the transfer.
+    pub fn is_similar_to(&self, other: &Self) -> bool {
+        match (self, other) {
+            (TransactionType::Expense, TransactionType::Expense) => true,
+            (TransactionType::Income, TransactionType::Income) => true,
+            (TransactionType::Transfer(_this), TransactionType::Transfer(_other)) => true,
+            _ => false,
+        }
+    }
 }
 
 impl FromStr for TransactionType {

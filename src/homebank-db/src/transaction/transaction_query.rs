@@ -237,7 +237,10 @@ impl Query for QueryTransactions {
             })
             // filter out transaction types
             .filter(|&t| match self.ttype() {
-                Some(v) => v.contains(t.ttype()),
+                Some(v) => v
+                    .iter()
+                    // check transaction types without explicitly checking the values
+                    .any(|queried_type| queried_type.is_similar_to(t.ttype())),
                 None => true,
             })
             // filter out the memo regex
