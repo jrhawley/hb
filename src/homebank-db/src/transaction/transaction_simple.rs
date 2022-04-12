@@ -50,9 +50,19 @@ impl SimpleTransaction {
         &self.amount
     }
 
+    /// Retrieve the mutable amount of the `Transaction`
+    pub fn mut_amount(&mut self) -> &mut f32 {
+        &mut self.amount
+    }
+
     /// Retrieve the memo for the `Transaction`
     pub fn memo(&self) -> &Option<String> {
         &self.memo
+    }
+
+    /// Retrieve the mutable memo for the `Transaction`
+    pub fn mut_memo(&mut self) -> &mut Option<String> {
+        &mut self.memo
     }
 }
 
