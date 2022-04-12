@@ -9,7 +9,7 @@ const SPLIT_SEPARATOR: &str = "||";
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "transactions", alias = "t", about = "Query transactions")]
-pub struct QueryTransactions {
+pub struct QueryTransactions<'c> {
     #[structopt(
         short = "d",
         help = "Include transactions starting from (and including) this date",
@@ -104,7 +104,7 @@ pub struct QueryTransactions {
     transaction_type: Option<Vec<TransactionType>>,
 }
 
-impl QueryTransactions {
+impl<'a> QueryTransactions<'a> {
     /// Select the lower bound date for querying
     pub fn date_from(&self) -> &Option<NaiveDate> {
         &self.date_from
@@ -171,10 +171,10 @@ impl QueryTransactions {
     }
 }
 
-impl Query for QueryTransactions {
-    type T = Transaction;
+impl<'a> Query for QueryTransactions<'a> {
+    type T = Transaction<'a>;
 
-    fn exec<'a>(&self, db: &'a HomeBankDb) -> Vec<&'a Self::T> {
+    fn exec<'b>(&self, db: &'b HomeBankDb) -> Vec<&'b Self::T> {
         let filt_transactions: Vec<&Transaction> = db
             .transactions()
             .iter()
