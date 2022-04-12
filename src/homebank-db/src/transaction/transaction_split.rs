@@ -27,6 +27,16 @@ impl SplitTransaction {
     pub fn categories(&self) -> &Vec<Option<usize>> {
         &self.categories
     }
+
+    /// Retrieve the amounts for the splits
+    pub fn amounts(&self) -> &Vec<f32> {
+        &self.amounts
+    }
+
+    /// Retrieve the memos for the splits
+    pub fn memos(&self) -> &Vec<Option<String>> {
+        &self.memos
+    }
 }
 
 impl Default for SplitTransaction {

@@ -165,9 +165,24 @@ impl Transaction {
         self.complexity.num_splits()
     }
 
-    /// Retrieve the categories for a split `Transaction`
+    /// Retrieve the categories for a `Transaction`
     pub fn categories(&self) -> &Vec<Option<usize>> {
         &self.complexity.categories()
+    }
+
+    /// Retrieve the total amount for a `Transaction`
+    pub fn total(&self) -> &Vec<f32> {
+        &self.amount
+    }
+
+    /// Retrieve the amounts for a `Transaction`
+    pub fn amounts(&self) -> &Vec<f32> {
+        &self.complexity.categories()
+    }
+
+    /// Retrieve the memos for a `Transaction`
+    pub fn memos(&self) -> &Vec<Option<String>> {
+        &self.complexity.memos()
     }
 
     /// Retrieve the names of the split categories

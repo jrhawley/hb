@@ -3,12 +3,12 @@
 use super::{SimpleTransaction, SplitTransaction};
 
 #[derive(Debug, PartialEq)]
-pub enum TransactionComplexity {
-    Simple(SimpleTransaction),
+pub enum TransactionComplexity<'a> {
+    Simple(SimpleTransaction<'a>),
     Split(SplitTransaction),
 }
 
-impl TransactionComplexity {
+impl<'a> TransactionComplexity<'a> {
     /// Check if the `Transaction` is 'Simple' or 'Split'
     pub fn is_split(&self) -> bool {
         match self {
@@ -41,9 +41,25 @@ impl TransactionComplexity {
             Self::Split(split_tr) => split_tr.categories(),
         }
     }
+
+    /// Retrieve the amount(s) for the `Transaction`
+    pub fn amounts(&self) -> &Vec<f32> {
+        match self {
+            Self::Simple(simple_tr) => &vec![*simple_tr.amount()],
+            Self::Split(split_tr) => split_tr.amounts(),
+        }
+    }
+
+    /// Retrieve the memo(s) for the `Transaction`
+    pub fn memos(&self) -> &Vec<Option<String>> {
+        match self {
+            Self::Simple(simple_tr) => &vec![*simple_tr.memo()],
+            Self::Split(split_tr) => split_tr.memos(),
+        }
+    }
 }
 
-impl Default for TransactionComplexity {
+impl<'a> Default for TransactionComplexity<'a> {
     fn default() -> Self {
         TransactionComplexity::Simple(SimpleTransaction::default())
     }
