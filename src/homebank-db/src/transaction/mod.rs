@@ -1,4 +1,5 @@
 pub mod transaction;
+pub mod transaction_complexity;
 pub mod transaction_date;
 pub mod transaction_error;
 pub mod transaction_query;
@@ -10,6 +11,7 @@ pub mod transaction_transfer;
 pub mod transaction_type;
 
 pub use transaction::Transaction;
+pub use transaction_complexity::TransactionComplexity;
 pub(crate) use transaction_date::julian_date_from_u32;
 pub use transaction_error::TransactionError;
 pub use transaction_query::QueryTransactions;
