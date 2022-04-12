@@ -9,7 +9,7 @@ const SPLIT_SEPARATOR: &str = "||";
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "transactions", alias = "t", about = "Query transactions")]
-pub struct QueryTransactions<'c> {
+pub struct QueryTransactions {
     #[structopt(
         short = "d",
         help = "Include transactions starting from (and including) this date",
