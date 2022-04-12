@@ -3,7 +3,8 @@
 use super::{
     julian_date_from_u32, parse_split_values, split_tags,
     transaction_split::{parse_split_amount_vec, parse_split_cat_vec, parse_split_memo_vec},
-    TransactionComplexity, TransactionStatus, TransactionType, Transfer,
+    SimpleTransaction, SplitTransaction, TransactionComplexity, TransactionStatus, TransactionType,
+    Transfer,
 };
 use crate::{HomeBankDb, PayMode, TransactionError};
 use chrono::NaiveDate;
@@ -11,7 +12,7 @@ use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
 #[derive(Debug, PartialEq)]
-pub struct Transaction<'a> {
+pub struct Transaction {
     /// Date on which the transaction took place
     date: NaiveDate,
     /// Net sum of the transaction (including any split amounts)
@@ -35,10 +36,10 @@ pub struct Transaction<'a> {
     /// What type of transaction was it? 'Expense', 'Income', or 'Transfer'?
     transaction_type: TransactionType,
     /// Is the `Transaction` 'Simple' or 'Split'?
-    complexity: TransactionComplexity<'a>,
+    complexity: TransactionComplexity,
 }
 
-impl<'a> Transaction<'a> {
+impl Transaction {
     /// Retrieve the date of the `Transaction`
     pub fn date(&self) -> &NaiveDate {
         &self.date
@@ -68,25 +69,25 @@ impl<'a> Transaction<'a> {
         &self.status
     }
 
-    /// Retrieve the category of the `Transaction`
-    pub fn category(&self) -> &Option<usize> {
-        &self.category
-    }
+    // /// Retrieve the category of the `Transaction`
+    // pub fn category(&self) -> &Option<usize> {
+    //     &self.category
+    // }
 
-    /// Retrieve the complete category name.
-    /// This includes the parent category, if one exists.
-    pub fn category_name(&self, db: &HomeBankDb) -> Option<String> {
-        match self.category() {
-            Some(idx) => {
-                if let Some(cat) = db.categories().get(idx) {
-                    Some(cat.full_name(db))
-                } else {
-                    None
-                }
-            }
-            None => None,
-        }
-    }
+    // /// Retrieve the complete category name.
+    // /// This includes the parent category, if one exists.
+    // pub fn category_name(&self, db: &HomeBankDb) -> Option<String> {
+    //     match self.category() {
+    //         Some(idx) => {
+    //             if let Some(cat) = db.categories().get(idx) {
+    //                 Some(cat.full_name(db))
+    //             } else {
+    //                 None
+    //             }
+    //         }
+    //         None => None,
+    //     }
+    // }
 
     /// Retrieve the payee for the `Transaction`
     pub fn payee(&self) -> &Option<usize> {
@@ -166,27 +167,27 @@ impl<'a> Transaction<'a> {
     }
 
     /// Retrieve the categories for a `Transaction`
-    pub fn categories(&self) -> &Vec<Option<usize>> {
-        &self.complexity.categories()
+    pub fn categories(&self) -> Vec<&Option<usize>> {
+        self.complexity.categories()
     }
 
     /// Retrieve the total amount for a `Transaction`
-    pub fn total(&self) -> &Vec<f32> {
+    pub fn total(&self) -> &f32 {
         &self.amount
     }
 
     /// Retrieve the amounts for a `Transaction`
-    pub fn amounts(&self) -> &Vec<f32> {
-        &self.complexity.categories()
+    pub fn amounts(&self) -> Vec<&f32> {
+        self.complexity.amounts()
     }
 
     /// Retrieve the memos for a `Transaction`
-    pub fn memos(&self) -> &Vec<Option<String>> {
-        &self.complexity.memos()
+    pub fn memos(&self) -> Vec<&Option<String>> {
+        self.complexity.memos()
     }
 }
 
-impl<'a> Default for Transaction<'a> {
+impl Default for Transaction {
     fn default() -> Self {
         Self {
             date: NaiveDate::from_ymd(2000, 1, 1),
@@ -205,13 +206,16 @@ impl<'a> Default for Transaction<'a> {
     }
 }
 
-impl<'a> TryFrom<Vec<OwnedAttribute>> for Transaction<'a> {
+impl TryFrom<Vec<OwnedAttribute>> for Transaction {
     type Error = TransactionError;
 
     fn try_from(v: Vec<OwnedAttribute>) -> Result<Self, Self::Error> {
         // placeholders that will be modified as the XML string is read
         let mut tr = Self::default();
         let mut xfer = Transfer::default();
+        let mut is_simple = false;
+        let mut simple = SimpleTransaction::default();
+        let mut split = SplitTransaction::default();
 
         for i in v {
             match i.name.local_name.as_str() {
@@ -239,7 +243,8 @@ impl<'a> TryFrom<Vec<OwnedAttribute>> for Transaction<'a> {
                     };
                 }
                 "category" => {
-                    tr.category = match usize::from_str(&i.value) {
+                    is_simple = true;
+                    *simple.mut_category() = match usize::from_str(&i.value) {
                         Ok(c) => Some(c),
                         Err(_) => {
                             return Err(TransactionError::InvalidCategory(i.value.to_string()))
@@ -283,9 +288,25 @@ impl<'a> TryFrom<Vec<OwnedAttribute>> for Transaction<'a> {
                     }
                 }
                 "wording" => {
-                    tr.memo = match i.value.as_str() {
-                        "" => None,
-                        s => Some(s.to_string()),
+                    match (i.value.as_str(), is_simple) {
+                        ("", true) => {
+                            // no memo, also need to store this for the `SimpleTransaction`
+                            tr.memo = None;
+                            *simple.mut_memo() = None;
+                        }
+                        ("", false) => {
+                            // no memo, only need to store this globally
+                            tr.memo = None;
+                        }
+                        (s, true) => {
+                            // there is a memo, also need to store this for the `SimpleTransaction`
+                            tr.memo = Some(s.to_string());
+                            *simple.mut_memo() = Some(s.to_string());
+                        }
+                        (s, false) => {
+                            // store the global memo
+                            tr.memo = Some(s.to_string());
+                        }
                     }
                 }
                 "tags" => {
@@ -309,9 +330,9 @@ impl<'a> TryFrom<Vec<OwnedAttribute>> for Transaction<'a> {
                     // if the split hasn't been processed yet by another field, check that they're the same length
                     if !tr.is_split() {
                         // update the number of splits
-                        tr.num_splits = raw_category_indices.len();
+                        *split.mut_num_splits() = raw_category_indices.len();
                         // store the categories
-                        tr.split_categories = Some(cat_indices);
+                        *split.mut_categories() = cat_indices;
                     } else if raw_category_indices.len() != tr.num_splits() {
                         // if the number of split categories doesn't match the expected number of splits
                         // throw an error
@@ -321,7 +342,7 @@ impl<'a> TryFrom<Vec<OwnedAttribute>> for Transaction<'a> {
                         ));
                     } else {
                         // if everything is matching up perfectly, store the split categories
-                        tr.split_categories = Some(cat_indices);
+                        *split.mut_categories() = cat_indices;
                     }
                 }
                 // handle split amounts
@@ -335,9 +356,9 @@ impl<'a> TryFrom<Vec<OwnedAttribute>> for Transaction<'a> {
                     // if the split hasn't been processed yet by another field, check that they're the same length
                     if !tr.is_split() {
                         // update the number of splits
-                        tr.num_splits = raw_amounts.len();
+                        *split.mut_num_splits() = raw_amounts.len();
                         // store the categories
-                        tr.split_amounts = Some(amounts);
+                        *split.mut_amounts() = amounts;
                     } else if raw_amounts.len() != tr.num_splits() {
                         // if the number of split amounts doesn't match the expected number of splits
                         // throw an error
@@ -347,7 +368,7 @@ impl<'a> TryFrom<Vec<OwnedAttribute>> for Transaction<'a> {
                         ));
                     } else {
                         // if everything is matching up perfectly, store the split amounts
-                        tr.split_amounts = Some(amounts);
+                        *split.mut_amounts() = amounts;
                     }
                 }
                 // handle split memos
@@ -358,9 +379,9 @@ impl<'a> TryFrom<Vec<OwnedAttribute>> for Transaction<'a> {
                     // if the split hasn't been processed yet by another field, check that they're the same length
                     if !tr.is_split() {
                         // update the number of splits
-                        tr.num_splits = raw_memos.len();
+                        *split.mut_num_splits() = raw_memos.len();
                         // store the categories
-                        tr.split_memos = Some(memos);
+                        *split.mut_memos() = memos;
                     } else if raw_memos.len() != tr.num_splits() {
                         // if the number of split categories doesn't match the expected number of splits
                         // throw an error
@@ -370,7 +391,7 @@ impl<'a> TryFrom<Vec<OwnedAttribute>> for Transaction<'a> {
                         ));
                     } else {
                         // if everything is matching up perfectly, store the split categories
-                        tr.split_memos = Some(memos);
+                        *split.mut_memos() = memos;
                     }
                 }
                 // handle the destination account for a transfer
@@ -405,6 +426,21 @@ impl<'a> TryFrom<Vec<OwnedAttribute>> for Transaction<'a> {
             } else {
                 tr.transaction_type = TransactionType::Transfer(xfer);
             }
+        }
+
+        // Check that the split transaction, if any, has been created properly.
+        // A transaction cannot be both `Simple` and `Split`, it has to be one or the other.
+        // We check for this by ensuring that either the placeholder `simple` or `split` has been
+        // modified, but not both.
+        if simple != SimpleTransaction::default() && split != SplitTransaction::default() {
+            return Err(TransactionError::ConflictingInfoSimpleSplitTransaction);
+        } else if split != SplitTransaction::default() {
+            // store the split transaction
+            tr.complexity = TransactionComplexity::Split(split);
+        } else if is_simple {
+            // store the simple transaction
+            tr.complexity = TransactionComplexity::Simple(simple);
+        } else {
         }
 
         Ok(tr)
@@ -488,6 +524,27 @@ mod tests {
         ]
     }
 
+    #[test]
+    fn try_from_template() {
+        let input = template_vec_ownedatt();
+        let expected = Ok(Transaction {
+            account: 1,
+            amount: 1.0,
+            date: NaiveDate::from_ymd(2020, 03, 11),
+            flags: None,
+            info: None,
+            memo: None,
+            tags: None,
+            pay_mode: PayMode::None,
+            payee: Some(1),
+            status: TransactionStatus::None,
+            transaction_type: TransactionType::Income,
+            complexity: TransactionComplexity::default(),
+        });
+
+        check_try_from_vec_ownedatt(input, expected)
+    }
+
     /// Create a template `Vec<OwnedAttribute>` that is missing one element
     #[track_caller]
     fn template_all_but(i: usize) -> Vec<OwnedAttribute> {
@@ -568,31 +625,6 @@ mod tests {
         check_try_from_vec_ownedatt(input, expected)
     }
 
-    #[test]
-    fn try_from_template() {
-        let input = template_vec_ownedatt();
-        let expected = Ok(Transaction {
-            account: 1,
-            amount: 1.0,
-            category: None,
-            date: NaiveDate::from_ymd(2020, 03, 11),
-            flags: None,
-            info: None,
-            memo: None,
-            tags: None,
-            pay_mode: PayMode::None,
-            payee: Some(1),
-            status: TransactionStatus::None,
-            transaction_type: TransactionType::Income,
-            num_splits: 0,
-            split_amounts: None,
-            split_categories: None,
-            split_memos: None,
-        });
-
-        check_try_from_vec_ownedatt(input, expected)
-    }
-
     #[track_caller]
     fn check_try_from_single_str(input: &str, expected: Result<Transaction, TransactionError>) {
         // set up the reader from the input string
@@ -658,7 +690,7 @@ mod tests {
     fn parse_good_category() {
         let input = r#"<ope category="1">"#;
         let expected = Ok(Transaction {
-            category: Some(1),
+            complexity: TransactionComplexity::Simple(SimpleTransaction::new(Some(1), 0.0, None)),
             ..Default::default()
         });
 
@@ -669,10 +701,7 @@ mod tests {
     #[should_panic]
     fn parse_bad_category() {
         let input = r#"<ope category="-1">"#;
-        let expected = Ok(Transaction {
-            category: Some(1),
-            ..Default::default()
-        });
+        let expected = Err(TransactionError::InvalidCategory(String::from("-1")));
 
         check_try_from_single_str(input, expected);
     }
@@ -692,10 +721,7 @@ mod tests {
     #[should_panic]
     fn parse_bad_date() {
         let input = r#"<ope category="5.028s">"#;
-        let expected = Ok(Transaction {
-            category: Some(1),
-            ..Default::default()
-        });
+        let expected = Err(TransactionError::InvalidCategory(String::from("5.028s")));
 
         check_try_from_single_str(input, expected);
     }
@@ -918,13 +944,15 @@ mod tests {
             status: TransactionStatus::Reconciled,
             flags: Some(256),
             payee: Some(13),
-            num_splits: 2,
-            split_categories: Some(vec![Some(83), Some(100)]),
-            split_amounts: Some(vec![-1119.80, 31.08]),
-            split_memos: Some(vec![
-                Some(String::from("January")),
-                Some(String::from("Internet payment (Dec 1 - Dec 30)")),
-            ]),
+            complexity: TransactionComplexity::Split(SplitTransaction::new(
+                2,
+                vec![Some(83), Some(100)],
+                vec![-1119.80, 31.08],
+                vec![
+                    Some(String::from("January")),
+                    Some(String::from("Internet payment (Dec 1 - Dec 30)")),
+                ],
+            )),
             ..Default::default()
         });
 
@@ -943,13 +971,15 @@ mod tests {
             status: TransactionStatus::Reconciled,
             flags: Some(256),
             payee: Some(13),
-            num_splits: 2,
-            split_categories: Some(vec![Some(83), Some(100)]),
-            split_amounts: Some(vec![-1119.80, 31.08]),
-            split_memos: Some(vec![
-                Some(String::from("January")),
-                Some(String::from("Internet payment (Dec 1 - Dec 30)")),
-            ]),
+            complexity: TransactionComplexity::Split(SplitTransaction::new(
+                2,
+                vec![Some(83), Some(100)],
+                vec![-1119.80, 31.08],
+                vec![
+                    Some(String::from("January")),
+                    Some(String::from("Internet payment (Dec 1 - Dec 30)")),
+                ],
+            )),
             ..Default::default()
         });
 
