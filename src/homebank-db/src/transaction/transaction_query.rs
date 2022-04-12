@@ -104,7 +104,7 @@ pub struct QueryTransactions {
     transaction_type: Option<Vec<TransactionType>>,
 }
 
-impl<'a> QueryTransactions<'a> {
+impl QueryTransactions {
     /// Select the lower bound date for querying
     pub fn date_from(&self) -> &Option<NaiveDate> {
         &self.date_from
@@ -171,8 +171,8 @@ impl<'a> QueryTransactions<'a> {
     }
 }
 
-impl<'a> Query for QueryTransactions<'a> {
-    type T = Transaction<'a>;
+impl Query for QueryTransactions {
+    type T = Transaction;
 
     fn exec<'b>(&self, db: &'b HomeBankDb) -> Vec<&'b Self::T> {
         let filt_transactions: Vec<&Transaction> = db
