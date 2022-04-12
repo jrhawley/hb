@@ -1035,4 +1035,24 @@ mod tests {
 
         check_try_from_single_str(input, expected);
     }
+
+    /// A single transaction marked as a transfer with an invalid destination account
+    #[test]
+    #[should_panic]
+    fn parse_simple_transfer_invalid_both() {
+        let input = r#"<ope date="736696" amount="-300" account="1" paymode="4" st="2" payee="1" kxfer="0" dst_account="0"/>"#;
+        let expected = Ok(Transaction {
+            date: NaiveDate::from_ymd(2018, 01, 02),
+            amount: -300.0,
+            account: 1,
+            pay_mode: PayMode::BankTransfer,
+            status: TransactionStatus::Reconciled,
+            transaction_type: TransactionType::Transfer(Transfer::new(0, 0)),
+            flags: None,
+            payee: Some(1),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
 }
