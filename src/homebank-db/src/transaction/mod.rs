@@ -14,6 +14,7 @@ pub(crate) use transaction_date::julian_date_from_u32;
 pub use transaction_error::TransactionError;
 pub use transaction_query::QueryTransactions;
 pub use transaction_simple::SimpleTransaction;
+pub use transaction_split::{parse_split_values, SplitTransaction};
 pub use transaction_status::TransactionStatus;
 pub(crate) use transaction_tags::split_tags;
 pub use transaction_transfer::Transfer;
