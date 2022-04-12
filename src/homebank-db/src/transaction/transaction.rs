@@ -417,7 +417,15 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
         // check that the transfer, if any, has been created properly
         // a proper transfer will not look like the default transfer
         if xfer != Transfer::default() {
-            tr.transaction_type = TransactionType::Transfer(xfer);
+            if *xfer.transfer_key() == 0 {
+                // check that either the key is not 0
+                return Err(TransactionError::InvalidTransferKey);
+            } else if *xfer.destination() == 0 {
+                // check that the destination account is not 0
+                return Err(TransactionError::InvalidDestinationAccount);
+            } else {
+                tr.transaction_type = TransactionType::Transfer(xfer);
+            }
         }
 
         Ok(tr)
@@ -980,6 +988,46 @@ mod tests {
             pay_mode: PayMode::BankTransfer,
             status: TransactionStatus::Reconciled,
             transaction_type: TransactionType::Transfer(Transfer::new(10, 2)),
+            flags: None,
+            payee: Some(1),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    /// A single transaction marked as a transfer with an invalid transfer key
+    #[test]
+    #[should_panic]
+    fn parse_simple_transfer_invalid_key() {
+        let input = r#"<ope date="736696" amount="-300" account="1" paymode="4" st="2" payee="1" kxfer="0" dst_account="2"/>"#;
+        let expected = Ok(Transaction {
+            date: NaiveDate::from_ymd(2018, 01, 02),
+            amount: -300.0,
+            account: 1,
+            pay_mode: PayMode::BankTransfer,
+            status: TransactionStatus::Reconciled,
+            transaction_type: TransactionType::Transfer(Transfer::new(0, 2)),
+            flags: None,
+            payee: Some(1),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    /// A single transaction marked as a transfer with an invalid destination account
+    #[test]
+    #[should_panic]
+    fn parse_simple_transfer_invalid_destination() {
+        let input = r#"<ope date="736696" amount="-300" account="1" paymode="4" st="2" payee="1" kxfer="10" dst_account="0"/>"#;
+        let expected = Ok(Transaction {
+            date: NaiveDate::from_ymd(2018, 01, 02),
+            amount: -300.0,
+            account: 1,
+            pay_mode: PayMode::BankTransfer,
+            status: TransactionStatus::Reconciled,
+            transaction_type: TransactionType::Transfer(Transfer::new(10, 0)),
             flags: None,
             payee: Some(1),
             ..Default::default()
