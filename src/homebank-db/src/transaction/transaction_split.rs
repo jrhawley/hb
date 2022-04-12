@@ -7,13 +7,13 @@ const SPLIT_SEPARATOR: &str = "||";
 
 #[derive(Debug, PartialEq)]
 pub struct SplitTransaction {
-    /// If this transaction is split, how many sub-transactions is it split into
+    /// How many sub-transactions is it split into
     num_splits: usize,
-    /// If this transaction is split, what are the categories for the sub-transactions
+    /// What are the categories for the sub-transactions
     categories: Vec<Option<usize>>,
-    /// If this transaction is split, what are the amounts for the sub-transactions
+    /// What are the amounts for the sub-transactions
     amounts: Vec<f32>,
-    /// If this transaction is split, what are the memos for the sub-transactions
+    /// What are the memos for the sub-transactions
     memos: Vec<Option<String>>,
 }
 
@@ -54,8 +54,10 @@ impl SplitTransaction {
     }
 
     /// Retrieve the categories for the splits
-    pub fn categories(&self) -> &Vec<Option<usize>> {
-        &self.categories
+    pub fn categories(&self) -> Vec<&Option<usize>> {
+        // using an iteration->collection trick to create the `Vec` on the fly
+        // without duplicating the data inside that `Vec`
+        self.categories.iter().collect()
     }
 
     /// Retrieve the mutable categories for the splits
@@ -64,8 +66,10 @@ impl SplitTransaction {
     }
 
     /// Retrieve the amounts for the splits
-    pub fn amounts(&self) -> &Vec<f32> {
-        &self.amounts
+    pub fn amounts(&self) -> Vec<&f32> {
+        // using an iteration->collection trick to create the `Vec` on the fly
+        // without duplicating the data inside that `Vec`
+        self.amounts.iter().collect()
     }
 
     /// Retrieve the mutable amounts for the splits
@@ -74,8 +78,10 @@ impl SplitTransaction {
     }
 
     /// Retrieve the memos for the splits
-    pub fn memos(&self) -> &Vec<Option<String>> {
-        &self.memos
+    pub fn memos(&self) -> Vec<&Option<String>> {
+        // using an iteration->collection trick to create the `Vec` on the fly
+        // without duplicating the data inside that `Vec`
+        self.memos.iter().collect()
     }
 
     /// Retrieve the mutable memos for the splits

@@ -1,31 +1,33 @@
 //! A simple `Transaction` that only belongs to a single `Category`.
 
 #[derive(Debug, PartialEq)]
-pub struct SimpleTransaction<'a> {
+pub struct SimpleTransaction {
     /// Which category does this transaction fall under
     category: Option<usize>,
 
     /// The amount of the parent `Transaction`.
-    /// Using a reference instead of a value to avoid duplicating data
-    amount: &'a f32,
+    /// This will duplicate data, but this impacts the code base much less
+    /// than using pointers and introducing lifetimes everywhere.
+    amount: f32,
 
     /// The memo of the parent `Transaction`.
-    /// Using a reference instead of a value to avoid duplicating data
-    memo: &'a Option<String>,
+    /// This will duplicate data, but this impacts the code base much less
+    /// than using pointers and introducing lifetimes everywhere.
+    memo: Option<String>,
 }
 
-impl<'a> SimpleTransaction<'a> {
+impl SimpleTransaction {
     /// Create an empty `SimpleTransaction`
     pub fn empty() -> Self {
         Self {
             category: None,
-            amount: &0.0,
-            memo: &None,
+            amount: 0.0,
+            memo: None,
         }
     }
 
     /// Create an new `SimpleTransaction`
-    pub fn new(category: Option<usize>, amount: &'a f32, memo: &'a Option<String>) -> Self {
+    pub fn new(category: Option<usize>, amount: f32, memo: Option<String>) -> Self {
         Self {
             category,
             amount,
@@ -54,7 +56,7 @@ impl<'a> SimpleTransaction<'a> {
     }
 }
 
-impl<'a> Default for SimpleTransaction<'a> {
+impl Default for SimpleTransaction {
     fn default() -> Self {
         Self::empty()
     }

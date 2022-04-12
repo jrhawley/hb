@@ -3,12 +3,12 @@
 use super::{SimpleTransaction, SplitTransaction};
 
 #[derive(Debug, PartialEq)]
-pub enum TransactionComplexity<'a> {
-    Simple(SimpleTransaction<'a>),
+pub enum TransactionComplexity {
+    Simple(SimpleTransaction),
     Split(SplitTransaction),
 }
 
-impl<'a> TransactionComplexity<'a> {
+impl TransactionComplexity {
     /// Check if the `Transaction` is 'Simple' or 'Split'
     pub fn is_split(&self) -> bool {
         match self {
@@ -35,31 +35,31 @@ impl<'a> TransactionComplexity<'a> {
     }
 
     /// Retrieve the category(ies) for the `Transaction`
-    pub fn categories(&self) -> &Vec<Option<usize>> {
+    pub fn categories(&self) -> Vec<&Option<usize>> {
         match self {
-            Self::Simple(simple_tr) => &vec![*simple_tr.category()],
+            Self::Simple(simple_tr) => vec![simple_tr.category()],
             Self::Split(split_tr) => split_tr.categories(),
         }
     }
 
     /// Retrieve the amount(s) for the `Transaction`
-    pub fn amounts(&self) -> &Vec<f32> {
+    pub fn amounts(&self) -> Vec<&f32> {
         match self {
-            Self::Simple(simple_tr) => &vec![*simple_tr.amount()],
+            Self::Simple(simple_tr) => vec![simple_tr.amount()],
             Self::Split(split_tr) => split_tr.amounts(),
         }
     }
 
     /// Retrieve the memo(s) for the `Transaction`
-    pub fn memos(&self) -> &Vec<Option<String>> {
+    pub fn memos(&self) -> Vec<&Option<String>> {
         match self {
-            Self::Simple(simple_tr) => &vec![*simple_tr.memo()],
+            Self::Simple(simple_tr) => vec![simple_tr.memo()],
             Self::Split(split_tr) => split_tr.memos(),
         }
     }
 }
 
-impl<'a> Default for TransactionComplexity<'a> {
+impl Default for TransactionComplexity {
     fn default() -> Self {
         TransactionComplexity::Simple(SimpleTransaction::default())
     }
