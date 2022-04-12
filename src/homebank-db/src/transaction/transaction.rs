@@ -572,8 +572,6 @@ mod tests {
             payee: Some(1),
             status: TransactionStatus::None,
             transaction_type: TransactionType::Income,
-            destination_account_idx: None,
-            transfer_key: None,
             num_splits: 0,
             split_amounts: None,
             split_categories: None,
