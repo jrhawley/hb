@@ -36,10 +36,6 @@ pub struct Transaction {
     tags: Option<Vec<String>>,
     /// What type of transaction was it? 'Expense', 'Income', or 'Transfer'?
     transaction_type: TransactionType,
-    /// If this is a transfer, what is the corresponding destination account
-    destination_account_idx: Option<usize>,
-    /// If this is a transfer, unique identifier for the transfer
-    transfer_key: Option<usize>,
     /// If this transaction is split, how many sub-transactions is it split into
     num_splits: usize,
     /// If this transaction is split, what are the categories for the sub-transactions
@@ -146,17 +142,25 @@ impl Transaction {
 
     /// Check if the `Transaction` is a transfer or not
     pub fn is_transfer(&self) -> bool {
-        self.transfer_key.is_some()
+        self.ttype().is_transfer()
     }
 
     /// Retrieve the transfer key for the `Transaction`
-    pub fn transfer_key(&self) -> &Option<usize> {
-        &self.transfer_key
+    pub fn transfer_key(&self) -> Option<&usize> {
+        if let TransactionType::Transfer(xfer) = self.ttype() {
+            Some(xfer.transfer_key())
+        } else {
+            None
+        }
     }
 
     /// Retrieve the destination account key for the transfer
-    pub fn transfer_destination_account_key(&self) -> &Option<usize> {
-        &self.destination_account_idx
+    pub fn transfer_destination(&self) -> Option<&usize> {
+        if let TransactionType::Transfer(xfer) = self.ttype() {
+            Some(xfer.destination())
+        } else {
+            None
+        }
     }
 
     /// Check if the `Transaction` is a split transaction or not
@@ -214,8 +218,6 @@ impl Default for Transaction {
             info: None,
             tags: None,
             transaction_type: TransactionType::Expense,
-            destination_account_idx: None,
-            transfer_key: None,
             num_splits: 0,
             split_amounts: None,
             split_categories: None,
@@ -244,7 +246,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                             tr.amount = a;
                             // if the transaction already appears to be a transfer, then leave the type alone
                             // if it's not a transfer then it's an expense if the amount is negative, otherwise an income
-                            if *tr.ttype() != TransactionType::Transfer {
+                            if !tr.is_transfer() {
                                 if a > 0.0 {
                                     tr.transaction_type = TransactionType::Income;
                                 } else {

@@ -1,5 +1,6 @@
 //! The type of a `Transaction`
 
+use super::Transfer;
 use crate::TransactionError;
 use std::str::FromStr;
 
@@ -7,7 +8,17 @@ use std::str::FromStr;
 pub enum TransactionType {
     Expense,
     Income,
-    Transfer,
+    Transfer(Transfer),
+}
+
+impl TransactionType {
+    /// Determine if the `Transaction` is a transfer
+    pub fn is_transfer(&self) -> bool {
+        match self {
+            TransactionType::Transfer(_) => true,
+            _ => false,
+        }
+    }
 }
 
 impl FromStr for TransactionType {
@@ -17,7 +28,9 @@ impl FromStr for TransactionType {
         match s {
             "Expense" | "expense" | "E" | "e" => Ok(TransactionType::Expense),
             "Income" | "income" | "I" | "i" => Ok(TransactionType::Income),
-            "Transfer" | "transfer" | "T" | "t" => Ok(TransactionType::Transfer),
+            "Transfer" | "transfer" | "T" | "t" => {
+                Ok(TransactionType::Transfer(Transfer::default()))
+            }
             _ => Err(TransactionError::InvalidType),
         }
     }
