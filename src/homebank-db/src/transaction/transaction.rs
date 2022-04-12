@@ -214,7 +214,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
         let mut tr = Self::default();
         let mut is_transfer = false;
         let mut xfer = Transfer::default();
-        let mut is_simple = false;
+        let mut is_simple: Option<bool> = None;
         let mut simple = SimpleTransaction::default();
         let mut split = SplitTransaction::default();
 
@@ -229,7 +229,12 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 "amount" => {
                     match f32::from_str(&i.value) {
                         Ok(a) => {
+                            // store the total amount
                             tr.amount = a;
+
+                            // also store this in the `SimpleTransaction`, even if this hasn't been decided yet
+                            *simple.mut_amount() = a;
+
                             // if the transaction already appears to be a transfer, then leave the type alone
                             // if it's not a transfer then it's an expense if the amount is negative, otherwise an income
                             if !tr.is_transfer() {
@@ -244,7 +249,13 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                     };
                 }
                 "category" => {
-                    is_simple = true;
+                    // if previous fields have determined this transaction to be a split one
+                    // then throw an error because of the conflicting info
+                    if let Some(false) = is_simple {
+                        return Err(TransactionError::ConflictingInfoSimpleSplitTransaction);
+                    }
+
+                    is_simple = Some(true);
                     *simple.mut_category() = match usize::from_str(&i.value) {
                         Ok(c) => Some(c),
                         Err(_) => {
@@ -290,23 +301,27 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 }
                 "wording" => {
                     match (i.value.as_str(), is_simple) {
-                        ("", true) => {
-                            // no memo, also need to store this for the `SimpleTransaction`
-                            tr.memo = None;
-                            *simple.mut_memo() = None;
-                        }
-                        ("", false) => {
+                        ("", Some(false)) => {
                             // no memo, only need to store this globally
                             tr.memo = None;
                         }
-                        (s, true) => {
-                            // there is a memo, also need to store this for the `SimpleTransaction`
-                            tr.memo = Some(s.to_string());
-                            *simple.mut_memo() = Some(s.to_string());
+                        ("", _) => {
+                            // store the no memo
+                            tr.memo = None;
+                            // also need to store this for the `SimpleTransaction`
+                            // even if the simple/split transaction hasn't been determined yet
+                            *simple.mut_memo() = None;
                         }
-                        (s, false) => {
+                        (s, Some(false)) => {
                             // store the global memo
                             tr.memo = Some(s.to_string());
+                        }
+                        (s, _) => {
+                            // there is a memo
+                            tr.memo = Some(s.to_string());
+                            // also store this for the `SimpleTransaction`
+                            // even if the simple/split transaction hasn't been determined yet
+                            *simple.mut_memo() = Some(s.to_string());
                         }
                     }
                 }
@@ -321,6 +336,14 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 }
                 // handle split categories
                 "scat" => {
+                    // if previous fields have determined this transaction to be a split one
+                    // then throw an error because of the conflicting info
+                    if let Some(true) = is_simple {
+                        return Err(TransactionError::ConflictingInfoSimpleSplitTransaction);
+                    }
+
+                    is_simple = Some(false);
+
                     // convert the category string into split categories
                     let raw_category_indices = parse_split_values(i);
                     let cat_indices = match parse_split_cat_vec(&raw_category_indices) {
@@ -348,6 +371,13 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 }
                 // handle split amounts
                 "samt" => {
+                    // if previous fields have determined this transaction to be a split one
+                    // then throw an error because of the conflicting info
+                    if let Some(true) = is_simple {
+                        return Err(TransactionError::ConflictingInfoSimpleSplitTransaction);
+                    }
+
+                    is_simple = Some(false);
                     let raw_amounts = parse_split_values(i);
                     let amounts = match parse_split_amount_vec(&raw_amounts) {
                         Ok(v) => v,
@@ -374,6 +404,13 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 }
                 // handle split memos
                 "smem" => {
+                    // if previous fields have determined this transaction to be a split one
+                    // then throw an error because of the conflicting info
+                    if let Some(true) = is_simple {
+                        return Err(TransactionError::ConflictingInfoSimpleSplitTransaction);
+                    }
+
+                    is_simple = Some(false);
                     let raw_memos = parse_split_values(i);
                     let memos = parse_split_memo_vec(&raw_memos);
 
@@ -437,15 +474,12 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
         // A transaction cannot be both `Simple` and `Split`, it has to be one or the other.
         // We check for this by ensuring that either the placeholder `simple` or `split` has been
         // modified, but not both.
-        if simple != SimpleTransaction::default() && split != SplitTransaction::default() {
-            return Err(TransactionError::ConflictingInfoSimpleSplitTransaction);
-        } else if split != SplitTransaction::default() {
+        if let Some(false) = is_simple {
             // store the split transaction
             tr.complexity = TransactionComplexity::Split(split);
-        } else if is_simple {
+        } else if let Some(true) = is_simple {
             // store the simple transaction
             tr.complexity = TransactionComplexity::Simple(simple);
-        } else {
         }
 
         Ok(tr)
@@ -970,6 +1004,15 @@ mod tests {
             )),
             ..Default::default()
         });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    /// Transaction containing both split categories and a global category
+    #[test]
+    fn parse_bad_split() {
+        let input = r#"<ope date="736696" amount="-1088.72" account="5" paymode="8" st="2" flags="256" payee="13" category="1" samt="-1119.8||31.079999999999998" scat="83||100" smem="January||Internet payment (Dec 1 - Dec 30)"/>"#;
+        let expected = Err(TransactionError::ConflictingInfoSimpleSplitTransaction);
 
         check_try_from_single_str(input, expected);
     }
