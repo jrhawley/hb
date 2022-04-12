@@ -212,6 +212,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
     fn try_from(v: Vec<OwnedAttribute>) -> Result<Self, Self::Error> {
         // placeholders that will be modified as the XML string is read
         let mut tr = Self::default();
+        let mut is_transfer = false;
         let mut xfer = Transfer::default();
         let mut is_simple = false;
         let mut simple = SimpleTransaction::default();
@@ -239,7 +240,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                                 }
                             }
                         }
-                        Err(_) => return Err(TransactionError::MissingAmount),
+                        Err(_) => return Err(TransactionError::InvalidAmount),
                     };
                 }
                 "category" => {
@@ -251,19 +252,19 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                         }
                     }
                 }
-                "date" => {
-                    tr.date = match u32::from_str(&i.value) {
-                        Ok(d) => julian_date_from_u32(d),
-                        Err(_) => return Err(TransactionError::MissingDate),
+                "date" => match u32::from_str(&i.value) {
+                    Ok(d) => {
+                        tr.date = julian_date_from_u32(d);
                     }
-                }
+                    Err(_) => return Err(TransactionError::InvalidDate),
+                },
                 "paymode" => {
                     tr.pay_mode = match usize::from_str(&i.value) {
                         Ok(pm) => match PayMode::try_from(pm) {
                             Ok(t_pm) => t_pm,
                             Err(e) => return Err(e),
                         },
-                        Err(_) => return Err(TransactionError::MissingPayMode),
+                        Err(_) => return Err(TransactionError::InvalidPayMode),
                     }
                 }
                 "st" => {
@@ -284,7 +285,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 "payee" => {
                     tr.payee = match usize::from_str(&i.value) {
                         Ok(p) => Some(p),
-                        Err(_) => return Err(TransactionError::MissingPayee),
+                        Err(_) => return Err(TransactionError::InvalidPayee),
                     }
                 }
                 "wording" => {
@@ -398,6 +399,8 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 "dst_account" => match usize::from_str(&i.value) {
                     Ok(acct_idx) => {
                         // if not currently set as a transfer, turn it into one
+                        is_transfer = true;
+                        // store the destination account index
                         *xfer.mut_destination() = acct_idx;
                     }
                     Err(_) => return Err(TransactionError::InvalidDestinationAccount),
@@ -406,6 +409,8 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                 "kxfer" => match usize::from_str(&i.value) {
                     Ok(key) => {
                         // if not currently set as a transfer, turn it into one
+                        is_transfer = true;
+                        // store the transfer key
                         *xfer.mut_transfer_key() = key;
                     }
                     Err(_) => return Err(TransactionError::InvalidTransferKey),
@@ -416,7 +421,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
 
         // check that the transfer, if any, has been created properly
         // a proper transfer will not look like the default transfer
-        if xfer != Transfer::default() {
+        if is_transfer {
             if *xfer.transfer_key() == 0 {
                 // check that either the key is not 0
                 return Err(TransactionError::InvalidTransferKey);
@@ -580,7 +585,7 @@ mod tests {
     fn try_from_missing_amount() {
         // drop the account from the template
         let input = template_all_but(1);
-        let expected = Err(TransactionError::MissingAmount);
+        let expected = Err(TransactionError::InvalidAmount);
 
         check_try_from_vec_ownedatt(input, expected)
     }
@@ -590,7 +595,7 @@ mod tests {
     fn try_from_missing_date() {
         // drop the account from the template
         let input = template_all_but(2);
-        let expected = Err(TransactionError::MissingDate);
+        let expected = Err(TransactionError::InvalidDate);
 
         check_try_from_vec_ownedatt(input, expected)
     }
@@ -600,7 +605,7 @@ mod tests {
     fn try_from_missing_paymode() {
         // drop the account from the template
         let input = template_all_but(3);
-        let expected = Err(TransactionError::MissingPayMode);
+        let expected = Err(TransactionError::InvalidPayMode);
 
         check_try_from_vec_ownedatt(input, expected)
     }
@@ -610,7 +615,7 @@ mod tests {
     fn try_from_missing_payee() {
         // drop the account from the template
         let input = template_all_but(4);
-        let expected = Err(TransactionError::MissingPayee);
+        let expected = Err(TransactionError::InvalidPayee);
 
         check_try_from_vec_ownedatt(input, expected)
     }
@@ -686,6 +691,7 @@ mod tests {
 
         check_try_from_single_str(input, expected);
     }
+
     #[test]
     fn parse_good_category() {
         let input = r#"<ope category="1">"#;
@@ -698,7 +704,6 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn parse_bad_category() {
         let input = r#"<ope category="-1">"#;
         let expected = Err(TransactionError::InvalidCategory(String::from("-1")));
@@ -718,17 +723,16 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn parse_bad_date() {
-        let input = r#"<ope category="5.028s">"#;
-        let expected = Err(TransactionError::InvalidCategory(String::from("5.028s")));
+        let input = r#"<ope date="5.028s">"#;
+        let expected = Err(TransactionError::InvalidDate);
 
         check_try_from_single_str(input, expected);
     }
 
     /// Check all valid pay modes at the same time
     #[test]
-    fn parse_paymode_good() {
+    fn parse_good_paymode() {
         let inputs = vec![
             PayMode::None,
             PayMode::CreditCard,
@@ -757,22 +761,18 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
-    fn parse_paymode_bad() {
+    fn parse_bad_paymode() {
         // use a string that should work in the `from_str` method to make sure that there
         // isn't confusion between the two parsing methods
         let input = r#"<ope paymode="none">"#;
-        let expected = Ok(Transaction {
-            pay_mode: PayMode::None,
-            ..Default::default()
-        });
+        let expected = Err(TransactionError::InvalidPayMode);
 
         check_try_from_single_str(input, expected);
     }
 
     /// Check all valid pay modes at the same time
     #[test]
-    fn parse_status_good() {
+    fn parse_good_status() {
         let inputs = vec![
             TransactionStatus::None,
             TransactionStatus::Cleared,
@@ -795,15 +795,11 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
-    fn parse_status_bad() {
+    fn parse_bad_status() {
         // use a string that should work in the `from_str` method to make sure that there
         // isn't confusion between the two parsing methods
         let input = r#"<ope st="none">"#;
-        let expected = Ok(Transaction {
-            status: TransactionStatus::None,
-            ..Default::default()
-        });
+        let expected = Err(TransactionError::InvalidStatus);
 
         check_try_from_single_str(input, expected);
     }
@@ -820,13 +816,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn parse_bad_flags() {
         let input = r#"<ope flags="somethingelse">"#;
-        let expected = Ok(Transaction {
-            flags: None,
-            ..Default::default()
-        });
+        let expected = Err(TransactionError::InvalidFlags);
 
         check_try_from_single_str(input, expected);
     }
@@ -843,13 +835,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn parse_bad_payee() {
         let input = r#"<ope payee="something-other-payee">"#;
-        let expected = Ok(Transaction {
-            payee: None,
-            ..Default::default()
-        });
+        let expected = Err(TransactionError::InvalidPayee);
 
         check_try_from_single_str(input, expected);
     }
@@ -1007,60 +995,27 @@ mod tests {
 
     /// A single transaction marked as a transfer with an invalid transfer key
     #[test]
-    #[should_panic]
     fn parse_simple_transfer_invalid_key() {
         let input = r#"<ope date="736696" amount="-300" account="1" paymode="4" st="2" payee="1" kxfer="0" dst_account="2"/>"#;
-        let expected = Ok(Transaction {
-            date: NaiveDate::from_ymd(2018, 01, 02),
-            amount: -300.0,
-            account: 1,
-            pay_mode: PayMode::BankTransfer,
-            status: TransactionStatus::Reconciled,
-            transaction_type: TransactionType::Transfer(Transfer::new(0, 2)),
-            flags: None,
-            payee: Some(1),
-            ..Default::default()
-        });
+        let expected = Err(TransactionError::InvalidTransferKey);
 
         check_try_from_single_str(input, expected);
     }
 
     /// A single transaction marked as a transfer with an invalid destination account
     #[test]
-    #[should_panic]
     fn parse_simple_transfer_invalid_destination() {
         let input = r#"<ope date="736696" amount="-300" account="1" paymode="4" st="2" payee="1" kxfer="10" dst_account="0"/>"#;
-        let expected = Ok(Transaction {
-            date: NaiveDate::from_ymd(2018, 01, 02),
-            amount: -300.0,
-            account: 1,
-            pay_mode: PayMode::BankTransfer,
-            status: TransactionStatus::Reconciled,
-            transaction_type: TransactionType::Transfer(Transfer::new(10, 0)),
-            flags: None,
-            payee: Some(1),
-            ..Default::default()
-        });
+        let expected = Err(TransactionError::InvalidDestinationAccount);
 
         check_try_from_single_str(input, expected);
     }
 
     /// A single transaction marked as a transfer with an invalid destination account
     #[test]
-    #[should_panic]
     fn parse_simple_transfer_invalid_both() {
         let input = r#"<ope date="736696" amount="-300" account="1" paymode="4" st="2" payee="1" kxfer="0" dst_account="0"/>"#;
-        let expected = Ok(Transaction {
-            date: NaiveDate::from_ymd(2018, 01, 02),
-            amount: -300.0,
-            account: 1,
-            pay_mode: PayMode::BankTransfer,
-            status: TransactionStatus::Reconciled,
-            transaction_type: TransactionType::Transfer(Transfer::new(0, 0)),
-            flags: None,
-            payee: Some(1),
-            ..Default::default()
-        });
+        let expected = Err(TransactionError::InvalidTransferKey);
 
         check_try_from_single_str(input, expected);
     }
