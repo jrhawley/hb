@@ -3,7 +3,7 @@
 use super::{
     julian_date_from_u32, parse_split_values, split_tags,
     transaction_split::{parse_split_amount_vec, parse_split_cat_vec, parse_split_memo_vec},
-    TransactionStatus, TransactionType, Transfer,
+    TransactionComplexity, TransactionStatus, TransactionType, Transfer,
 };
 use crate::{HomeBankDb, PayMode, TransactionError};
 use chrono::NaiveDate;
@@ -26,8 +26,6 @@ pub struct Transaction {
     flags: Option<usize>,
     /// Which payee was involved with the transaction
     payee: Option<usize>,
-    /// Which category does this transaction fall under
-    category: Option<usize>,
     /// Short form text expanding on what the transaction was about
     memo: Option<String>,
     /// Any info related to the transaction, such as a reference number
@@ -36,14 +34,8 @@ pub struct Transaction {
     tags: Option<Vec<String>>,
     /// What type of transaction was it? 'Expense', 'Income', or 'Transfer'?
     transaction_type: TransactionType,
-    /// If this transaction is split, how many sub-transactions is it split into
-    num_splits: usize,
-    /// If this transaction is split, what are the categories for the sub-transactions
-    split_categories: Option<Vec<Option<usize>>>,
-    /// If this transaction is split, what are the amounts for the sub-transactions
-    split_amounts: Option<Vec<f32>>,
-    /// If this transaction is split, what are the memos for the sub-transactions
-    split_memos: Option<Vec<Option<String>>>,
+    /// Is the `Transaction` 'Simple' or 'Split'?
+    complexity: TransactionComplexity,
 }
 
 impl Transaction {
@@ -165,42 +157,42 @@ impl Transaction {
 
     /// Check if the `Transaction` is a split transaction or not
     pub fn is_split(&self) -> bool {
-        self.num_splits > 0
+        self.complexity.is_split()
     }
 
     /// Retrieve the number of splits the `Transaction` is divided into
     pub fn num_splits(&self) -> usize {
-        self.num_splits
+        self.complexity.num_splits()
     }
 
     /// Retrieve the categories for a split `Transaction`
-    pub fn split_categories(&self) -> &Option<Vec<Option<usize>>> {
-        &self.split_categories
+    pub fn categories(&self) -> &Vec<Option<usize>> {
+        &self.complexity.categories()
     }
 
     /// Retrieve the names of the split categories
-    pub fn split_category_names(&self, db: &HomeBankDb) -> Option<Vec<Option<String>>> {
-        match self.split_categories() {
-            Some(cats) => {
-                let cat_names = cats
-                    .iter()
-                    .map(|possible_idx| {
-                        if let Some(cat_idx) = possible_idx {
-                            if let Some(cat) = db.categories().get(cat_idx) {
-                                Some(cat.name().to_string())
-                            } else {
-                                None
-                            }
-                        } else {
-                            None
-                        }
-                    })
-                    .collect();
-                Some(cat_names)
-            }
-            None => None,
-        }
-    }
+    // pub fn split_category_names(&self, db: &HomeBankDb) -> Option<Vec<Option<String>>> {
+    //     match self.categories() {
+    //         Some(cats) => {
+    //             let cat_names = cats
+    //                 .iter()
+    //                 .map(|possible_idx| {
+    //                     if let Some(cat_idx) = possible_idx {
+    //                         if let Some(cat) = db.categories().get(cat_idx) {
+    //                             Some(cat.name().to_string())
+    //                         } else {
+    //                             None
+    //                         }
+    //                     } else {
+    //                         None
+    //                     }
+    //                 })
+    //                 .collect();
+    //             Some(cat_names)
+    //         }
+    //         None => None,
+    //     }
+    // }
 }
 
 impl Default for Transaction {
@@ -209,19 +201,15 @@ impl Default for Transaction {
             date: NaiveDate::from_ymd(2000, 1, 1),
             amount: 0.0,
             account: 0,
-            pay_mode: PayMode::None,
-            status: TransactionStatus::None,
+            pay_mode: PayMode::default(),
+            status: TransactionStatus::default(),
             flags: None,
             payee: None,
-            category: None,
             memo: None,
             info: None,
             tags: None,
-            transaction_type: TransactionType::Expense,
-            num_splits: 0,
-            split_amounts: None,
-            split_categories: None,
-            split_memos: None,
+            transaction_type: TransactionType::default(),
+            complexity: TransactionComplexity::default()
         }
     }
 }

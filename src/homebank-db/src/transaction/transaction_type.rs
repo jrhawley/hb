@@ -33,6 +33,12 @@ impl TransactionType {
     }
 }
 
+impl Default for TransactionType {
+    fn default() -> Self {
+        Self::Expense
+    }
+}
+
 impl FromStr for TransactionType {
     type Err = TransactionError;
 

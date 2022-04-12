@@ -10,11 +10,34 @@ pub struct SplitTransaction {
     /// If this transaction is split, how many sub-transactions is it split into
     num_splits: usize,
     /// If this transaction is split, what are the categories for the sub-transactions
-    split_categories: Vec<Option<usize>>,
+    categories: Vec<Option<usize>>,
     /// If this transaction is split, what are the amounts for the sub-transactions
-    split_amounts: Vec<f32>,
+    amounts: Vec<f32>,
     /// If this transaction is split, what are the memos for the sub-transactions
-    split_memos: Vec<Option<String>>,
+    memos: Vec<Option<String>>,
+}
+
+impl SplitTransaction {
+    /// Retrieve the number of splits
+    pub fn num_splits(&self) -> usize {
+        self.num_splits
+    }
+
+    /// Retrieve the categories for the splits
+    pub fn categories(&self) -> &Vec<Option<usize>> {
+        &self.categories
+    }
+}
+
+impl Default for SplitTransaction {
+    fn default() -> Self {
+        Self {
+            num_splits: 0,
+            categories: vec![],
+            amounts: vec![],
+            memos: vec![],
+        }
+    }
 }
 
 /// Parse the values stored in a split transaction or template.

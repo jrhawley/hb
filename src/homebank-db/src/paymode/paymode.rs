@@ -18,6 +18,12 @@ pub enum PayMode {
     DirectDebit,
 }
 
+impl Default for PayMode {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
 impl TryFrom<usize> for PayMode {
     type Error = TransactionError;
 

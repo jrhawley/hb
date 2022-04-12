@@ -25,4 +25,26 @@ impl TransactionComplexity {
             (_, _) => false,
         }
     }
+
+    /// Return the number of splits in the `Transaction`
+    pub fn num_splits(&self) -> usize {
+        match self {
+            Self::Simple(_) => 0,
+            Self::Split(split_tr) => split_tr.num_splits(),
+        }
+    }
+
+    /// Retrieve the category(ies) for the `Transaction`
+    pub fn categories(&self) -> &Vec<Option<usize>> {
+        match self {
+            Self::Simple(simple_tr) => &vec![*simple_tr.category()],
+            Self::Split(split_tr) => split_tr.categories(),
+        }
+    }
+}
+
+impl Default for TransactionComplexity {
+    fn default() -> Self {
+        TransactionComplexity::Simple(SimpleTransaction::default())
+    }
 }

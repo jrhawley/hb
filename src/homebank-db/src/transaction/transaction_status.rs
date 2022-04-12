@@ -12,6 +12,12 @@ pub enum TransactionStatus {
     Void,
 }
 
+impl Default for TransactionStatus {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
 impl TryFrom<usize> for TransactionStatus {
     type Error = TransactionError;
 
