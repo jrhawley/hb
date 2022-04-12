@@ -11,7 +11,7 @@ use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
 #[derive(Debug, PartialEq)]
-pub struct Transaction {
+pub struct Transaction<'a> {
     /// Date on which the transaction took place
     date: NaiveDate,
     /// Net sum of the transaction (including any split amounts)
@@ -35,10 +35,10 @@ pub struct Transaction {
     /// What type of transaction was it? 'Expense', 'Income', or 'Transfer'?
     transaction_type: TransactionType,
     /// Is the `Transaction` 'Simple' or 'Split'?
-    complexity: TransactionComplexity,
+    complexity: TransactionComplexity<'a>,
 }
 
-impl Transaction {
+impl<'a> Transaction<'a> {
     /// Retrieve the date of the `Transaction`
     pub fn date(&self) -> &NaiveDate {
         &self.date
@@ -184,33 +184,9 @@ impl Transaction {
     pub fn memos(&self) -> &Vec<Option<String>> {
         &self.complexity.memos()
     }
-
-    /// Retrieve the names of the split categories
-    // pub fn split_category_names(&self, db: &HomeBankDb) -> Option<Vec<Option<String>>> {
-    //     match self.categories() {
-    //         Some(cats) => {
-    //             let cat_names = cats
-    //                 .iter()
-    //                 .map(|possible_idx| {
-    //                     if let Some(cat_idx) = possible_idx {
-    //                         if let Some(cat) = db.categories().get(cat_idx) {
-    //                             Some(cat.name().to_string())
-    //                         } else {
-    //                             None
-    //                         }
-    //                     } else {
-    //                         None
-    //                     }
-    //                 })
-    //                 .collect();
-    //             Some(cat_names)
-    //         }
-    //         None => None,
-    //     }
-    // }
 }
 
-impl Default for Transaction {
+impl<'a> Default for Transaction<'a> {
     fn default() -> Self {
         Self {
             date: NaiveDate::from_ymd(2000, 1, 1),
@@ -224,12 +200,12 @@ impl Default for Transaction {
             info: None,
             tags: None,
             transaction_type: TransactionType::default(),
-            complexity: TransactionComplexity::default()
+            complexity: TransactionComplexity::default(),
         }
     }
 }
 
-impl TryFrom<Vec<OwnedAttribute>> for Transaction {
+impl<'a> TryFrom<Vec<OwnedAttribute>> for Transaction<'a> {
     type Error = TransactionError;
 
     fn try_from(v: Vec<OwnedAttribute>) -> Result<Self, Self::Error> {
