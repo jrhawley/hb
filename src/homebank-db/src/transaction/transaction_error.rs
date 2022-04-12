@@ -28,4 +28,6 @@ pub enum TransactionError {
     InvalidDestinationAccount,
     #[error("Invalid transfer key. Must be of type `usize`.")]
     InvalidTransferKey,
+    #[error("Transactions must be `SimpleTransaction` or `SplitTransaction`, but not both. `SplitTransaction`s cannot have a global category and `SimpleTransactions` cannot have multiple memos or amounts.")]
+    ConflictingInfoSimpleSplitTransaction,
 }
