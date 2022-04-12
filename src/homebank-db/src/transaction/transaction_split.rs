@@ -18,9 +18,39 @@ pub struct SplitTransaction {
 }
 
 impl SplitTransaction {
+    /// Create an empty `SplitTransaction`
+    pub fn empty() -> Self {
+        Self {
+            num_splits: 0,
+            categories: vec![],
+            amounts: vec![],
+            memos: vec![],
+        }
+    }
+
+    /// Create an empty `SplitTransaction`
+    pub fn new(
+        num_splits: usize,
+        categories: Vec<Option<usize>>,
+        amounts: Vec<f32>,
+        memos: Vec<Option<String>>,
+    ) -> Self {
+        Self {
+            num_splits,
+            categories,
+            amounts,
+            memos,
+        }
+    }
+
     /// Retrieve the number of splits
     pub fn num_splits(&self) -> usize {
         self.num_splits
+    }
+
+    /// Retrieve the mutable number of splits
+    pub fn mut_num_splits(&mut self) -> &mut usize {
+        &mut self.num_splits
     }
 
     /// Retrieve the categories for the splits
@@ -28,25 +58,35 @@ impl SplitTransaction {
         &self.categories
     }
 
+    /// Retrieve the mutable categories for the splits
+    pub fn mut_categories(&mut self) -> &mut Vec<Option<usize>> {
+        &mut self.categories
+    }
+
     /// Retrieve the amounts for the splits
     pub fn amounts(&self) -> &Vec<f32> {
         &self.amounts
+    }
+
+    /// Retrieve the mutable amounts for the splits
+    pub fn mut_amounts(&mut self) -> &mut Vec<f32> {
+        &mut self.amounts
     }
 
     /// Retrieve the memos for the splits
     pub fn memos(&self) -> &Vec<Option<String>> {
         &self.memos
     }
+
+    /// Retrieve the mutable memos for the splits
+    pub fn mut_memos(&mut self) -> &mut Vec<Option<String>> {
+        &mut self.memos
+    }
 }
 
 impl Default for SplitTransaction {
     fn default() -> Self {
-        Self {
-            num_splits: 0,
-            categories: vec![],
-            amounts: vec![],
-            memos: vec![],
-        }
+        Self::empty()
     }
 }
 
