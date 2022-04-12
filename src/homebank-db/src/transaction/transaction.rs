@@ -3,7 +3,7 @@
 use super::{
     julian_date_from_u32, parse_split_values, split_tags,
     transaction_split::{parse_split_amount_vec, parse_split_cat_vec, parse_split_memo_vec},
-    TransactionStatus, TransactionType,
+    TransactionStatus, TransactionType, Transfer,
 };
 use crate::{HomeBankDb, PayMode, TransactionError};
 use chrono::NaiveDate;
@@ -230,14 +230,16 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
     type Error = TransactionError;
 
     fn try_from(v: Vec<OwnedAttribute>) -> Result<Self, Self::Error> {
+        // placeholders that will be modified as the XML string is read
         let mut tr = Self::default();
+        let mut xfer = Transfer::default();
 
         for i in v {
             match i.name.local_name.as_str() {
                 "account" => {
                     tr.account = match usize::from_str(&i.value) {
                         Ok(a) => a,
-                        Err(_) => return Err(TransactionError::MissingAccount),
+                        Err(_) => return Err(TransactionError::InvalidAccount),
                     }
                 }
                 "amount" => {
@@ -392,9 +394,32 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                         tr.split_memos = Some(memos);
                     }
                 }
+                // handle the destination account for a transfer
+                "dst_account" => match usize::from_str(&i.value) {
+                    Ok(acct_idx) => {
+                        // if not currently set as a transfer, turn it into one
+                        *xfer.mut_destination() = acct_idx;
+                    }
+                    Err(_) => return Err(TransactionError::InvalidDestinationAccount),
+                },
+                // handle the transfer key for a transfer
+                "kxfer" => match usize::from_str(&i.value) {
+                    Ok(key) => {
+                        // if not currently set as a transfer, turn it into one
+                        *xfer.mut_transfer_key() = key;
+                    }
+                    Err(_) => return Err(TransactionError::InvalidTransferKey),
+                },
                 _ => {}
             }
         }
+
+        // check that the transfer, if any, has been created properly
+        // a proper transfer will not look like the default transfer
+        if xfer != Transfer::default() {
+            tr.transaction_type = TransactionType::Transfer(xfer);
+        }
+
         Ok(tr)
     }
 }
@@ -491,7 +516,7 @@ mod tests {
     #[should_panic]
     fn try_from_empty() {
         let input = vec![];
-        let expected = Err(TransactionError::MissingAccount);
+        let expected = Err(TransactionError::InvalidAccount);
 
         check_try_from_vec_ownedatt(input, expected)
     }
@@ -501,7 +526,7 @@ mod tests {
     fn try_from_missing_acct() {
         // drop the account from the template
         let input = template_all_but(0);
-        let expected = Err(TransactionError::MissingAccount);
+        let expected = Err(TransactionError::InvalidAccount);
 
         check_try_from_vec_ownedatt(input, expected)
     }
@@ -938,6 +963,25 @@ mod tests {
                 Some(String::from("January")),
                 Some(String::from("Internet payment (Dec 1 - Dec 30)")),
             ]),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    /// A single transaction marked as a transfer
+    #[test]
+    fn parse_simple_transfer() {
+        let input = r#"<ope date="736696" amount="-300" account="1" paymode="4" st="2" payee="1" kxfer="10" dst_account="2"/>"#;
+        let expected = Ok(Transaction {
+            date: NaiveDate::from_ymd(2018, 01, 02),
+            amount: -300.0,
+            account: 1,
+            pay_mode: PayMode::BankTransfer,
+            status: TransactionStatus::Reconciled,
+            transaction_type: TransactionType::Transfer(Transfer::new(10, 2)),
+            flags: None,
+            payee: Some(1),
             ..Default::default()
         });
 

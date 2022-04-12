@@ -2,8 +2,8 @@ use thiserror::Error;
 
 #[derive(Debug, Error, PartialEq)]
 pub enum TransactionError {
-    #[error("Missing account from transaction.")]
-    MissingAccount,
+    #[error("Invalid account identifier from transaction. Must be of type `usize`.")]
+    InvalidAccount,
     #[error("Missing amount from transaction.")]
     MissingAmount,
     #[error("Missing date from transaction.")]
@@ -24,4 +24,8 @@ pub enum TransactionError {
     MismatchedSplitNumber(usize, usize),
     #[error("Invalid transaction flags. Must be a `usize` type.")]
     InvalidFlags,
+    #[error("Invalid destination account identifier from transfer. Must be of type `usize`.")]
+    InvalidDestinationAccount,
+    #[error("Invalid transfer key. Must be of type `usize`.")]
+    InvalidTransferKey,
 }
