@@ -45,8 +45,8 @@ impl Transaction {
         &self.date
     }
 
-    /// Retrieve the amount of the `Transaction`
-    pub fn amount(&self) -> &f32 {
+    /// Retrieve the total amount for a `Transaction`
+    pub fn total(&self) -> &f32 {
         &self.amount
     }
 
@@ -169,11 +169,6 @@ impl Transaction {
     /// Retrieve the categories for a `Transaction`
     pub fn categories(&self) -> Vec<&Option<usize>> {
         self.complexity.categories()
-    }
-
-    /// Retrieve the total amount for a `Transaction`
-    pub fn total(&self) -> &f32 {
-        &self.amount
     }
 
     /// Retrieve the amounts for a `Transaction`

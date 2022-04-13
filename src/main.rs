@@ -61,7 +61,7 @@ fn main() -> Result<(), anyhow::Error> {
 
             let sum = filt_transactions
                 .iter()
-                .fold(0.0, |sum, &tr| sum + tr.amount());
+                .fold(0.0, |sum, &tr| sum + tr.total());
             println!("{sum}");
         }
         None => {}
