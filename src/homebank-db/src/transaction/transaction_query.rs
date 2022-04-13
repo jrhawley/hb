@@ -12,6 +12,7 @@ const SPLIT_SEPARATOR: &str = "||";
 pub struct QueryTransactions {
     #[structopt(
         short = "d",
+        long = "date-from",
         help = "Include transactions starting from (and including) this date",
         parse(try_from_str = NaiveDate::from_str),
         value_name = "date"
@@ -20,6 +21,7 @@ pub struct QueryTransactions {
 
     #[structopt(
         short = "D",
+        long = "date-to",
         help = "Include transactions up to (and excluding) this date",
         parse(try_from_str = NaiveDate::from_str),
         value_name = "date"
@@ -28,6 +30,7 @@ pub struct QueryTransactions {
 
     #[structopt(
         short = "l",
+        long = "amount-lower",
         help = "Include transactions greater than (and including) this amount",
         value_name = "amount"
     )]
@@ -35,6 +38,7 @@ pub struct QueryTransactions {
 
     #[structopt(
         short = "u",
+        long = "amount-upper",
         help = "Include transactions less than (and excluding) this amount",
         value_name = "amount"
     )]
@@ -42,6 +46,7 @@ pub struct QueryTransactions {
 
     #[structopt(
         short = "s",
+        long = "status",
         help = "Include transactions with a certain status",
         value_name = "status"
     )]
@@ -49,6 +54,7 @@ pub struct QueryTransactions {
 
     #[structopt(
         short = "c",
+        long = "category",
         help = "Include transactions with categories that match the regular expression",
         value_name = "regex"
     )]
@@ -56,6 +62,7 @@ pub struct QueryTransactions {
 
     #[structopt(
         short = "p",
+        long = "payee",
         help = "Include transactions involving payees that match the regular expression",
         value_name = "regex"
     )]
@@ -63,6 +70,7 @@ pub struct QueryTransactions {
 
     #[structopt(
         short = "a",
+        long = "account",
         help = "Include transactions involving accounts that match the regular expression",
         value_name = "regex"
     )]
@@ -70,6 +78,7 @@ pub struct QueryTransactions {
 
     #[structopt(
         short = "M",
+        long = "method",
         help = "Include transactions with a certain payment method",
         value_name = "method"
     )]
@@ -77,6 +86,7 @@ pub struct QueryTransactions {
 
     #[structopt(
         short = "m",
+        long = "memo",
         help = "Include transactions whose memos match this regular expression",
         value_name = "regex"
     )]
@@ -84,6 +94,7 @@ pub struct QueryTransactions {
 
     #[structopt(
         short = "i",
+        long = "info",
         help = "Include transactions whose info fields match this regular expression",
         value_name = "regex"
     )]
@@ -91,6 +102,7 @@ pub struct QueryTransactions {
 
     #[structopt(
         short = "t",
+        long = "tag",
         help = "Include transactions whose tags match this regular expression",
         value_name = "regex"
     )]
@@ -98,6 +110,7 @@ pub struct QueryTransactions {
 
     #[structopt(
         short = "T",
+        long = "type",
         help = "Include 'Expense', 'Income', or 'Transfer' transactions",
         value_name = "type"
     )]

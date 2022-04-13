@@ -9,6 +9,7 @@ use structopt::StructOpt;
 pub struct QueryAccounts {
     #[structopt(
         short = "T",
+        long = "type",
         help = "Include accounts of a certain type. Options are 'None', 'Bank', 'Cash', 'Asset', 'CreditCard', 'Liability', 'Chequing', or 'Savings'.",
         value_name = "type"
     )]
@@ -16,6 +17,7 @@ pub struct QueryAccounts {
 
     #[structopt(
         short = "g",
+        long = "group",
         help = "Include accounts in group(s) that match the regular expression",
         value_name = "regex"
     )]
@@ -23,6 +25,7 @@ pub struct QueryAccounts {
 
     #[structopt(
         short = "i",
+        long = "institution",
         help = "Include accounts whose institutions match the regular expression",
         value_name = "regex"
     )]
