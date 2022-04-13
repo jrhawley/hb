@@ -180,6 +180,13 @@ impl Transaction {
     pub fn memos(&self) -> Vec<&Option<String>> {
         self.complexity.memos()
     }
+
+    /// Subset the `Transaction`.
+    /// This will return the same thing if it is a `SimpleTransaction`, or a
+    /// `SplitTransaction` that is a subset of the original.
+    pub fn subset(&self, idx: Vec<usize>) -> Self {
+        *self
+    }
 }
 
 impl Default for Transaction {
@@ -1056,5 +1063,23 @@ mod tests {
         let expected = Err(TransactionError::InvalidTransferKey);
 
         check_try_from_single_str(input, expected);
+    }
+
+    #[track_caller]
+    fn check_subset(input: (Transaction, Vec<usize>), expected: Transaction) {
+        let tr = input.0;
+        let idx = input.1;
+        let observed = tr.subset(idx);
+
+        assert_eq!(expected, observed);
+    }
+
+    #[test]
+    fn subset_simple() {
+        let tr = Transaction::default();
+        let idx = vec![0];
+        let expected = Transaction::default();
+
+        check_subset((tr, idx), expected);
     }
 }
