@@ -5,7 +5,7 @@ use xml::attribute::OwnedAttribute;
 
 use super::CurrencyError;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Currency {
     key: usize,
     flags: usize,

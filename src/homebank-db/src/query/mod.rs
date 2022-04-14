@@ -11,7 +11,7 @@ pub trait Query {
     type T;
 
     /// Execute the query
-    fn exec<'a>(&self, db: &'a HomeBankDb) -> Vec<&'a Self::T>;
+    fn exec(&self, db: &HomeBankDb) -> Vec<Self::T>;
 }
 
 /// A subcommand to query the database from the CLI.

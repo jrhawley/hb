@@ -6,7 +6,7 @@ use xml::attribute::OwnedAttribute;
 
 use super::CategoryError;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Category {
     key: usize,
     flags: usize,

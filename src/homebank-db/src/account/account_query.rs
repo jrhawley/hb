@@ -49,7 +49,7 @@ impl QueryAccounts {
 impl Query for QueryAccounts {
     type T = Account;
 
-    fn exec<'a>(&self, db: &'a HomeBankDb) -> Vec<&'a Self::T> {
+    fn exec(&self, db: &HomeBankDb) -> Vec<Self::T> {
         let filt_accounts = db
             .accounts()
             .values()
@@ -71,6 +71,7 @@ impl Query for QueryAccounts {
                 Some(re) => re.is_match(acct.institution()),
                 None => true,
             })
+            .map(|acct| acct.clone())
             .collect();
 
         filt_accounts

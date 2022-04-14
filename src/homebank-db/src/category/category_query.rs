@@ -24,7 +24,7 @@ impl QueryCategories {
 impl Query for QueryCategories {
     type T = Category;
 
-    fn exec<'a>(&self, db: &'a HomeBankDb) -> Vec<&'a Category> {
+    fn exec(&self, db: &HomeBankDb) -> Vec<Self::T> {
         let filt_payees = db
             .categories()
             .values()
@@ -33,6 +33,7 @@ impl Query for QueryCategories {
                 Some(re) => re.is_match(p.name()),
                 None => true,
             })
+            .map(|cat| cat.clone())
             .collect();
 
         filt_payees

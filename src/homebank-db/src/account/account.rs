@@ -8,7 +8,7 @@ use crate::transaction::julian_date_from_u32;
 
 use super::{AccountError, AccountType};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Account {
     key: usize,
     flags: usize,

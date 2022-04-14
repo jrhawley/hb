@@ -1,16 +1,10 @@
 //! Groups
 
+use super::GroupError;
 use std::str::FromStr;
-use thiserror::Error;
 use xml::attribute::OwnedAttribute;
 
-#[derive(Debug, Error)]
-pub enum GroupError {
-    #[error("Invalid group key.")]
-    InvalidKey,
-}
-
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Group {
     key: usize,
     name: String,

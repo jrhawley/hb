@@ -1,4 +1,4 @@
-use super::{TransactionComplexity, TransactionStatus, TransactionType};
+use super::{TransactionStatus, TransactionType};
 use crate::{HomeBankDb, PayMode, Query, Transaction};
 use chrono::NaiveDate;
 use regex::Regex;
@@ -187,8 +187,8 @@ impl QueryTransactions {
 impl Query for QueryTransactions {
     type T = Transaction;
 
-    fn exec<'b>(&self, db: &'b HomeBankDb) -> Vec<&'b Self::T> {
-        let filt_transactions: Vec<&Transaction> = db
+    fn exec(&self, db: &HomeBankDb) -> Vec<Self::T> {
+        let filt_transactions: Vec<Transaction> = db
             .transactions()
             .iter()
             // filter out dates before the given date

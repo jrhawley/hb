@@ -1,11 +1,10 @@
 //! Payees
 
+use super::PayeeError;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
-use super::PayeeError;
-
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Payee {
     key: usize,
     name: String,

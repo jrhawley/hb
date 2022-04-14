@@ -22,7 +22,7 @@ impl QueryGroups {
 impl Query for QueryGroups {
     type T = Group;
 
-    fn exec<'a>(&self, db: &'a HomeBankDb) -> Vec<&'a Self::T> {
+    fn exec(&self, db: &HomeBankDb) -> Vec<Self::T> {
         let filt_groups = db
             .groups()
             .values()
@@ -30,6 +30,7 @@ impl Query for QueryGroups {
                 Some(re) => re.is_match(grp.name()),
                 None => true,
             })
+            .map(|grp| grp.clone())
             .collect();
 
         filt_groups

@@ -20,7 +20,7 @@ impl QueryCurrencies {
 impl Query for QueryCurrencies {
     type T = Currency;
 
-    fn exec<'a>(&self, db: &'a HomeBankDb) -> Vec<&'a Currency> {
+    fn exec(&self, db: &HomeBankDb) -> Vec<Self::T> {
         let filt_payees = db
             .currencies()
             .values()
@@ -29,6 +29,7 @@ impl Query for QueryCurrencies {
                 Some(re) => re.is_match(p.name()),
                 None => true,
             })
+            .map(|curr| curr.clone())
             .collect();
 
         filt_payees

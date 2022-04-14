@@ -23,7 +23,7 @@ impl QueryPayees {
 impl Query for QueryPayees {
     type T = Payee;
 
-    fn exec<'a>(&self, db: &'a HomeBankDb) -> Vec<&'a Payee> {
+    fn exec(&self, db: &HomeBankDb) -> Vec<Self::T> {
         let filt_payees = db
             .payees()
             .values()
@@ -32,6 +32,7 @@ impl Query for QueryPayees {
                 Some(re) => re.is_match(p.name()),
                 None => true,
             })
+            .map(|payee| payee.clone())
             .collect();
 
         filt_payees
