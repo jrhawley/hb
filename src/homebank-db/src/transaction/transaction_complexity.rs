@@ -67,10 +67,20 @@ impl TransactionComplexity {
     }
 
     /// Subset the `Transaction`.
-    pub fn subset(&self, idx: &[usize]) -> Self {
-        match self {
-            Self::Simple(_) => self.clone(),
-            Self::Split(split) => Self::Split(split.subset(idx)),
+    pub fn subset(&self, idx: &[usize]) -> Option<Self> {
+        match (self, idx.len()) {
+            (Self::Simple(simple), 1) => {
+                if idx == &[0] {
+                    Some(Self::Simple(simple.clone()))
+                } else {
+                    None
+                }
+            }
+            (Self::Simple(simple), _) => None,
+            (Self::Split(split), _) => match split.subset(idx) {
+                Some(sub_split) => Some(Self::Split(sub_split)),
+                None => None,
+            },
         }
     }
 }

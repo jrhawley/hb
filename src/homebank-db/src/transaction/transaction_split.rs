@@ -95,8 +95,12 @@ impl SplitTransaction {
     }
 
     /// Subset the `SplitTransaction`
-    pub fn subset(&self, idx: &[usize]) -> Self {
+    pub fn subset(&self, idx: &[usize]) -> Option<Self> {
         let sub_num = idx.len();
+        if sub_num == 0 {
+            return None;
+        }
+
         let sub_memos = idx
             .iter()
             .map(|&i| match self.memos()[i] {
@@ -113,7 +117,12 @@ impl SplitTransaction {
             .collect();
         let sub_amounts = idx.iter().map(|&i| self.amounts()[i].clone()).collect();
 
-        Self::new(sub_num, &sub_categories, &sub_amounts, &sub_memos)
+        Some(Self::new(
+            sub_num,
+            &sub_categories,
+            &sub_amounts,
+            &sub_memos,
+        ))
     }
 }
 

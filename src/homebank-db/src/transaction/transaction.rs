@@ -218,22 +218,25 @@ impl Transaction {
     /// Subset the `Transaction`.
     /// This will return the same thing if it is a `SimpleTransaction`, or a
     /// `SplitTransaction` that is a subset of the original.
-    pub fn subset(&self, idx: &[usize]) -> Self {
-        let complexity = &self.complexity.subset(idx);
-        Self::new(
-            self.date(),
-            complexity.total(),
-            self.account(),
-            self.pay_mode(),
-            self.status(),
-            self.flags(),
-            self.payee(),
-            self.memo(),
-            self.info(),
-            self.tags(),
-            self.ttype(),
-            complexity,
-        )
+    pub fn subset(&self, idx: &[usize]) -> Option<Self> {
+        if let Some(complexity) = &self.complexity.subset(idx) {
+            Some(Self::new(
+                self.date(),
+                complexity.total(),
+                self.account(),
+                self.pay_mode(),
+                self.status(),
+                self.flags(),
+                self.payee(),
+                self.memo(),
+                self.info(),
+                self.tags(),
+                self.ttype(),
+                complexity,
+            ))
+        } else {
+            None
+        }
     }
 }
 
@@ -1101,7 +1104,7 @@ mod tests {
     }
 
     #[track_caller]
-    fn check_subset(input: (Transaction, Vec<usize>), expected: Transaction) {
+    fn check_subset(input: (Transaction, Vec<usize>), expected: Option<Transaction>) {
         let tr = input.0;
         let idx = input.1;
         let observed = tr.subset(&idx);
@@ -1113,7 +1116,25 @@ mod tests {
     fn subset_simple() {
         let tr = Transaction::default();
         let idx = vec![0];
-        let expected = Transaction::default();
+        let expected = Some(Transaction::default());
+
+        check_subset((tr, idx), expected);
+    }
+
+    #[test]
+    fn subset_simple_empty_index() {
+        let tr = Transaction::default();
+        let idx = vec![];
+        let expected = None;
+
+        check_subset((tr, idx), expected);
+    }
+
+    #[test]
+    fn subset_simple_bad_index() {
+        let tr = Transaction::default();
+        let idx = vec![1];
+        let expected = None;
 
         check_subset((tr, idx), expected);
     }
@@ -1140,7 +1161,7 @@ mod tests {
             ..Default::default()
         };
         let idx = vec![0];
-        let expected = Transaction {
+        let expected = Some(Transaction {
             date: NaiveDate::from_ymd(2018, 01, 02),
             amount: -1119.80,
             account: 5,
@@ -1155,7 +1176,34 @@ mod tests {
                 &vec![Some(String::from("January"))],
             )),
             ..Default::default()
+        });
+
+        check_subset((tr, idx), expected);
+    }
+
+    #[test]
+    fn subset_split_empty_index() {
+        let tr = Transaction {
+            date: NaiveDate::from_ymd(2018, 01, 02),
+            amount: -1088.72,
+            account: 5,
+            pay_mode: PayMode::Deposit,
+            status: TransactionStatus::Reconciled,
+            flags: Some(256),
+            payee: Some(13),
+            complexity: TransactionComplexity::Split(SplitTransaction::new(
+                2,
+                &vec![Some(83), Some(100)],
+                &vec![-1119.80, 31.08],
+                &vec![
+                    Some(String::from("January")),
+                    Some(String::from("Internet payment (Dec 1 - Dec 30)")),
+                ],
+            )),
+            ..Default::default()
         };
+        let idx = vec![];
+        let expected = None;
 
         check_subset((tr, idx), expected);
     }
