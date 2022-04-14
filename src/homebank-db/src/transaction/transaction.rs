@@ -40,6 +40,55 @@ pub struct Transaction {
 }
 
 impl Transaction {
+    /// Create an empty `Transaction`
+    pub fn empty() -> Self {
+        Self {
+            date: NaiveDate::from_ymd(2000, 1, 1),
+            amount: 0.0,
+            account: 0,
+            pay_mode: PayMode::default(),
+            status: TransactionStatus::default(),
+            flags: None,
+            payee: None,
+            memo: None,
+            info: None,
+            tags: None,
+            transaction_type: TransactionType::default(),
+            complexity: TransactionComplexity::default(),
+        }
+    }
+
+    /// Create a new `Transaction`
+    pub fn new(
+        date: &NaiveDate,
+        amount: f32,
+        account: usize,
+        pay_mode: &PayMode,
+        status: &TransactionStatus,
+        flags: &Option<usize>,
+        payee: &Option<usize>,
+        memo: &Option<String>,
+        info: &Option<String>,
+        tags: &Option<Vec<String>>,
+        ttype: &TransactionType,
+        complexity: &TransactionComplexity,
+    ) -> Self {
+        Self {
+            date: date.clone(),
+            amount,
+            account,
+            pay_mode: pay_mode.clone(),
+            status: status.clone(),
+            flags: flags.clone(),
+            payee: payee.clone(),
+            memo: memo.clone(),
+            info: info.clone(),
+            tags: tags.clone(),
+            transaction_type: ttype.clone(),
+            complexity: complexity.clone(),
+        }
+    }
+
     /// Retrieve the date of the `Transaction`
     pub fn date(&self) -> &NaiveDate {
         &self.date
@@ -191,20 +240,7 @@ impl Transaction {
 
 impl Default for Transaction {
     fn default() -> Self {
-        Self {
-            date: NaiveDate::from_ymd(2000, 1, 1),
-            amount: 0.0,
-            account: 0,
-            pay_mode: PayMode::default(),
-            status: TransactionStatus::default(),
-            flags: None,
-            payee: None,
-            memo: None,
-            info: None,
-            tags: None,
-            transaction_type: TransactionType::default(),
-            complexity: TransactionComplexity::default(),
-        }
+        Self::empty()
     }
 }
 
