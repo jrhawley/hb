@@ -31,15 +31,15 @@ impl SplitTransaction {
     /// Create an empty `SplitTransaction`
     pub fn new(
         num_splits: usize,
-        categories: Vec<Option<usize>>,
-        amounts: Vec<f32>,
-        memos: Vec<Option<String>>,
+        categories: &Vec<Option<usize>>,
+        amounts: &Vec<f32>,
+        memos: &Vec<Option<String>>,
     ) -> Self {
         Self {
             num_splits,
-            categories,
-            amounts,
-            memos,
+            categories: categories.clone(),
+            amounts: amounts.clone(),
+            memos: memos.clone(),
         }
     }
 
@@ -65,6 +65,11 @@ impl SplitTransaction {
         &mut self.categories
     }
 
+    /// Retrieve the total sum of the amounts
+    pub fn total(&self) -> f32 {
+        self.amounts().iter().fold(0.0, |a, &b| a + b)
+    }
+
     /// Retrieve the amounts for the splits
     pub fn amounts(&self) -> Vec<&f32> {
         // using an iteration->collection trick to create the `Vec` on the fly
@@ -87,6 +92,28 @@ impl SplitTransaction {
     /// Retrieve the mutable memos for the splits
     pub fn mut_memos(&mut self) -> &mut Vec<Option<String>> {
         &mut self.memos
+    }
+
+    /// Subset the `SplitTransaction`
+    pub fn subset(&self, idx: &[usize]) -> Self {
+        let sub_num = idx.len();
+        let sub_memos = idx
+            .iter()
+            .map(|&i| match self.memos()[i] {
+                Some(possible_str) => Some(possible_str.to_string()),
+                None => None,
+            })
+            .collect();
+        let sub_categories = idx
+            .iter()
+            .map(|&i| match self.categories()[i] {
+                Some(possible_cat) => Some(possible_cat.clone()),
+                None => None,
+            })
+            .collect();
+        let sub_amounts = idx.iter().map(|&i| self.amounts()[i].clone()).collect();
+
+        Self::new(sub_num, &sub_categories, &sub_amounts, &sub_memos)
     }
 }
 
