@@ -34,6 +34,14 @@ impl TransactionComplexity {
         }
     }
 
+    /// Retrieve the total for the `Transaction`
+    pub fn total(&self) -> f32 {
+        match self {
+            Self::Simple(simple) => *simple.amount(),
+            Self::Split(split) => split.total(),
+        }
+    }
+
     /// Retrieve the category(ies) for the `Transaction`
     pub fn categories(&self) -> Vec<&Option<usize>> {
         match self {
@@ -55,6 +63,14 @@ impl TransactionComplexity {
         match self {
             Self::Simple(simple_tr) => vec![simple_tr.memo()],
             Self::Split(split_tr) => split_tr.memos(),
+        }
+    }
+
+    /// Subset the `Transaction`.
+    pub fn subset(&self, idx: &[usize]) -> Self {
+        match self {
+            Self::Simple(_) => self.clone(),
+            Self::Split(split) => Self::Split(split.subset(idx)),
         }
     }
 }
