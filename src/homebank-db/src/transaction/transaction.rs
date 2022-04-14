@@ -118,26 +118,6 @@ impl Transaction {
         &self.status
     }
 
-    // /// Retrieve the category of the `Transaction`
-    // pub fn category(&self) -> &Option<usize> {
-    //     &self.category
-    // }
-
-    // /// Retrieve the complete category name.
-    // /// This includes the parent category, if one exists.
-    // pub fn category_name(&self, db: &HomeBankDb) -> Option<String> {
-    //     match self.category() {
-    //         Some(idx) => {
-    //             if let Some(cat) = db.categories().get(idx) {
-    //                 Some(cat.full_name(db))
-    //             } else {
-    //                 None
-    //             }
-    //         }
-    //         None => None,
-    //     }
-    // }
-
     /// Retrieve the payee for the `Transaction`
     pub fn payee(&self) -> &Option<usize> {
         &self.payee
@@ -175,6 +155,11 @@ impl Transaction {
     /// Retrieve the tags for the `Transaction`
     pub fn tags(&self) -> &Option<Vec<String>> {
         &self.tags
+    }
+
+    /// Retrieve the flags for the `Transaction`
+    pub fn flags(&self) -> &Option<usize> {
+        &self.flags
     }
 
     /// Retrieve the type for the `Transaction`
