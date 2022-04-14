@@ -218,8 +218,22 @@ impl Transaction {
     /// Subset the `Transaction`.
     /// This will return the same thing if it is a `SimpleTransaction`, or a
     /// `SplitTransaction` that is a subset of the original.
-    pub fn subset(&self, idx: Vec<usize>) -> Self {
-        *self
+    pub fn subset(&self, idx: &[usize]) -> Self {
+        let complexity = &self.complexity.subset(idx);
+        Self::new(
+            self.date(),
+            complexity.total(),
+            self.account(),
+            self.pay_mode(),
+            self.status(),
+            self.flags(),
+            self.payee(),
+            self.memo(),
+            self.info(),
+            self.tags(),
+            self.ttype(),
+            complexity,
+        )
     }
 }
 
