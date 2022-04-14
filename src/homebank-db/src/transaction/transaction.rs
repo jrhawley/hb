@@ -205,6 +205,23 @@ impl Transaction {
         self.complexity.categories()
     }
 
+    /// Revtrieve the names of the categories for a `Transaction`
+    pub fn category_names(&self, db: &HomeBankDb) -> Vec<Option<String>> {
+        self.categories()
+            .iter()
+            .map(|&cat_idx| match cat_idx {
+                Some(idx) => {
+                    if let Some(category) = db.categories().get(idx) {
+                        Some(category.name().to_string())
+                    } else {
+                        None
+                    }
+                }
+                None => None,
+            })
+            .collect()
+    }
+
     /// Retrieve the amounts for a `Transaction`
     pub fn amounts(&self) -> Vec<&f32> {
         self.complexity.amounts()
