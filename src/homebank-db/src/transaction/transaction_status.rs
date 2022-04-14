@@ -3,7 +3,7 @@
 use super::TransactionError;
 use std::str::FromStr;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum TransactionStatus {
     None,
     Cleared,

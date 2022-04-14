@@ -1,6 +1,6 @@
 //! Transactions that transfer amounts between accounts.
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Transfer {
     /// Unique identifier for the transfer
     transfer_key: usize,

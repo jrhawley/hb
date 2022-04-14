@@ -5,7 +5,7 @@ use xml::attribute::OwnedAttribute;
 /// The string separator used to denote split transactions
 const SPLIT_SEPARATOR: &str = "||";
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct SplitTransaction {
     /// How many sub-transactions is it split into
     num_splits: usize,

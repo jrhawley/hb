@@ -2,7 +2,7 @@
 
 use super::{SimpleTransaction, SplitTransaction};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum TransactionComplexity {
     Simple(SimpleTransaction),
     Split(SplitTransaction),

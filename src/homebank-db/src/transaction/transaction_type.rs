@@ -4,7 +4,7 @@ use super::Transfer;
 use crate::TransactionError;
 use std::str::FromStr;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum TransactionType {
     Expense,
     Income,
