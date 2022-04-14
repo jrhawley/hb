@@ -991,9 +991,9 @@ mod tests {
             payee: Some(13),
             complexity: TransactionComplexity::Split(SplitTransaction::new(
                 2,
-                vec![Some(83), Some(100)],
-                vec![-1119.80, 31.08],
-                vec![
+                &vec![Some(83), Some(100)],
+                &vec![-1119.80, 31.08],
+                &vec![
                     Some(String::from("January")),
                     Some(String::from("Internet payment (Dec 1 - Dec 30)")),
                 ],
@@ -1018,9 +1018,9 @@ mod tests {
             payee: Some(13),
             complexity: TransactionComplexity::Split(SplitTransaction::new(
                 2,
-                vec![Some(83), Some(100)],
-                vec![-1119.80, 31.08],
-                vec![
+                &vec![Some(83), Some(100)],
+                &vec![-1119.80, 31.08],
+                &vec![
                     Some(String::from("January")),
                     Some(String::from("Internet payment (Dec 1 - Dec 30)")),
                 ],
@@ -1090,7 +1090,7 @@ mod tests {
     fn check_subset(input: (Transaction, Vec<usize>), expected: Transaction) {
         let tr = input.0;
         let idx = input.1;
-        let observed = tr.subset(idx);
+        let observed = tr.subset(&idx);
 
         assert_eq!(expected, observed);
     }
@@ -1100,6 +1100,48 @@ mod tests {
         let tr = Transaction::default();
         let idx = vec![0];
         let expected = Transaction::default();
+
+        check_subset((tr, idx), expected);
+    }
+
+    #[test]
+    fn subset_split() {
+        let tr = Transaction {
+            date: NaiveDate::from_ymd(2018, 01, 02),
+            amount: -1088.72,
+            account: 5,
+            pay_mode: PayMode::Deposit,
+            status: TransactionStatus::Reconciled,
+            flags: Some(256),
+            payee: Some(13),
+            complexity: TransactionComplexity::Split(SplitTransaction::new(
+                2,
+                &vec![Some(83), Some(100)],
+                &vec![-1119.80, 31.08],
+                &vec![
+                    Some(String::from("January")),
+                    Some(String::from("Internet payment (Dec 1 - Dec 30)")),
+                ],
+            )),
+            ..Default::default()
+        };
+        let idx = vec![0];
+        let expected = Transaction {
+            date: NaiveDate::from_ymd(2018, 01, 02),
+            amount: -1119.80,
+            account: 5,
+            pay_mode: PayMode::Deposit,
+            status: TransactionStatus::Reconciled,
+            flags: Some(256),
+            payee: Some(13),
+            complexity: TransactionComplexity::Split(SplitTransaction::new(
+                1,
+                &vec![Some(83)],
+                &vec![-1119.80],
+                &vec![Some(String::from("January"))],
+            )),
+            ..Default::default()
+        };
 
         check_subset((tr, idx), expected);
     }
