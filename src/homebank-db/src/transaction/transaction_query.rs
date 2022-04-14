@@ -272,36 +272,30 @@ impl Query for QueryTransactions {
             })
             // filter out certain categories
             .filter_map(|tr| {
-                if !tr.is_split() {
-                    // simple transactions can simply have their categories matched
-                    match (self.category(), tr.categories()[0]) {
-                        (Some(re), Some(tr_cat_idx)) => {
-                            if let Some(tr_category) = db.categories().get(tr_cat_idx) {
-                                if re.is_match(tr_category.name()) {
-                                    Some(tr)
-                                } else {
-                                    None
+                match self.category() {
+                    Some(re) => {
+                        let matching_idx: Vec<usize> = tr
+                            .category_names(db)
+                            .iter()
+                            .enumerate()
+                            .filter_map(|(i, cat)| match cat {
+                                Some(u) => {
+                                    if re.is_match(u) {
+                                        Some(i)
+                                    } else {
+                                        None
+                                    }
                                 }
-                            } else {
-                                None
-                            }
-                        }
-                        (Some(_), None) => None,
-                        (_, _) => Some(tr),
+                                None => None,
+                            })
+                            .collect();
+
+                        // return the subset of the `Transaction` that matches the category query
+                        tr.subset(&matching_idx)
                     }
-                } else {
-                    // split transactions will be filtered only by the sub-transactions that match
-                    Some(tr)
+                    None => None,
                 }
             })
-            // .filter(|&t| match (self.category(), t.category_name(db)) {
-            //     // if there is a regex and there is a category name
-            //     (Some(re), Some(t_cat_name)) => re.is_match(&t_cat_name),
-            //     // if there is a regex but no category
-            //     (Some(_), None) => false,
-            //     // if there is no regex
-            //     (None, _) => true,
-            // })
             .collect();
 
         filt_transactions
