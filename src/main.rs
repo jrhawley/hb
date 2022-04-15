@@ -57,12 +57,10 @@ fn main() -> Result<(), anyhow::Error> {
         Some(SubCommand::Sum(query)) => {
             let filt_transactions = query.exec(&db);
 
-            // println!("{:#?}", filt_transactions);
-
             let sum = filt_transactions
                 .iter()
                 .fold(0.0, |sum, tr| sum + tr.total());
-            println!("{sum}");
+            println!("{sum:.2}");
         }
         None => {}
     }
