@@ -5,7 +5,7 @@ use regex::Regex;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "accounts", alias = "a", about = "Query accounts")]
+#[structopt(name = "accounts", visible_alias = "a", about = "Query accounts")]
 pub struct QueryAccounts {
     #[structopt(
         short = "T",

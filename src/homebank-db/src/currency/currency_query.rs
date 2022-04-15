@@ -4,7 +4,11 @@ use structopt::StructOpt;
 use crate::{Currency, HomeBankDb, Query};
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "currencies", alias = "C", about = "Query currencies used")]
+#[structopt(
+    name = "currencies",
+    visible_alias = "C",
+    about = "Query currencies used"
+)]
 pub struct QueryCurrencies {
     #[structopt(help = "Name of the currency", value_name = "regex")]
     name: Option<Regex>,

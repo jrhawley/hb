@@ -60,8 +60,14 @@ impl Default for CliOpts {
 
 #[derive(Debug, StructOpt)]
 pub enum SubCommand {
-    #[structopt(about = "Perform a query on the HomeBank database")]
+    #[structopt(
+        about = "Perform a query on the HomeBank database",
+        visible_alias = "q"
+    )]
     Query(QueryOpts),
-    #[structopt(about = "Calculate a sum of transactions in a query")]
+    #[structopt(
+        about = "Calculate a sum of transactions in a query",
+        visible_alias = "s"
+    )]
     Sum(QueryTransactions),
 }

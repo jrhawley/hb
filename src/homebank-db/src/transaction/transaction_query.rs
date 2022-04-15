@@ -8,7 +8,11 @@ use structopt::StructOpt;
 const SPLIT_SEPARATOR: &str = "||";
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "transactions", alias = "t", about = "Query transactions")]
+#[structopt(
+    name = "transactions",
+    visible_alias = "t",
+    about = "Query transactions"
+)]
 pub struct QueryTransactions {
     #[structopt(
         short = "d",

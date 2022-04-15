@@ -4,7 +4,7 @@ use structopt::StructOpt;
 use crate::{Group, HomeBankDb, Query};
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "groups", alias = "g", about = "Query account groups")]
+#[structopt(name = "groups", visible_alias = "g", about = "Query account groups")]
 pub struct QueryGroups {
     #[structopt(
         help = "Include groups whose names match this regular expression",

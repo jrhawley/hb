@@ -16,7 +16,6 @@ pub trait Query {
 
 /// A subcommand to query the database from the CLI.
 #[derive(Debug, StructOpt)]
-#[structopt(name = "query", alias = "q", about = "Query the database")]
 pub struct QueryOpts {
     #[structopt(subcommand)]
     query_type: QueryType,
