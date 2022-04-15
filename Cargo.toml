@@ -3,9 +3,7 @@ name = "hb"
 version = "0.1.0"
 edition = "2021"
 authors = ["James Hawley <developer@jrhawley.ca>"]
-description = "Query your HomeBank transactions from the command line."
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "Query and operate on your HomeBank database from the command line."
 
 [workspace]
 members = [
@@ -21,5 +19,3 @@ serde = { version = "1.0.136", features = ["derive"] }
 structopt = "0.3.26"
 thiserror = "1.0.30"
 toml = "0.5.8"
-
-[features]
