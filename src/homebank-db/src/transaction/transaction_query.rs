@@ -5,8 +5,6 @@ use regex::Regex;
 use std::str::FromStr;
 use structopt::StructOpt;
 
-const SPLIT_SEPARATOR: &str = "||";
-
 #[derive(Debug, StructOpt)]
 #[structopt(
     name = "transactions",

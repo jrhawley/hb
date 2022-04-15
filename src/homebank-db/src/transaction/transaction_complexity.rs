@@ -76,7 +76,7 @@ impl TransactionComplexity {
                     None
                 }
             }
-            (Self::Simple(simple), _) => None,
+            (Self::Simple(_simple), _) => None,
             (Self::Split(split), _) => match split.subset(idx) {
                 Some(sub_split) => Some(Self::Split(sub_split)),
                 None => None,
