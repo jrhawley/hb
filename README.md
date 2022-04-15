@@ -1,6 +1,6 @@
 # hb
 
-A CLI/TUI for [Homebank](https://homebank.free.fr/en/index.php).
+A CLI/TUI for [Homebank](http://homebank.free.fr/).
 
 ## Installation
 
