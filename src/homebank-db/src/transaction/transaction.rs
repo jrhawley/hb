@@ -212,7 +212,7 @@ impl Transaction {
             .map(|&cat_idx| match cat_idx {
                 Some(idx) => {
                     if let Some(category) = db.categories().get(idx) {
-                        Some(category.name().to_string())
+                        Some(category.full_name(db))
                     } else {
                         None
                     }

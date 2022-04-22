@@ -30,7 +30,7 @@ impl Query for QueryCategories {
             .values()
             // filter out categories that don't match the regex
             .filter(|&p| match self.name() {
-                Some(re) => re.is_match(p.name()),
+                Some(re) => re.is_match(&p.full_name(db)),
                 None => true,
             })
             .map(|cat| cat.clone())
