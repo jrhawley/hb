@@ -1,7 +1,7 @@
 //! Top level CLI command
 
 use crate::config::default_cfg_file;
-use homebank_db::{QueryOpts, QueryTransactions};
+use homebank_db::{category::QueryBudget, QueryOpts, QueryTransactions};
 use lazy_static::lazy_static;
 use std::path::{Path, PathBuf};
 use structopt::StructOpt;
@@ -65,9 +65,13 @@ pub enum SubCommand {
         visible_alias = "q"
     )]
     Query(QueryOpts),
+
     #[structopt(
         about = "Calculate a sum of transactions in a query",
         visible_alias = "s"
     )]
     Sum(QueryTransactions),
+
+    #[structopt(about = "Look at your category budgets", visible_alias = "b")]
+    Budget(QueryBudget),
 }

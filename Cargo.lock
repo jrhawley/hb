@@ -152,6 +152,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "kronos",
+ "lazy_static",
  "regex",
  "semver",
  "structopt",
