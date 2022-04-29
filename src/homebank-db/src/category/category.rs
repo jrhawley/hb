@@ -17,6 +17,7 @@ pub struct Category {
 }
 
 impl Category {
+    /// Create an empty `Category`
     pub fn empty() -> Self {
         Self {
             key: 0,
@@ -27,13 +28,8 @@ impl Category {
         }
     }
 
-    pub fn new(
-        key: usize,
-        flags: usize,
-        name: &str,
-        b: &Vec<f32>,
-        parent_key: Option<usize>,
-    ) -> Self {
+    /// Create a new `Category`
+    pub fn new(key: usize, flags: usize, name: &str, parent_key: Option<usize>) -> Self {
         Self {
             key,
             flags,
@@ -43,15 +39,17 @@ impl Category {
         }
     }
 
+    /// Retrieve the `Category`'s key
     pub(crate) fn key(&self) -> usize {
         self.key
     }
 
+    /// Retrieve the `Category`'s name
     pub fn name(&self) -> &str {
         &self.name
     }
 
-    /// This includes the parent category, if one exists.
+    /// Retrieve the `Category`'s key, including the parent category, if one exists.
     pub fn full_name(&self, db: &HomeBankDb) -> String {
         if let Some(idx) = self.parent_key {
             if let Some(parent_cat) = db.categories().get(&idx) {
@@ -64,6 +62,7 @@ impl Category {
         }
     }
 
+    /// Retrieve the `Category`'s name
     pub fn flags(&self) -> usize {
         self.flags
     }
