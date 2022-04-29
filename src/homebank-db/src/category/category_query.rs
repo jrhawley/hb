@@ -15,7 +15,7 @@ pub struct QueryCategories {
 }
 
 impl QueryCategories {
-    /// Retrieve the regular expression for the payee name
+    /// Retrieve the regular expression for the `Category` name
     fn name(&self) -> &Option<Regex> {
         &self.name
     }
@@ -25,7 +25,7 @@ impl Query for QueryCategories {
     type T = Category;
 
     fn exec(&self, db: &HomeBankDb) -> Vec<Self::T> {
-        let filt_payees = db
+        let filt_categories = db
             .categories()
             .values()
             // filter out categories that don't match the regex
@@ -36,6 +36,6 @@ impl Query for QueryCategories {
             .map(|cat| cat.clone())
             .collect();
 
-        filt_payees
+        filt_categories
     }
 }
