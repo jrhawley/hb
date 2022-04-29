@@ -110,3 +110,67 @@ impl TryFrom<Vec<OwnedAttribute>> for Category {
         Ok(cat)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use xml::{reader::XmlEvent, EventReader};
+
+    #[test]
+    fn it_works() {
+        let result = 2 + 2;
+        assert_eq!(result, 4);
+    }
+
+    #[track_caller]
+    fn check_try_from_single_str(input: &str, expected: Result<Category, CategoryError>) {
+        // set up the reader from the input string
+        let mut reader = EventReader::from_str(input);
+
+        // skip the XML starting header and parse the first event
+        let (_start, first) = (reader.next(), reader.next());
+
+        // get the first event
+        if let Ok(XmlEvent::StartElement {
+            name, attributes, ..
+        }) = first
+        {
+            if "cat" == name.local_name.as_str() {
+                let observed = Category::try_from(attributes);
+                assert_eq!(expected, observed);
+            } else {
+                panic!(
+                    "Incorrect category string passed into check. Expected `cat`, found `{:#?}`",
+                    name.local_name.as_str()
+                );
+            }
+        } else {
+            panic!("Incorrect string passed into check. `{:#?}`", first);
+        }
+    }
+
+    #[test]
+    fn parse_simple_category() {
+        let input = r#"<cat key="1" name="Name">"#;
+        let expected = Ok(Category {
+            key: 1,
+            name: "Name".to_string(),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    fn parse_simple_subcategory() {
+        let input = r#"<cat key="2" name="Name" parent="1">"#;
+        let expected = Ok(Category {
+            key: 2,
+            name: "Name".to_string(),
+            parent_key: Some(1),
+            ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+}
