@@ -1,18 +1,16 @@
 //! Categories
 
+use super::{CategoryBudget, CategoryError};
 use crate::HomeBankDb;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
-
-use super::CategoryError;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Category {
     key: usize,
     flags: usize,
     name: String,
-    // I don't know what this is
-    b: Vec<f32>,
+    budget: CategoryBudget,
     parent_key: Option<usize>,
 }
 
@@ -23,7 +21,7 @@ impl Category {
             key: 0,
             flags: 0,
             name: "".to_string(),
-            b: vec![],
+            budget: CategoryBudget::default(),
             parent_key: None,
         }
     }
@@ -34,7 +32,7 @@ impl Category {
             key,
             flags,
             name: name.to_string(),
-            b: b.clone(),
+            budget: CategoryBudget::new(),
             parent_key,
         }
     }
@@ -66,6 +64,21 @@ impl Category {
     pub fn flags(&self) -> usize {
         self.flags
     }
+
+    /// Set the budget amount for a month or each month
+    pub fn set_budget(&mut self, index: usize, amount: f32) -> Result<(), CategoryError> {
+        self.budget.set_budget(index, amount)
+    }
+
+    /// Retrieve the `Category`'s budget
+    pub fn budget(&self) -> &CategoryBudget {
+        &self.budget
+    }
+
+    /// Retrieve the budget amount for a given month
+    pub fn budget_amount(&self, month: usize) -> Option<f32> {
+        self.budget.budget(month)
+    }
 }
 
 impl Default for Category {
@@ -82,26 +95,43 @@ impl TryFrom<Vec<OwnedAttribute>> for Category {
 
         for i in v {
             match i.name.local_name.as_str() {
+                // category name
                 "name" => {
                     cat.name = i.value.to_string();
                 }
+                // category key in the database
                 "key" => {
                     cat.key = match usize::from_str(&i.value) {
                         Ok(idx) => idx,
                         Err(_) => return Err(CategoryError::InvalidKey),
                     }
                 }
+                // flags for the category
                 "flags" => {
                     cat.flags = match usize::from_str(&i.value) {
                         Ok(idx) => idx,
                         Err(_) => return Err(CategoryError::InvalidFlags),
                     }
                 }
+                // a parent category (if any)
                 "parent" => {
                     cat.parent_key = match usize::from_str(&i.value) {
                         Ok(idx) => Some(idx),
                         Err(_) => return Err(CategoryError::InvalidParentKey),
                     }
+                }
+                // budgeting for each month
+                "b0" | "b1" | "b2" | "b3" | "b4" | "b5" | "b6" | "b7" | "b8" | "b9" | "b10"
+                | "b11" | "b12" => {
+                    let index = match usize::from_str(&i.name.local_name.as_str()[1..]) {
+                        Ok(i) => i,
+                        Err(_) => return Err(CategoryError::InvalidBudgetProperty),
+                    };
+                    let amount = match f32::from_str(&i.value) {
+                        Ok(v) => v,
+                        Err(_) => return Err(CategoryError::InvalidBudgetValue),
+                    };
+                    cat.set_budget(index, amount)?;
                 }
                 _ => {}
             }
@@ -168,6 +198,57 @@ mod tests {
             name: "Name".to_string(),
             parent_key: Some(1),
             ..Default::default()
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+    #[test]
+    fn parse_simple_budget_each_month() {
+        let input = r#"<cat key="1" name="Name" b0="-400">"#;
+        let expected = Ok(Category {
+            key: 1,
+            name: "Name".to_string(),
+            parent_key: None,
+            flags: 0,
+            budget: CategoryBudget {
+                each_month: Some(-400.0),
+                ..Default::default()
+            },
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    fn parse_budget_each_month_with_single_month() {
+        let input = r#"<cat key="1" name="Name" b0="-400" b2="-200">"#;
+        let expected = Ok(Category {
+            key: 1,
+            name: "Name".to_string(),
+            parent_key: None,
+            flags: 0,
+            budget: CategoryBudget {
+                each_month: Some(-400.0),
+                february: Some(-200.0),
+                ..Default::default()
+            },
+        });
+
+        check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    fn parse_simple_budget_single_month() {
+        let input = r#"<cat key="1" name="Name" b2="-200">"#;
+        let expected = Ok(Category {
+            key: 1,
+            name: "Name".to_string(),
+            parent_key: None,
+            flags: 0,
+            budget: CategoryBudget {
+                february: Some(-200.0),
+                ..Default::default()
+            },
         });
 
         check_try_from_single_str(input, expected);
