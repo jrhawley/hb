@@ -120,6 +120,39 @@ pub struct QueryTransactions {
 }
 
 impl QueryTransactions {
+    /// Create a new query for `Transaction`s
+    pub fn new(
+        date_from: &Option<NaiveDate>,
+        date_to: &Option<NaiveDate>,
+        amount_from: &Option<f32>,
+        amount_to: &Option<f32>,
+        status: &Option<Vec<TransactionStatus>>,
+        category: &Option<Regex>,
+        payee: &Option<Regex>,
+        account: &Option<Regex>,
+        pay_mode: &Option<Vec<PayMode>>,
+        memo: &Option<Regex>,
+        info: &Option<Regex>,
+        tags: &Option<Regex>,
+        transaction_type: &Option<Vec<TransactionType>>,
+    ) -> Self {
+        Self {
+            date_from: date_from.clone(),
+            date_to: date_to.clone(),
+            amount_from: amount_from.clone(),
+            amount_to: amount_to.clone(),
+            status: status.clone(),
+            category: category.clone(),
+            payee: payee.clone(),
+            account: account.clone(),
+            pay_mode: pay_mode.clone(),
+            memo: memo.clone(),
+            info: info.clone(),
+            tags: tags.clone(),
+            transaction_type: transaction_type.clone(),
+        }
+    }
+
     /// Select the lower bound date for querying
     pub fn date_from(&self) -> &Option<NaiveDate> {
         &self.date_from
