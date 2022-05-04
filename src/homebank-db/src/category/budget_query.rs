@@ -1,6 +1,8 @@
 //! Query the budget in your HomeBank database.
 
-use crate::{Category, HomeBankDb, Query, QueryTransactions, Transaction};
+use crate::{
+    transaction::sum_transactions, Category, HomeBankDb, Query, QueryTransactions, Transaction,
+};
 use chrono::{Datelike, Local, NaiveDate};
 use lazy_static::lazy_static;
 use regex::Regex;
@@ -52,35 +54,44 @@ impl Query for QueryBudget {
     type T = Transaction;
 
     fn exec(&self, db: &HomeBankDb) -> Vec<Self::T> {
-        let filt_categories: Vec<Category> = db
+        let mut filt_categories: Vec<Category> = db
             .categories()
             .values()
             // filter out categories that don't match the regex
-            .filter(|&p| match self.name() {
-                Some(re) => re.is_match(&p.full_name(db)),
+            .filter(|&cat| match self.name() {
+                Some(re) => re.is_match(&cat.full_name(db)),
                 None => true,
             })
+            // filter out categories that don't have a budget
+            .filter(|&cat| cat.has_budget())
             .map(|cat| cat.clone())
             .collect();
 
-        let transaction_query = QueryTransactions::new(
-            &Some(*self.date_from()),
-            &None,
-            &None,
-            &None,
-            &None,
-            self.name(),
-            &None,
-            &None,
-            &None,
-            &None,
-            &None,
-            &None,
-            &None,
-        );
+        filt_categories.sort_by(|a, b| a.full_name(db).cmp(&b.full_name(db)));
 
-        let filt_transactions = transaction_query.exec(db);
+        for cat in filt_categories {
+            let cat_name_re = Regex::new(&cat.full_name(db)).unwrap();
+            let transaction_query = QueryTransactions::new(
+                &Some(*self.date_from()),
+                &None,
+                &None,
+                &None,
+                &None,
+                &Some(cat_name_re),
+                &None,
+                &None,
+                &None,
+                &None,
+                &None,
+                &None,
+                &None,
+            );
 
-        filt_transactions
+            let filt_transactions = transaction_query.exec(db);
+            let sum = sum_transactions(&filt_transactions);
+            println!("{}\n{}", cat.full_name(db), sum);
+        }
+
+        vec![]
     }
 }
