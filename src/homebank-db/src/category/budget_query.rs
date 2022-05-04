@@ -51,7 +51,7 @@ impl QueryBudget {
 }
 
 impl Query for QueryBudget {
-    type T = Transaction;
+    type T = (String, f32);
 
     fn exec(&self, db: &HomeBankDb) -> Vec<Self::T> {
         let mut filt_categories: Vec<Category> = db
@@ -69,29 +69,33 @@ impl Query for QueryBudget {
 
         filt_categories.sort_by(|a, b| a.full_name(db).cmp(&b.full_name(db)));
 
-        for cat in filt_categories {
-            let cat_name_re = Regex::new(&cat.full_name(db)).unwrap();
-            let transaction_query = QueryTransactions::new(
-                &Some(*self.date_from()),
-                &None,
-                &None,
-                &None,
-                &None,
-                &Some(cat_name_re),
-                &None,
-                &None,
-                &None,
-                &None,
-                &None,
-                &None,
-                &None,
-            );
+        let budget_spent: Vec<(String, f32)> = filt_categories
+            .iter()
+            .map(|cat| {
+                let cat_name_re = Regex::new(&cat.full_name(db)).unwrap();
+                let transaction_query = QueryTransactions::new(
+                    &Some(*self.date_from()),
+                    &None,
+                    &None,
+                    &None,
+                    &None,
+                    &Some(cat_name_re),
+                    &None,
+                    &None,
+                    &None,
+                    &None,
+                    &None,
+                    &None,
+                    &None,
+                );
 
-            let filt_transactions = transaction_query.exec(db);
-            let sum = sum_transactions(&filt_transactions);
-            println!("{}\n{}", cat.full_name(db), sum);
-        }
+                let filt_transactions = transaction_query.exec(db);
+                let sum = sum_transactions(&filt_transactions);
 
-        vec![]
+                (cat.full_name(db), sum)
+            })
+            .collect();
+
+        budget_spent
     }
 }
