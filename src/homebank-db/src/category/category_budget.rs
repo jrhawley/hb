@@ -137,7 +137,6 @@ impl CategoryBudget {
 
         // iterate over all the first days of each month
         while date_iter < last_date {
-            println!("{:#?}", date_iter);
             date_iter = time_step.next().unwrap().start.date();
 
             sum += match self.budget(date_iter.month() as usize) {
