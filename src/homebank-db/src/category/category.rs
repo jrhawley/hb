@@ -32,7 +32,7 @@ impl Category {
             key,
             flags,
             name: name.to_string(),
-            budget: CategoryBudget::new(),
+            budget: CategoryBudget::empty(),
             parent_key,
         }
     }
@@ -77,7 +77,7 @@ impl Category {
 
     /// Determine if the `Category` has a budget or not
     pub fn has_budget(&self) -> bool {
-        self.budget.is_empty()
+        !self.budget.is_empty()
     }
 
     /// Retrieve the budget amount for a given month
@@ -258,5 +258,34 @@ mod tests {
         });
 
         check_try_from_single_str(input, expected);
+    }
+
+    #[test]
+    fn parse_non_budget() {
+        let cat = Category {
+            key: 157,
+            parent_key: Some(106),
+            flags: 1,
+            name: "Parking".to_string(),
+            budget: CategoryBudget::empty(),
+        };
+
+        assert_eq!(false, cat.has_budget());
+    }
+
+    #[test]
+    fn parse_budget() {
+        let cat = Category {
+            key: 157,
+            parent_key: Some(106),
+            flags: 1,
+            name: "Parking".to_string(),
+            budget: CategoryBudget {
+                february: Some(2.0),
+                ..Default::default()
+            },
+        };
+
+        assert_eq!(true, cat.has_budget());
     }
 }
