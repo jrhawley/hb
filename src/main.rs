@@ -61,7 +61,13 @@ fn main() -> Result<(), anyhow::Error> {
         }
         Some(SubCommand::Budget(query)) => {
             let filt_budget = query.exec(&db);
-            println!("{:#?}", filt_budget);
+            for (cat_name, total, allotment) in filt_budget {
+                let allotment_str = match allotment {
+                    Some(val) => format!("{val:.2}"),
+                    None => "None".to_string(),
+                };
+                println!("{} :: {} / {}", cat_name, total, allotment_str);
+            }
         }
         None => {}
     }
