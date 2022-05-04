@@ -184,6 +184,148 @@ impl QueryTransactions {
     pub fn ttype(&self) -> &Option<Vec<TransactionType>> {
         &self.transaction_type
     }
+
+    /// Filter out dates occurring before the query date
+    pub fn filter_date_from(&self, tr: &Transaction) -> bool {
+        match self.date_from() {
+            Some(d) => tr.date() >= d,
+            None => true,
+        }
+    }
+
+    /// Filter out dates occurring after the query date
+    pub fn filter_date_to(&self, tr: &Transaction) -> bool {
+        match self.date_to() {
+            Some(d) => tr.date() < d,
+            None => true,
+        }
+    }
+
+    /// Filter out amounts below the query amount lower bound
+    pub fn filter_amount_from(&self, tr: &Transaction) -> bool {
+        match self.amount_from() {
+            Some(a) => tr.total() >= a,
+            None => true,
+        }
+    }
+
+    /// Filter out amounts above the query amount upper
+    pub fn filter_amount_to(&self, tr: &Transaction) -> bool {
+        match self.amount_to() {
+            Some(a) => tr.total() < a,
+            None => true,
+        }
+    }
+
+    /// Filter out by status
+    pub fn filter_status(&self, tr: &Transaction) -> bool {
+        match self.status() {
+            Some(v) => v.contains(tr.status()),
+            None => true,
+        }
+    }
+
+    /// Filter by payee names
+    pub fn filter_payee(&self, tr: &Transaction, db: &HomeBankDb) -> bool {
+        match (self.payee(), tr.payee_name(db)) {
+            // if there is a regex and there is a category name
+            (Some(re), Some(t_payee_name)) => re.is_match(&t_payee_name),
+            // if there is a regex but no category
+            (Some(_), None) => false,
+            // if there is no regex
+            (None, _) => true,
+        }
+    }
+
+    /// Filer by account name
+    pub fn filter_account(&self, tr: &Transaction, db: &HomeBankDb) -> bool {
+        match (self.payee(), tr.account_name(db)) {
+            // if there is a regex and there is a category name
+            (Some(re), Some(tr_account_name)) => re.is_match(&tr_account_name),
+            // if there is a regex but no category
+            (Some(_), None) => false,
+            // if there is no regex
+            (None, _) => true,
+        }
+    }
+
+    /// Filter by payment method
+    pub fn filter_paymode(&self, tr: &Transaction) -> bool {
+        match self.pay_mode() {
+            Some(v) => v.contains(tr.pay_mode()),
+            None => true,
+        }
+    }
+
+    /// Filter by `TransactionType`
+    pub fn filter_ttype(&self, tr: &Transaction) -> bool {
+        match self.ttype() {
+            Some(v) => v
+                .iter()
+                // check transaction types without explicitly checking the values
+                .any(|queried_type| queried_type.is_similar_to(tr.ttype())),
+            None => true,
+        }
+    }
+
+    /// Filter by tags
+    pub fn filter_tags(&self, tr: &Transaction) -> bool {
+        match (self.tags(), tr.tags()) {
+            (Some(re), Some(tags)) => {
+                // combine all the tags back into a single string to perform a single regex match
+                // this avoids performing the costly match multiple times
+                let combined_tr_tags = tags.join(",");
+                re.is_match(&combined_tr_tags)
+            }
+            (Some(_), None) => false,
+            (None, _) => true,
+        }
+    }
+
+    /// Filter by memo
+    pub fn filter_memo(&self, tr: &Transaction) -> bool {
+        match (self.memo(), tr.memo()) {
+            (Some(re), Some(memo)) => re.is_match(memo),
+            (Some(_), None) => false,
+            (None, _) => true,
+        }
+    }
+
+    /// Filter by info
+    pub fn filter_info(&self, tr: &Transaction) -> bool {
+        match (self.info(), tr.info()) {
+            (Some(re), Some(info)) => re.is_match(info),
+            (Some(_), None) => false,
+            (None, _) => true,
+        }
+    }
+
+    /// Filter map the `Transaction` by the `Category`
+    pub fn filter_category(&self, tr: &Transaction, db: &HomeBankDb) -> Option<Transaction> {
+        match self.category() {
+            Some(re) => {
+                let matching_idx: Vec<usize> = tr
+                    .category_names(db)
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, cat)| match cat {
+                        Some(u) => {
+                            if re.is_match(u) {
+                                Some(i)
+                            } else {
+                                None
+                            }
+                        }
+                        None => None,
+                    })
+                    .collect();
+
+                // return the subset of the `Transaction` that matches the category query
+                tr.subset(&matching_idx)
+            }
+            None => Some(tr.clone()),
+        }
+    }
 }
 
 impl Query for QueryTransactions {
@@ -193,111 +335,19 @@ impl Query for QueryTransactions {
         let filt_transactions: Vec<Transaction> = db
             .transactions()
             .iter()
-            // filter out dates before the given date
-            .filter(|&tr| match self.date_from() {
-                Some(d) => tr.date() >= d,
-                None => true,
-            })
-            // filter out dates on or after the given date
-            .filter(|&tr| match self.date_to() {
-                Some(d) => tr.date() < d,
-                None => true,
-            })
-            // filter out amounts less than the lower bound
-            .filter(|&tr| match self.amount_from() {
-                Some(a) => tr.total() >= a,
-                None => true,
-            })
-            // filter out amounts greater than the upper bound
-            .filter(|&tr| match self.amount_to() {
-                Some(a) => tr.total() < a,
-                None => true,
-            })
-            // filter out certain statuses
-            .filter(|&tr| match self.status() {
-                Some(v) => v.contains(tr.status()),
-                None => true,
-            })
-            // filter out certain payees
-            .filter(|&tr| match (self.payee(), tr.payee_name(db)) {
-                // if there is a regex and there is a category name
-                (Some(re), Some(t_payee_name)) => re.is_match(&t_payee_name),
-                // if there is a regex but no category
-                (Some(_), None) => false,
-                // if there is no regex
-                (None, _) => true,
-            })
-            // filter out certain accounts
-            .filter(|&tr| match (self.payee(), tr.account_name(db)) {
-                // if there is a regex and there is a category name
-                (Some(re), Some(tr_account_name)) => re.is_match(&tr_account_name),
-                // if there is a regex but no category
-                (Some(_), None) => false,
-                // if there is no regex
-                (None, _) => true,
-            })
-            // filter out certain payment methods
-            .filter(|&tr| match self.pay_mode() {
-                Some(v) => v.contains(tr.pay_mode()),
-                None => true,
-            })
-            // filter out transaction types
-            .filter(|&tr| match self.ttype() {
-                Some(v) => v
-                    .iter()
-                    // check transaction types without explicitly checking the values
-                    .any(|queried_type| queried_type.is_similar_to(tr.ttype())),
-                None => true,
-            })
-            // filter out tags that don't match the regex
-            .filter(|&tr| match (self.tags(), tr.tags()) {
-                (Some(re), Some(tags)) => {
-                    // combine all the tags back into a single string to perform a single regex match
-                    // this avoids performing the costly match multiple times
-                    let combined_tr_tags = tags.join(",");
-                    re.is_match(&combined_tr_tags)
-                }
-                (Some(_), None) => false,
-                (None, _) => true,
-            })
-            // filter out the memo regex
-            .filter(|&tr| match (self.memo(), tr.memo()) {
-                (Some(re), Some(memo)) => re.is_match(memo),
-                (Some(_), None) => false,
-                (None, _) => true,
-            })
-            // filter out the info regex
-            .filter(|&tr| match (self.info(), tr.info()) {
-                (Some(re), Some(info)) => re.is_match(info),
-                (Some(_), None) => false,
-                (None, _) => true,
-            })
-            // filter out certain categories
-            .filter_map(|tr| {
-                match self.category() {
-                    Some(re) => {
-                        let matching_idx: Vec<usize> = tr
-                            .category_names(db)
-                            .iter()
-                            .enumerate()
-                            .filter_map(|(i, cat)| match cat {
-                                Some(u) => {
-                                    if re.is_match(u) {
-                                        Some(i)
-                                    } else {
-                                        None
-                                    }
-                                }
-                                None => None,
-                            })
-                            .collect();
-
-                        // return the subset of the `Transaction` that matches the category query
-                        tr.subset(&matching_idx)
-                    }
-                    None => None,
-                }
-            })
+            .filter(|&tr| self.filter_date_from(tr))
+            .filter(|&tr| self.filter_date_to(tr))
+            .filter(|&tr| self.filter_amount_from(tr))
+            .filter(|&tr| self.filter_amount_to(tr))
+            .filter(|&tr| self.filter_status(tr))
+            .filter(|&tr| self.filter_payee(tr, db))
+            .filter(|&tr| self.filter_account(tr, db))
+            .filter(|&tr| self.filter_paymode(tr))
+            .filter(|&tr| self.filter_ttype(tr))
+            .filter(|&tr| self.filter_tags(tr))
+            .filter(|&tr| self.filter_memo(tr))
+            .filter(|&tr| self.filter_info(tr))
+            .filter_map(|tr| self.filter_category(tr, db))
             .collect();
 
         filt_transactions
