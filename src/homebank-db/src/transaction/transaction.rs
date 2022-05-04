@@ -543,6 +543,11 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
     }
 }
 
+/// Sum the total amount from all the `Transaction`s
+pub fn sum_transactions(v: &Vec<Transaction>) -> f32 {
+    v.iter().fold(0.0, |sum, tr| sum + tr.total())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

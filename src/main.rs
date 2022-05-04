@@ -1,7 +1,7 @@
 use anyhow::Context;
 use cli::{CliOpts, SubCommand};
 use config::Config;
-use homebank_db::{HomeBankDb, Query, QueryType};
+use homebank_db::{transaction::sum_transactions, HomeBankDb, Query, QueryType};
 use structopt::StructOpt;
 
 pub mod cli;
@@ -56,10 +56,7 @@ fn main() -> Result<(), anyhow::Error> {
         // }
         Some(SubCommand::Sum(query)) => {
             let filt_transactions = query.exec(&db);
-
-            let sum = filt_transactions
-                .iter()
-                .fold(0.0, |sum, tr| sum + tr.total());
+            let sum = sum_transactions(&filt_transactions);
             println!("{sum:.2}");
         }
         Some(SubCommand::Budget(query)) => {

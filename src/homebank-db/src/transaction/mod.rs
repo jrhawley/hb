@@ -10,7 +10,7 @@ pub mod transaction_tags;
 pub mod transaction_transfer;
 pub mod transaction_type;
 
-pub use transaction::Transaction;
+pub use transaction::{sum_transactions, Transaction};
 pub use transaction_complexity::TransactionComplexity;
 pub(crate) use transaction_date::julian_date_from_u32;
 pub use transaction_error::TransactionError;
