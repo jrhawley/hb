@@ -2,6 +2,7 @@
 
 use super::{CategoryBudget, CategoryError};
 use crate::HomeBankDb;
+use chrono::NaiveDate;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
@@ -83,6 +84,11 @@ impl Category {
     /// Retrieve the budget amount for a given month
     pub fn budget_amount(&self, month: usize) -> Option<f32> {
         self.budget.budget(month)
+    }
+
+    /// Retrieve the total budget amount of an interval of time
+    pub fn budget_amount_over_interval(&self, from: NaiveDate, to: NaiveDate) -> Option<f32> {
+        self.budget.budget_over_interval(from, to)
     }
 }
 

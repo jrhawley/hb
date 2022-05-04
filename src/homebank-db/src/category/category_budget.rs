@@ -1,6 +1,8 @@
 //! A budget for a given category.
 
 use crate::CategoryError;
+use chrono::{Datelike, Duration, NaiveDate};
+use kronos::{Grain, Grains, NthOf, TimeSequence};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct CategoryBudget {
@@ -100,6 +102,51 @@ impl CategoryBudget {
             12 => self.december,
             _ => return None,
         }
+    }
+
+    /// Get the budget amount over a period of time.
+    ///
+    /// The dates form a half-open interval [`from`, `to`) including the first date and excluding the second.
+    /// Only the months for the `from` and `to` dates are considered, since budgets are set per month.
+    pub fn budget_over_interval(&self, from: NaiveDate, to: NaiveDate) -> Option<f32> {
+        if self.is_empty() {
+            return None;
+        }
+
+        // create an iterator for the first of each month
+        let first_of_month = NthOf(1, Grains(Grain::Day), Grains(Grain::Month));
+
+        // create an off-by-1 date so the next `first_of_month` date will always be the correct first day of the month
+        let day_before_from = from - Duration::days(1);
+
+        // create an off-by-1 date so the next `first_of_month` date will always be the correct first day of the month
+        let day_before_to = to - Duration::days(1);
+        // calculate the last date that should be used as the upper bound of the time interval
+        let last_date = first_of_month
+            .future(&day_before_to.and_hms(0, 0, 0))
+            .next()
+            .unwrap()
+            .start
+            .date();
+
+        // create a date iterator to step over the first day of each month between the `first_date` and `last_date`
+        let mut time_step = first_of_month.future(&day_before_from.and_hms(0, 0, 0));
+        let mut date_iter = time_step.next().unwrap().start.date();
+
+        let mut sum = 0.0;
+
+        // iterate over all the first days of each month
+        while date_iter < last_date {
+            println!("{:#?}", date_iter);
+            date_iter = time_step.next().unwrap().start.date();
+
+            sum += match self.budget(date_iter.month() as usize) {
+                Some(val) => val,
+                None => 0.0,
+            };
+        }
+
+        Some(sum)
     }
 }
 
