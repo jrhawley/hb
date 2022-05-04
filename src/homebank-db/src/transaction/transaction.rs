@@ -11,7 +11,7 @@ use chrono::NaiveDate;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Transaction {
     /// Date on which the transaction took place
     date: NaiveDate,
