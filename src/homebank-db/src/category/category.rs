@@ -75,6 +75,11 @@ impl Category {
         &self.budget
     }
 
+    /// Determine if the `Category` has a budget or not
+    pub fn has_budget(&self) -> bool {
+        self.budget.is_empty()
+    }
+
     /// Retrieve the budget amount for a given month
     pub fn budget_amount(&self, month: usize) -> Option<f32> {
         self.budget.budget(month)
@@ -202,6 +207,7 @@ mod tests {
 
         check_try_from_single_str(input, expected);
     }
+
     #[test]
     fn parse_simple_budget_each_month() {
         let input = r#"<cat key="1" name="Name" b0="-400">"#;

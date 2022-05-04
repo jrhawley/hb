@@ -44,6 +44,12 @@ impl CategoryBudget {
         }
     }
 
+    /// Check if there is a budget in the first place
+    pub fn is_empty(&self) -> bool {
+        let non_budget = Self::empty();
+        *self == non_budget
+    }
+
     /// Set the budget amount for a month or each month
     pub fn set_budget(&mut self, index: usize, amount: f32) -> Result<(), CategoryError> {
         match index {
@@ -194,5 +200,35 @@ mod tests {
         for i in 1..=12 {
             check_budget_amount((&budget, i), Some(i as f32));
         }
+    }
+
+    #[test]
+    fn check_no_budget() {
+        let non_budget = CategoryBudget::empty();
+        let observed = non_budget.is_empty();
+
+        assert_eq!(true, observed);
+    }
+
+    #[test]
+    fn check_some_budget_each_month() {
+        let budget = CategoryBudget {
+            each_month: Some(1.0),
+            ..Default::default()
+        };
+        let observed = budget.is_empty();
+
+        assert_eq!(false, observed);
+    }
+
+    #[test]
+    fn check_some_budget_one_month() {
+        let budget = CategoryBudget {
+            january: Some(1.0),
+            ..Default::default()
+        };
+        let observed = budget.is_empty();
+
+        assert_eq!(false, observed);
     }
 }
