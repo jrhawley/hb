@@ -66,7 +66,7 @@ fn main() -> Result<(), anyhow::Error> {
                     Some(val) => format!("{val:.2}"),
                     None => "None".to_string(),
                 };
-                println!("{} :: {} / {}", cat_name, total, allotment_str);
+                println!("{cat_name} :: {total:.2} / {allotment_str}");
             }
         }
         None => {}
