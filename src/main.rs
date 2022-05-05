@@ -2,7 +2,6 @@ use anyhow::Context;
 use cli::{budget::budget_pbar, CliOpts, SubCommand};
 use config::Config;
 use homebank_db::{transaction::sum_transactions, HomeBankDb, Query, QueryType};
-use indicatif::{ProgressBar, ProgressStyle};
 use structopt::StructOpt;
 
 pub mod cli;
