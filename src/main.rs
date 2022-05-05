@@ -2,6 +2,7 @@ use anyhow::Context;
 use cli::{CliOpts, SubCommand};
 use config::Config;
 use homebank_db::{transaction::sum_transactions, HomeBankDb, Query, QueryType};
+use indicatif::{ProgressBar, ProgressStyle};
 use structopt::StructOpt;
 
 pub mod cli;
@@ -62,11 +63,19 @@ fn main() -> Result<(), anyhow::Error> {
         Some(SubCommand::Budget(query)) => {
             let filt_budget = query.exec(&db);
             for (cat_name, total, allotment) in filt_budget {
-                let allotment_str = match allotment {
-                    Some(val) => format!("{val:.2}"),
-                    None => "None".to_string(),
-                };
-                println!("{cat_name} :: {total:.2} / {allotment_str}");
+                if let Some(val) = allotment {
+                    let pbar = ProgressBar::new(val.abs() as u64);
+
+                    pbar.set_message(format!("{cat_name}"));
+                    pbar.set_style(
+                        ProgressStyle::default_bar()
+                            .template("{msg:<30} {wide_bar} {pos:>4}/{len:<4} ({percent:>3} %)"),
+                    );
+
+                    let progress = total.abs() as u64;
+                    pbar.set_position(progress);
+                    pbar.abandon();
+                }
             }
         }
         None => {}
