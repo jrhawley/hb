@@ -135,7 +135,7 @@ dependencies = [
 
 [[package]]
 name = "hb"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "dirs",
@@ -168,7 +168,7 @@ dependencies = [
 
 [[package]]
 name = "homebank_db"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "chrono",
  "kronos",

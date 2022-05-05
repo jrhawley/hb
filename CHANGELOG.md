@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.0] - 2022-05-05
+
+### Added
+
+- Adding broader support for `Category` budgets in the `homebank_db` crate
+- Display budget progress with the `budget` subcommand
+  - Renders progress bars of transactions within a category and compares that against budgets set for those categories
+  - Can search for categories by their name or consider specific time intervals
+
 ## [0.1.1] - 2022-04-22
 
 ### Added
