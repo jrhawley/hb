@@ -61,6 +61,11 @@ fn main() -> Result<(), anyhow::Error> {
         }
         Some(SubCommand::Budget(query)) => {
             let filt_budget = query.exec(&db);
+
+            if filt_budget.is_empty() {
+                eprintln!("No budget(s) set for the matching categories.");
+            }
+
             for summary in filt_budget {
                 let pbar = budget_pbar(summary);
                 pbar.abandon();
