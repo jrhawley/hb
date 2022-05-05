@@ -28,11 +28,11 @@ pub fn budget_pbar(summary: BudgetSummary) -> ProgressBar {
 
         pbar
     } else {
-        let pbar = ProgressBar::new(0);
+        let pbar = ProgressBar::new(u64::MAX);
         let bar_colour = "white";
 
         let template = format!(
-            "{{msg:<30.{bar_colour}}} {{wide_bar:.{bar_colour}}} {{pos:>6.{bar_colour}}}/{{len:>6}} ({{percent:>3.{bar_colour}}} %)"
+            "{{msg:<30.{bar_colour}}} {{wide_bar:.{bar_colour}}} {{pos:>6.{bar_colour}}}/  None ({{percent:>3.{bar_colour}}} %)"
         );
 
         pbar.set_message(format!("{}", summary.name()));
