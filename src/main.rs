@@ -1,5 +1,5 @@
 use anyhow::Context;
-use cli::{CliOpts, SubCommand};
+use cli::{budget::budget_pbar, CliOpts, SubCommand};
 use config::Config;
 use homebank_db::{transaction::sum_transactions, HomeBankDb, Query, QueryType};
 use indicatif::{ProgressBar, ProgressStyle};
@@ -62,20 +62,9 @@ fn main() -> Result<(), anyhow::Error> {
         }
         Some(SubCommand::Budget(query)) => {
             let filt_budget = query.exec(&db);
-            for (cat_name, total, allotment) in filt_budget {
-                if let Some(val) = allotment {
-                    let pbar = ProgressBar::new(val.abs() as u64);
-
-                    pbar.set_message(format!("{cat_name}"));
-                    pbar.set_style(
-                        ProgressStyle::default_bar()
-                            .template("{msg:<30} {wide_bar} {pos:>4}/{len:<4} ({percent:>3} %)"),
-                    );
-
-                    let progress = total.abs() as u64;
-                    pbar.set_position(progress);
-                    pbar.abandon();
-                }
+            for summary in filt_budget {
+                let pbar = budget_pbar(summary);
+                pbar.abandon();
             }
         }
         None => {}

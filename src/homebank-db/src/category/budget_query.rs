@@ -86,8 +86,68 @@ impl QueryBudget {
     }
 }
 
+pub struct BudgetSummary {
+    name: String,
+    progress: f32,
+    allotment: Option<f32>,
+    progress_frac: Option<f32>,
+}
+
+impl BudgetSummary {
+    /// Create a new budget summary
+    pub fn new(name: &str, progress: f32, allotment: Option<f32>) -> Self {
+        Self {
+            name: name.to_string(),
+            progress,
+            allotment,
+            progress_frac: match allotment {
+                Some(val) => Some(progress / val),
+                None => None,
+            },
+        }
+    }
+
+    /// Retrieve the name of the `Category` to which the budget applies
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Retrieve the progress of the budget
+    pub fn progress(&self) -> f32 {
+        self.progress
+    }
+
+    /// Retrieve the progress of the budget, made positive, and rounded to the nearest integer
+    pub fn progress_rounded(&self) -> u64 {
+        self.progress.abs() as u64
+    }
+
+    /// Retrieve the progress of the budget
+    pub fn progress_frac(&self) -> &Option<f32> {
+        &self.progress_frac
+    }
+
+    /// Retrieve the allotment for the budget
+    pub fn allotment(&self) -> Option<f32> {
+        self.allotment
+    }
+
+    /// Retrieve the allotment for the budget, made positive, and rounded to the nearest integer
+    pub fn allotment_rounded(&self) -> Option<u64> {
+        match self.allotment {
+            Some(val) => Some(val.abs() as u64),
+            None => None,
+        }
+    }
+
+    /// Helper function to determine if there is a budget or not
+    pub fn has_allotment(&self) -> bool {
+        self.allotment.is_some()
+    }
+}
+
 impl Query for QueryBudget {
-    type T = (String, f32, Option<f32>);
+    type T = BudgetSummary;
 
     fn exec(&self, db: &HomeBankDb) -> Vec<Self::T> {
         let mut filt_categories: Vec<Category> = db
@@ -105,7 +165,7 @@ impl Query for QueryBudget {
 
         filt_categories.sort_by(|a, b| a.full_name(db).cmp(&b.full_name(db)));
 
-        let budget_spent: Vec<(String, f32, Option<f32>)> = filt_categories
+        let budget_spent: Vec<BudgetSummary> = filt_categories
             .iter()
             .map(|cat| {
                 let cat_name_re = Regex::new(&cat.full_name(db)).unwrap();
@@ -129,7 +189,7 @@ impl Query for QueryBudget {
                 let sum = sum_transactions(&filt_transactions);
                 let allotment = cat.budget_amount_over_interval(*self.date_from(), *self.date_to());
 
-                (cat.full_name(db), sum, allotment)
+                BudgetSummary::new(&cat.full_name(db), sum, allotment)
             })
             .collect();
 
