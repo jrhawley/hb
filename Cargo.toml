@@ -1,22 +1,5 @@
-[package]
-name = "hb"
-version = "0.2.0"
-edition = "2021"
-authors = ["James Hawley <developer@jrhawley.ca>"]
-description = "Query and operate on your HomeBank database from the command line."
-
 [workspace]
 members = [
-    "src/homebank-db"
+    "src/homebank-cli",
+    "src/homebank-db",
 ]
-
-[dependencies]
-anyhow = "1.0.54"
-dirs = "4.0.0"
-homebank_db = { path = "src/homebank-db" }
-indicatif = "0.16.2"
-lazy_static = "1.4.0"
-serde = { version = "1.0.136", features = ["derive"] }
-structopt = "0.3.26"
-thiserror = "1.0.30"
-toml = "0.5.8"
