@@ -6,6 +6,7 @@ authors = ["James Hawley <developer@jrhawley.ca>"]
 description = "Query and operate on your HomeBank database from the command line."
 keywords = ["cli", "terminal", "finance"]
 categories = ["command-line-utilities"]
+license = "GPL-2.0"
 
 [dependencies]
 anyhow = "1.0.54"

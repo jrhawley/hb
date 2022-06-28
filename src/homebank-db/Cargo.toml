@@ -5,6 +5,7 @@ edition = "2021"
 authors = ["James Hawley <developer@jrhawley.ca>"]
 description = "Query and operate on your HomeBank database."
 keywords = ["database", "library", "finance"]
+license = "GPL-2.0"
 
 [dependencies]
 chrono = "0.4.19"

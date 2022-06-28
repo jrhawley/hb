@@ -1,3 +1,5 @@
+license = "GPL-2.0"
+
 [workspace]
 members = [
     "src/homebank-cli",
