@@ -10,12 +10,12 @@ license = "GPL-2.0"
 
 [dependencies]
 anyhow = "1.0.54"
+clap = { version = "3.2.16", features = ["derive", "cargo", "regex"] }
 dirs = "4.0.0"
 homebank_db = { path = "../homebank-db" }
 indicatif = "0.16.2"
 lazy_static = "1.4.0"
 serde = { version = "1.0.136", features = ["derive"] }
-structopt = "0.3.26"
 thiserror = "1.0.30"
 toml = "0.5.8"
 

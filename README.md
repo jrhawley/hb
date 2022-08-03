@@ -27,6 +27,7 @@ OPTIONS:
     -c, --config <path>    Path to hb configuration file
 
 SUBCOMMANDS:
+    budget    Look at your category budgets [aliases: b]
     help     Prints this message or the help of the given subcommand(s)
     query    Perform a query on the HomeBank database [aliases: q]    
     sum      Calculate a sum of transactions in a query [aliases: t, s]

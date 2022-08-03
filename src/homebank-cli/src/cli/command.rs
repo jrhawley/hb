@@ -1,20 +1,20 @@
 //! Top level CLI command
 
 use crate::config::default_cfg_file;
+use clap::Parser;
 use homebank_db::{category::QueryBudget, QueryOpts, QueryTransactions};
 use lazy_static::lazy_static;
 use std::path::{Path, PathBuf};
-use structopt::StructOpt;
 
 lazy_static! {
     static ref DEFAULT_CFG: String = default_cfg_file().to_str().unwrap().to_string();
 }
 
-#[derive(Debug, StructOpt)]
-#[structopt(author, about)]
+#[derive(Debug, Parser)]
+#[clap(author, about)]
 pub struct CliOpts {
-    #[structopt(
-        short = "c",
+    #[clap(
+        short = 'c',
         long = "config",
         help = "Path to hb configuration file",
         default_value = &DEFAULT_CFG
@@ -22,7 +22,7 @@ pub struct CliOpts {
     pub path: PathBuf,
 
     // make optional subcommands
-    #[structopt(subcommand)]
+    #[clap(subcommand)]
     pub subcmd: Option<SubCommand>,
 }
 
@@ -58,20 +58,20 @@ impl Default for CliOpts {
     }
 }
 
-#[derive(Debug, StructOpt)]
+#[derive(Debug, Parser)]
 pub enum SubCommand {
-    #[structopt(
+    #[clap(
         about = "Perform a query on the HomeBank database",
         visible_alias = "q"
     )]
     Query(QueryOpts),
 
-    #[structopt(
+    #[clap(
         about = "Calculate a sum of transactions in a query",
         visible_alias = "s"
     )]
     Sum(QueryTransactions),
 
-    #[structopt(about = "Look at your category budgets", visible_alias = "b")]
+    #[clap(about = "Look at your category budgets", visible_alias = "b")]
     Budget(QueryBudget),
 }

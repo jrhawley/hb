@@ -5,10 +5,10 @@ use super::{
     ConfigError,
 };
 use crate::cli::CliOpts;
+use clap::crate_name;
 use dirs::config_dir;
 use serde::Deserialize;
 use std::path::{Path, PathBuf};
-use structopt::clap::crate_name;
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Config {
