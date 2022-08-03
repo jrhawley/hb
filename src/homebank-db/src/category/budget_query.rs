@@ -2,11 +2,11 @@
 
 use crate::{transaction::sum_transactions, Category, HomeBankDb, Query, QueryTransactions};
 use chrono::{Datelike, Local, NaiveDate};
+use clap::Parser;
 use kronos::{Grain, Grains, NthOf, TimeSequence};
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::str::FromStr;
-use structopt::StructOpt;
 
 lazy_static! {
     pub static ref TODAY: NaiveDate = Local::today().naive_local();
@@ -34,13 +34,13 @@ lazy_static! {
         FIRST_OF_NEXT_MONTH.format("%Y-%m-%d").to_string();
 }
 
-#[derive(Debug, StructOpt)]
+#[derive(Debug, Parser)]
 pub struct QueryBudget {
-    #[structopt(help = "Name of the category", value_name = "regex")]
+    #[clap(help = "Name of the category", value_name = "regex")]
     name: Option<Regex>,
 
-    #[structopt(
-        short = "d",
+    #[clap(
+        short = 'd',
         long = "date-from",
         help = "Consider the budget from the month including this date",
         default_value = &TODAY_FIRST_OF_MONTH_STR,
@@ -49,8 +49,8 @@ pub struct QueryBudget {
     )]
     date_from: NaiveDate,
 
-    #[structopt(
-        short = "D",
+    #[clap(
+        short = 'D',
         long = "date-to",
         help = "Consider the budget from the month up to and excluding this date",
         default_value = &FIRST_OF_NEXT_MONTH_STR,

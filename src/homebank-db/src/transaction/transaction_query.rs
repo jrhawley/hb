@@ -1,19 +1,19 @@
 use super::{TransactionStatus, TransactionType};
 use crate::{HomeBankDb, PayMode, Query, Transaction};
 use chrono::NaiveDate;
+use clap::Parser;
 use regex::Regex;
 use std::str::FromStr;
-use structopt::StructOpt;
 
-#[derive(Debug, StructOpt)]
-#[structopt(
+#[derive(Debug, Parser)]
+#[clap(
     name = "transactions",
     visible_alias = "t",
     about = "Query transactions"
 )]
 pub struct QueryTransactions {
-    #[structopt(
-        short = "d",
+    #[clap(
+        short = 'd',
         long = "date-from",
         help = "Include transactions starting from (and including) this date",
         parse(try_from_str = NaiveDate::from_str),
@@ -21,8 +21,8 @@ pub struct QueryTransactions {
     )]
     date_from: Option<NaiveDate>,
 
-    #[structopt(
-        short = "D",
+    #[clap(
+        short = 'D',
         long = "date-to",
         help = "Include transactions up to (and excluding) this date",
         parse(try_from_str = NaiveDate::from_str),
@@ -30,88 +30,88 @@ pub struct QueryTransactions {
     )]
     date_to: Option<NaiveDate>,
 
-    #[structopt(
-        short = "l",
+    #[clap(
+        short = 'l',
         long = "amount-lower",
         help = "Include transactions greater than (and including) this amount",
         value_name = "amount"
     )]
     amount_from: Option<f32>,
 
-    #[structopt(
-        short = "u",
+    #[clap(
+        short = 'u',
         long = "amount-upper",
         help = "Include transactions less than (and excluding) this amount",
         value_name = "amount"
     )]
     amount_to: Option<f32>,
 
-    #[structopt(
-        short = "s",
+    #[clap(
+        short = 's',
         long = "status",
         help = "Include transactions with a certain status",
         value_name = "status"
     )]
     status: Option<Vec<TransactionStatus>>,
 
-    #[structopt(
-        short = "c",
+    #[clap(
+        short = 'c',
         long = "category",
         help = "Include transactions with categories that match the regular expression",
         value_name = "regex"
     )]
     category: Option<Regex>,
 
-    #[structopt(
-        short = "p",
+    #[clap(
+        short = 'p',
         long = "payee",
         help = "Include transactions involving payees that match the regular expression",
         value_name = "regex"
     )]
     payee: Option<Regex>,
 
-    #[structopt(
-        short = "a",
+    #[clap(
+        short = 'a',
         long = "account",
         help = "Include transactions involving accounts that match the regular expression",
         value_name = "regex"
     )]
     account: Option<Regex>,
 
-    #[structopt(
-        short = "M",
+    #[clap(
+        short = 'M',
         long = "method",
         help = "Include transactions with a certain payment method",
         value_name = "method"
     )]
     pay_mode: Option<Vec<PayMode>>,
 
-    #[structopt(
-        short = "m",
+    #[clap(
+        short = 'm',
         long = "memo",
         help = "Include transactions whose memos match this regular expression",
         value_name = "regex"
     )]
     memo: Option<Regex>,
 
-    #[structopt(
-        short = "i",
+    #[clap(
+        short = 'i',
         long = "info",
         help = "Include transactions whose info fields match this regular expression",
         value_name = "regex"
     )]
     info: Option<Regex>,
 
-    #[structopt(
-        short = "t",
+    #[clap(
+        short = 't',
         long = "tag",
         help = "Include transactions whose tags match this regular expression",
         value_name = "regex"
     )]
     tags: Option<Regex>,
 
-    #[structopt(
-        short = "T",
+    #[clap(
+        short = 'T',
         long = "type",
         help = "Include 'Expense', 'Income', or 'Transfer' transactions",
         value_name = "type"

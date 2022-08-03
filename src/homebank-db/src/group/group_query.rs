@@ -1,12 +1,12 @@
+use clap::Parser;
 use regex::Regex;
-use structopt::StructOpt;
 
 use crate::{Group, HomeBankDb, Query};
 
-#[derive(Debug, StructOpt)]
-#[structopt(name = "groups", visible_alias = "g", about = "Query account groups")]
+#[derive(Debug, Parser)]
+#[clap(name = "groups", visible_alias = "g", about = "Query account groups")]
 pub struct QueryGroups {
-    #[structopt(
+    #[clap(
         help = "Include groups whose names match this regular expression",
         value_name = "regex"
     )]

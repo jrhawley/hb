@@ -1,30 +1,30 @@
 //! Query the accounts
 
 use crate::{db::HomeBankDb, query::Query, Account, AccountType};
+use clap::Parser;
 use regex::Regex;
-use structopt::StructOpt;
 
-#[derive(Debug, StructOpt)]
-#[structopt(name = "accounts", visible_alias = "a", about = "Query accounts")]
+#[derive(Debug, Parser)]
+#[clap(name = "accounts", visible_alias = "a", about = "Query accounts")]
 pub struct QueryAccounts {
-    #[structopt(
-        short = "T",
+    #[clap(
+        short = 'T',
         long = "type",
         help = "Include accounts of a certain type. Options are 'None', 'Bank', 'Cash', 'Asset', 'CreditCard', 'Liability', 'Chequing', or 'Savings'.",
         value_name = "type"
     )]
     acct_type: Option<Vec<AccountType>>,
 
-    #[structopt(
-        short = "g",
+    #[clap(
+        short = 'g',
         long = "group",
         help = "Include accounts in group(s) that match the regular expression",
         value_name = "regex"
     )]
     group: Option<Regex>,
 
-    #[structopt(
-        short = "i",
+    #[clap(
+        short = 'i',
         long = "institution",
         help = "Include accounts whose institutions match the regular expression",
         value_name = "regex"

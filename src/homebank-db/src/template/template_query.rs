@@ -1,7 +1,7 @@
-use structopt::StructOpt;
+use clap::Parser;
 
-#[derive(Debug, StructOpt)]
-#[structopt(
+#[derive(Debug, Parser)]
+#[clap(
     name = "templates",
     visible_alias = "T",
     about = "Query templates and scheduled transactions"

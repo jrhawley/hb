@@ -1,15 +1,15 @@
 use crate::{HomeBankDb, Payee, Query};
+use clap::Parser;
 use regex::Regex;
-use structopt::StructOpt;
 
-#[derive(Debug, StructOpt)]
-#[structopt(
+#[derive(Debug, Parser)]
+#[clap(
     name = "payees",
     visible_alias = "p",
     about = "Query transaction payees, to and from"
 )]
 pub struct QueryPayees {
-    #[structopt(help = "Name of the payee", value_name = "regex")]
+    #[clap(help = "Name of the payee", value_name = "regex")]
     name: Option<Regex>,
 }
 

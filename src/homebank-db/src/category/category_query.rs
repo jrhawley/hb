@@ -1,16 +1,16 @@
 use super::Category;
 use crate::{db::HomeBankDb, query::Query};
+use clap::Parser;
 use regex::Regex;
-use structopt::StructOpt;
 
-#[derive(Debug, StructOpt)]
-#[structopt(
+#[derive(Debug, Parser)]
+#[clap(
     name = "categories",
     visible_alias = "c",
     about = "Query transaction categories"
 )]
 pub struct QueryCategories {
-    #[structopt(help = "Name of the category", value_name = "regex")]
+    #[clap(help = "Name of the category", value_name = "regex")]
     name: Option<Regex>,
 }
 

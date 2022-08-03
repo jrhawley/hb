@@ -4,7 +4,7 @@ use crate::{
     currency::QueryCurrencies, group::QueryGroups, payee::QueryPayees,
     transaction::QueryTransactions, HomeBankDb, QueryAccounts, QueryCategories,
 };
-use structopt::StructOpt;
+use clap::Parser;
 
 /// A common way to execute queries of different data types in the HomeBank database.
 pub trait Query {
@@ -15,9 +15,9 @@ pub trait Query {
 }
 
 /// A subcommand to query the database from the CLI.
-#[derive(Debug, StructOpt)]
+#[derive(Debug, Parser)]
 pub struct QueryOpts {
-    #[structopt(subcommand)]
+    #[clap(subcommand)]
     query_type: QueryType,
 }
 
@@ -29,7 +29,7 @@ impl QueryOpts {
 }
 
 /// Differentiate between the different query types from the CLI
-#[derive(Debug, StructOpt)]
+#[derive(Debug, Parser)]
 pub enum QueryType {
     Accounts(QueryAccounts),
     Categories(QueryCategories),

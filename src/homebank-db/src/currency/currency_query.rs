@@ -1,16 +1,16 @@
+use clap::Parser;
 use regex::Regex;
-use structopt::StructOpt;
 
 use crate::{Currency, HomeBankDb, Query};
 
-#[derive(Debug, StructOpt)]
-#[structopt(
+#[derive(Debug, Parser)]
+#[clap(
     name = "currencies",
     visible_alias = "C",
     about = "Query currencies used"
 )]
 pub struct QueryCurrencies {
-    #[structopt(help = "Name of the currency", value_name = "regex")]
+    #[clap(help = "Name of the currency", value_name = "regex")]
     name: Option<Regex>,
 }
 
