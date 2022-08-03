@@ -36,7 +36,9 @@ fn main() -> Result<(), anyhow::Error> {
             QueryType::Categories(query) => {
                 let filt_categories = query.exec(&db);
 
-                println!("{:#?}", filt_categories);
+                for cat in filt_categories {
+                    println!("{}", cat.full_name(&db));
+                }
             }
             QueryType::Accounts(query) => {
                 let filt_accounts = query.exec(&db);
