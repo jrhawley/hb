@@ -25,7 +25,7 @@ impl Query for QueryCategories {
     type T = Category;
 
     fn exec(&self, db: &HomeBankDb) -> Vec<Self::T> {
-        let filt_categories = db
+        let mut filt_categories: Vec<Category> = db
             .categories()
             .values()
             // filter out categories that don't match the regex
@@ -35,6 +35,8 @@ impl Query for QueryCategories {
             })
             .map(|cat| cat.clone())
             .collect();
+
+        filt_categories.sort_by(|a, b| a.full_name(&db).cmp(&b.full_name(&db)));
 
         filt_categories
     }
