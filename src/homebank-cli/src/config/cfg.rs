@@ -6,7 +6,7 @@ use super::{
 };
 use crate::cli::CliOpts;
 use clap::crate_name;
-use dirs::config_dir;
+use dirs_next::config_dir;
 use serde::Deserialize;
 use std::path::{Path, PathBuf};
 
@@ -101,7 +101,7 @@ pub fn default_cfg_file() -> PathBuf {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use dirs::home_dir;
+    use dirs_next::home_dir;
 
     #[test]
     #[cfg(target_os = "linux")]

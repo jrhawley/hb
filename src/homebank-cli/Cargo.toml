@@ -11,7 +11,7 @@ license = "GPL-2.0"
 [dependencies]
 anyhow = "1.0.54"
 clap = { version = "3.2.16", features = ["derive", "cargo", "regex"] }
-dirs = "4.0.0"
+dirs-next = "2.0.0"
 homebank_db = { path = "../homebank-db" }
 indicatif = "0.16.2"
 lazy_static = "1.4.0"

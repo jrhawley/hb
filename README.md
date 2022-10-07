@@ -40,7 +40,7 @@ See [this blog post](https://jrhawley.ca/2022/04/14/homebank-cli) for details ab
 ### Customized configuration
 
 A configuration file will automatically be loaded from your user's application settings, if one exists.
-`hb` uses the [`dirs`](https://docs.rs/dirs/latest/dirs/) crate to achieve this, which follows the [expected conventions](https://docs.rs/dirs/latest/dirs/fn.config_dir.html) in each operating system.
+`hb` uses the [`dirs-next`](https://docs.rs/dirs-next/) crate to achieve this, which follows the [expected conventions](https://docs.rs/dirs-next/latest/dirs_next/fn.config_dir.html) in each operating system.
 
 | Operating system | Configuration location                                    |
 | ---------------- | --------------------------------------------------------- |
