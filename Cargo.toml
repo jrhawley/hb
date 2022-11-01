@@ -5,10 +5,13 @@ members = [
 ]
 
 [workspace.dependencies]
+homebank_cli = { path = "src/homebank-cli" }
+homebank_db = { path = "src/homebank-db" }
 clap = { version = "3.2.16", features = ["derive", "cargo", "regex"] }
 thiserror = "1.0.30"
 
 [workspace.package]
+name = "hb"
 version = "0.2.0"
 edition = "2021"
 authors = ["James Hawley <developer@jrhawley.ca>"]
