@@ -1,3 +1,5 @@
+//! A command line interface for [HomeBank](https://homebank.free.fr).
+
 use anyhow::Context;
 use clap::Parser;
 use cli::{budget::budget_pbar, CliOpts, SubCommand};
