@@ -9,6 +9,7 @@ use homebank_db::{transaction::sum_transactions, HomeBankDb, Query, QueryType};
 pub mod cli;
 pub mod config;
 
+/// Run the command line interface.
 fn main() -> Result<(), anyhow::Error> {
     let cli_opts = CliOpts::parse();
 
