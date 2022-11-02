@@ -1,4 +1,7 @@
 //! A command line interface for [HomeBank](https://homebank.free.fr).
+//! 
+//! The interface allows you to query the HomeBank database by using the [`homebank_db`][homebank_db] crate.
+
 
 use anyhow::Context;
 use clap::Parser;
