@@ -1,4 +1,4 @@
-//! Currencies
+//! Currencies used within a HomeBank database.
 
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;

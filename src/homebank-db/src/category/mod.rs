@@ -1,3 +1,5 @@
+//! Categories for each [`Transaction`][crate::transaction::transaction::Transaction].
+
 pub mod budget_query;
 pub mod category;
 pub mod category_budget;

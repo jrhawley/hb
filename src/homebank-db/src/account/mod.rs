@@ -1,3 +1,5 @@
+//! Chequing, savings, and other types of financial accounts.
+
 pub mod account;
 pub mod account_error;
 pub mod account_query;

@@ -1,4 +1,4 @@
-//! Transactions
+//! Individual transactions applied to one or more [`Account`s][crate::account::account::Account].
 
 use super::{
     julian_date_from_u32, parse_split_values, split_tags,
@@ -15,26 +15,37 @@ use xml::attribute::OwnedAttribute;
 pub struct Transaction {
     /// Date on which the transaction took place
     date: NaiveDate,
+
     /// Net sum of the transaction (including any split amounts)
     amount: f32,
+    
     /// Which account the transaction applied to
     account: usize,
+    
     /// Payment method transacted
     pay_mode: PayMode,
+    
     /// Review status of the transaction
     status: TransactionStatus,
+    
     /// Any flags
     flags: Option<usize>,
+    
     /// Which payee was involved with the transaction
     payee: Option<usize>,
+    
     /// Short form text expanding on what the transaction was about
     memo: Option<String>,
+    
     /// Any info related to the transaction, such as a reference number
     info: Option<String>,
+    
     /// Tags for the transaction
     tags: Option<Vec<String>>,
+    
     /// What type of transaction was it? 'Expense', 'Income', or 'Transfer'?
     transaction_type: TransactionType,
+    
     /// Is the `Transaction` 'Simple' or 'Split'?
     complexity: TransactionComplexity,
 }

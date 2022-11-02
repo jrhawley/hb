@@ -1,3 +1,5 @@
+//! Individual transactions applied to one or more [`Account`s][crate::account::account::Account].
+
 pub mod transaction;
 pub mod transaction_complexity;
 pub mod transaction_date;

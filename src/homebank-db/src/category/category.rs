@@ -1,4 +1,4 @@
-//! Categories
+//! Categories for each [`Transaction`][crate::transaction::transaction::Transaction].
 
 use super::{CategoryBudget, CategoryError};
 use crate::HomeBankDb;

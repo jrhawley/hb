@@ -1,4 +1,4 @@
-//! Accounts
+//! Chequing, savings, and other types of financial accounts.
 
 use chrono::NaiveDate;
 use std::str::FromStr;
@@ -10,20 +10,42 @@ use super::{AccountError, AccountType};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Account {
+    /// Unique key for this account.
     key: usize,
+
     flags: usize,
-    // Display position
+
+    /// Display position.
     pos: usize,
+    
+    /// What type of account this is.
     atype: AccountType,
+
+    /// Index of currency used for transactions in this account.
     currency_idx: usize,
+
+    /// Account name.
     name: String,
+
+    /// Institution where the account is managed.
     bank_name: String,
+
+    /// Initial starting amount.
     initial_amount: f32,
+
+    /// Overdraft amount.
     minimum_amount: f32,
+
+    /// Maximum total amount.
     maximum_amount: f32,
+
+    /// User-provided notes.
     notes: String,
+
+    /// Index of the group this account belongs to, if any.
     group_idx: usize,
-    // Last reconciled date
+
+    // Last reconciled date.
     rdate: NaiveDate,
 }
 

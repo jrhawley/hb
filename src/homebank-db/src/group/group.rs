@@ -1,4 +1,6 @@
-//! Groups
+//! The group that an [`Account`][crate::account::account::Account] belongs to.
+//! 
+//! Either `Active` or `Archived`.
 
 use super::GroupError;
 use std::str::FromStr;
