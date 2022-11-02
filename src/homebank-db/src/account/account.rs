@@ -209,7 +209,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Account {
                 "rdate" => {
                     acct.rdate = match u32::from_str(&i.value) {
                         Ok(d) => julian_date_from_u32(d),
-                        Err(_) => return Err(AccountError::InvalidRDate),
+                        Err(_) => return Err(AccountError::InvalidReconcileDate),
                     }
                 }
                 _ => {}
