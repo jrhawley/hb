@@ -39,7 +39,7 @@ pub struct Currency {
     decimal_len: usize,
     
     /// Conversion rate from this currency to the base currency specified in the [`HomeBankDbProperties`][crate::db::db_properties::HomeBankDbProperties].
-    /// `conversion_rate` = Value in base currency / value in this currency.
+    /// `conversion_rate` = `value in base currency` / `value in this currency`.
     conversion_rate: f32,
 
     /// The date when this currency's exchange rates were last updated.
