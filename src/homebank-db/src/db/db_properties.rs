@@ -1,9 +1,10 @@
-//! Properties for the entire database
+//! Properties for the entire HomeBank database.
 
 use std::str::FromStr;
 use thiserror::Error;
 use xml::attribute::OwnedAttribute;
 
+/// Properties for the entire HomeBank database.
 #[derive(Debug, PartialEq)]
 pub struct HomeBankDbProperties {
     title: String,

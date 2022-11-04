@@ -1,3 +1,5 @@
+//! Library implementation of HomeBank that is heavily inspired by [HomeBank's C implementation](https://code.launchpad.net/~mdoyen/homebank/).
+
 pub mod account;
 pub mod category;
 pub mod currency;

@@ -1,3 +1,8 @@
+//! A command line interface for [HomeBank](https://homebank.free.fr).
+//! 
+//! The interface allows you to query the HomeBank database by using the [`homebank_db`][homebank_db] crate.
+
+
 use anyhow::Context;
 use clap::Parser;
 use cli::{budget::budget_pbar, CliOpts, SubCommand};
@@ -7,6 +12,7 @@ use homebank_db::{transaction::sum_transactions, HomeBankDb, Query, QueryType};
 pub mod cli;
 pub mod config;
 
+/// Run the command line interface.
 fn main() -> Result<(), anyhow::Error> {
     let cli_opts = CliOpts::parse();
 

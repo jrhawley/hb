@@ -1,12 +1,11 @@
 //! Utilities for working with TOML files.
 
+use dirs_next::home_dir;
 use std::{
     fs::File,
     io::{self, Read},
     path::{Path, PathBuf},
 };
-
-use dirs::home_dir;
 
 /// Read the contents of a file into a string, if possible
 pub fn file_to_string(path: &Path) -> io::Result<String> {

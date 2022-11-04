@@ -1,20 +1,20 @@
 [package]
 name = "homebank_db"
-version = "0.2.0"
-edition = "2021"
-authors = ["James Hawley <developer@jrhawley.ca>"]
-description = "Query and operate on your HomeBank database."
+version = { workspace =  true }
+edition = { workspace = true }
+authors = { workspace = true }
 keywords = ["database", "library", "finance"]
-license = "GPL-2.0"
+license = { workspace = true }
+description = "Query and operate on your HomeBank database."
 
 [dependencies]
 chrono = "0.4.19"
-clap = { version = "3.2.16", features = ["derive", "cargo", "regex"] }
+clap = { workspace = true }
 kronos = "0.1.5"
 lazy_static = "1.4.0"
 regex = "1.5.5"
 semver = "1.0.5"
-thiserror = "1.0.30"
+thiserror = { workspace = true }
 xml-rs = "0.8.4"
 
 [lib]

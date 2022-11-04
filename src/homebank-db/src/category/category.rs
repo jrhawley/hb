@@ -1,4 +1,4 @@
-//! Categories
+//! Categories for each [`Transaction`][crate::transaction::transaction::Transaction].
 
 use super::{CategoryBudget, CategoryError};
 use crate::HomeBankDb;
@@ -6,9 +6,10 @@ use chrono::NaiveDate;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
+/// Categories for each [`Transaction`][crate::transaction::transaction::Transaction].
 #[derive(Debug, PartialEq, Clone)]
 pub struct Category {
-    /// The unique primary key for the category in the database
+    /// The unique primary key for the category in the database.
     key: usize,
 
     /// Flags listed on the category.
@@ -69,14 +70,15 @@ pub struct Category {
     /// - `UF_REFRESHALL`
     flags: usize,
 
-    /// The name of the category
+    /// The name of the category.
     name: String,
 
-    /// The budget set for this category
+    /// A credit or debit budget for this category across all [`Transaction`s][crate::transaction::transaction::Transaction].
     budget: CategoryBudget,
 
     /// To help when grouping items, categories may be organized into subcategories.
     /// If this is the case, `parent_key` will give the primary key for its parent.
+    /// This will be `Some(_)` if this category is a subcategory for some other category. 
     ///
     /// # Examples
     ///

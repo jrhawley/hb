@@ -1,4 +1,4 @@
-//! Account types
+//! Chequing, savings, and other types of financial accounts.
 
 use super::AccountError;
 use std::str::FromStr;

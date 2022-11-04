@@ -1,22 +1,22 @@
 [package]
 name = "hb"
-version = "0.2.0"
-edition = "2021"
-authors = ["James Hawley <developer@jrhawley.ca>"]
+version = { workspace = true }
+edition = { workspace = true }
+authors = { workspace = true }
+license = { workspace = true }
+categories = ["command-line-utilities"]
 description = "Query and operate on your HomeBank database from the command line."
 keywords = ["cli", "terminal", "finance"]
-categories = ["command-line-utilities"]
-license = "GPL-2.0"
 
 [dependencies]
 anyhow = "1.0.54"
-clap = { version = "3.2.16", features = ["derive", "cargo", "regex"] }
-dirs = "4.0.0"
-homebank_db = { path = "../homebank-db" }
+clap = { workspace = true }
+dirs-next = "2.0.0"
+homebank_db = { workspace = true }
 indicatif = "0.16.2"
 lazy_static = "1.4.0"
 serde = { version = "1.0.136", features = ["derive"] }
-thiserror = "1.0.30"
+thiserror = { workspace = true }
 toml = "0.5.8"
 
 [[bin]]

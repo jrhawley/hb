@@ -1,4 +1,4 @@
-//! Payees
+//! The donor or recipient of a [`Transaction`][crate::transaction::transaction::Transaction].
 
 use super::PayeeError;
 use std::str::FromStr;

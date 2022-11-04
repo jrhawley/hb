@@ -1,4 +1,4 @@
-//! Transactions
+//! Individual transactions applied to one or more [`Account`s][crate::account::account::Account].
 
 use super::{
     julian_date_from_u32, parse_split_values, split_tags,
@@ -11,31 +11,45 @@ use chrono::NaiveDate;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
+/// Individual transactions applied to one or more [`Account`s][crate::account::account::Account].
 #[derive(Debug, PartialEq, Clone)]
 pub struct Transaction {
-    /// Date on which the transaction took place
+    /// Date on which the transaction took place.
     date: NaiveDate,
-    /// Net sum of the transaction (including any split amounts)
+
+    /// Net sum of the transaction (including any split amounts).
     amount: f32,
-    /// Which account the transaction applied to
+    
+    /// Which account the transaction applied to.
     account: usize,
-    /// Payment method transacted
+    
+    /// Payment method transacted.
     pay_mode: PayMode,
-    /// Review status of the transaction
+    
+    /// Review status of the transaction.
     status: TransactionStatus,
-    /// Any flags
+    
+    /// Any flags on the transaction.
     flags: Option<usize>,
-    /// Which payee was involved with the transaction
+    
+    /// Which payee was involved with the transaction.
     payee: Option<usize>,
-    /// Short form text expanding on what the transaction was about
+    
+    /// Short form text expanding on what the transaction was about.
     memo: Option<String>,
-    /// Any info related to the transaction, such as a reference number
+    
+    /// Any info related to the transaction, such as a reference number.
     info: Option<String>,
-    /// Tags for the transaction
+    
+    /// User-provided tags for the transaction.
     tags: Option<Vec<String>>,
-    /// What type of transaction was it? 'Expense', 'Income', or 'Transfer'?
+    
+    /// What type of transaction was it?
+    /// `Expense`, `Income`, or `Transfer`?
     transaction_type: TransactionType,
-    /// Is the `Transaction` 'Simple' or 'Split'?
+    
+    /// Is the transaction [`Simple`][crate::transaction::transaction_simple::SimpleTransaction] or [`Split`][crate::transaction::transaction_simple::SimpleTransaction]?
+    /// This aso contains the [`Category`][crate::category::category::Category] information for this transaction. 
     complexity: TransactionComplexity,
 }
 

@@ -5,16 +5,32 @@ use crate::{Account, Category, Currency, Group, HomeBankDbSchema, Payee, Transac
 use std::{collections::HashMap, fs::File, io::BufReader, path::Path};
 use xml::{reader::XmlEvent, EventReader};
 
+/// Data structure for the HomeBank database.
 #[derive(Debug, PartialEq)]
 pub struct HomeBankDb {
+    /// Version of the database schema.
     homebank_version: HomeBankDbSchema,
+
+    /// Other properties of the database.
     properties: HomeBankDbProperties,
+
+    /// Every [`Currency`][crate::currency::currency::Currency] used in this database.
     currencies: HashMap<usize, Currency>,
+
+    /// Every [`Group`][crate::group::group::Group] of accounts in this database.
     groups: HashMap<usize, Group>,
+
+    /// Every [`Account`][crate::account::account::Account] in this database.
     accounts: HashMap<usize, Account>,
+
+    /// Every [`Payee`][crate::payee::payee::Payee] in this database.
     payees: HashMap<usize, Payee>,
+
+    /// Every [`Category`][crate::category::category::Category] in this database.
     categories: HashMap<usize, Category>,
-    // favourites: Vec<Favourite>,
+
+    // pub favourites: Vec<Favourite>,
+    /// Every [`Transaction`][crate::transaction::transaction::Transaction] in this database.
     transactions: Vec<Transaction>,
 }
 

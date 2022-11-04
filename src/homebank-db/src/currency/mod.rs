@@ -1,3 +1,5 @@
+//! Currencies used within a HomeBank database.
+
 pub mod currency;
 pub mod currency_error;
 pub mod currency_query;
