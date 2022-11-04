@@ -16,7 +16,7 @@ pub struct QueryAccounts {
     #[clap(short = 'g', long = "group", value_name = "regex")]
     group: Option<Regex>,
 
-    /// include accounts whose institutions match the regular expression.
+    /// Include accounts whose institutions match the regular expression.
     #[clap(short = 'i', long = "institution", value_name = "regex")]
     institution: Option<Regex>,
 }
