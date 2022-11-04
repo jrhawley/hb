@@ -3,6 +3,7 @@
 use super::AccountError;
 use std::str::FromStr;
 
+/// Chequing, savings, and other types of financial accounts.
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum AccountType {
     None,
