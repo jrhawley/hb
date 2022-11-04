@@ -53,6 +53,7 @@ impl Default for HomeBankDbProperties {
     }
 }
 
+/// Errors when parsing the HomeBank database properties tag from the XML.
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum HomeBankDbPropertiesError {
     #[error("Invalid database title.")]
