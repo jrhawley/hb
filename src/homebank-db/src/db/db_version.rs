@@ -1,4 +1,4 @@
-//! Version information for the HomeBank database
+//! Version information for the HomeBank database.
 
 use super::HomeBankDbError;
 use crate::transaction::{julian_date_from_u32, transaction_date::unclamped_julian_date_from_u32};
@@ -7,6 +7,7 @@ use semver::Version;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
+/// Version information for the HomeBank database.
 #[derive(Debug, PartialEq)]
 pub struct HomeBankDbSchema {
     version: Version,

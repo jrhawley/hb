@@ -7,15 +7,30 @@ use xml::{reader::XmlEvent, EventReader};
 
 #[derive(Debug, PartialEq)]
 pub struct HomeBankDb {
-    homebank_version: HomeBankDbSchema,
-    properties: HomeBankDbProperties,
-    currencies: HashMap<usize, Currency>,
-    groups: HashMap<usize, Group>,
-    accounts: HashMap<usize, Account>,
-    payees: HashMap<usize, Payee>,
-    categories: HashMap<usize, Category>,
-    // favourites: Vec<Favourite>,
-    transactions: Vec<Transaction>,
+    /// Version of the database schema.
+    pub homebank_version: HomeBankDbSchema,
+
+    /// Other properties of the database.
+    pub properties: HomeBankDbProperties,
+
+    /// Every [`Currency`][crate::currency::currency::Currency] used in this database.
+    pub currencies: HashMap<usize, Currency>,
+
+    /// Every [`Group`][crate::group::group::Group] of accounts in this database.
+    pub groups: HashMap<usize, Group>,
+
+    /// Every [`Account`][crate::account::account::Account] in this database.
+    pub accounts: HashMap<usize, Account>,
+
+    /// Every [`Payee`][crate::payee::payee::Payee] in this database.
+    pub payees: HashMap<usize, Payee>,
+
+    /// Every [`Category`][crate::category::category::Category] in this database.
+    pub categories: HashMap<usize, Category>,
+
+    // pub favourites: Vec<Favourite>,
+    /// Every [`Transaction`][crate::transaction::transaction::Transaction] in this database.
+    pub transactions: Vec<Transaction>,
 }
 
 impl HomeBankDb {
