@@ -6,12 +6,23 @@ use chrono::NaiveDate;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
+/// Categories for each [`Transaction`][crate::transaction::transaction::Transaction].
 #[derive(Debug, PartialEq, Clone)]
 pub struct Category {
+    /// Unique key for this category.
     key: usize,
+
+    /// Flags assigned to this category.
     flags: usize,
+
+    /// The name of the category.
     name: String,
+
+    /// A credit or debit budget for this category across all [`Transaction`s][crate::transaction::transaction::Transaction].
     budget: CategoryBudget,
+
+    /// The `key` of a parent category.
+    /// This will be `Some(_)` if this category is a subcategory for some other category. 
     parent_key: Option<usize>,
 }
 

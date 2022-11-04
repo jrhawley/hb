@@ -34,25 +34,27 @@ lazy_static! {
         FIRST_OF_NEXT_MONTH.format("%Y-%m-%d").to_string();
 }
 
+/// Query the budget in your HomeBank database.
 #[derive(Debug, Parser)]
 pub struct QueryBudget {
-    #[clap(help = "Name of the category", value_name = "regex")]
+    /// Name of the category.
+    #[clap(value_name = "regex")]
     name: Option<Regex>,
 
+    /// Consider the budget from the month including this date.
     #[clap(
         short = 'd',
         long = "date-from",
-        help = "Consider the budget from the month including this date",
         default_value = &TODAY_FIRST_OF_MONTH_STR,
         parse(try_from_str = NaiveDate::from_str),
         value_name = "date"
     )]
     date_from: NaiveDate,
 
+    /// Consider the budget from the month up to and excluding this date.
     #[clap(
         short = 'D',
         long = "date-to",
-        help = "Consider the budget from the month up to and excluding this date",
         default_value = &FIRST_OF_NEXT_MONTH_STR,
         parse(try_from_str = NaiveDate::from_str),
         value_name = "date"
@@ -86,10 +88,18 @@ impl QueryBudget {
     }
 }
 
+/// The sum of all [`Transaction`s][crate::transaction::transaction::Transaction], as well as budget information, for a given [`Category`].
 pub struct BudgetSummary {
+    /// The [`Category`] name
     name: String,
+    
+    /// The total sum of [`Transaction`s][crate::transaction::transaction::Transaction] over the time span provided.
     progress: f32,
+
+    /// How much room is allotted for this [`Category`] over the time span provided.
     allotment: Option<f32>,
+
+    /// The fraction of the spending over the allotted amount.
     progress_frac: Option<f32>,
 }
 
@@ -107,7 +117,7 @@ impl BudgetSummary {
         }
     }
 
-    /// Retrieve the name of the `Category` to which the budget applies
+    /// Retrieve the name of the [`Category`] to which the budget applies
     pub fn name(&self) -> &str {
         &self.name
     }

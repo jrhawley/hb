@@ -1,12 +1,15 @@
-//! A budget for a given category.
+//! A budget for a given [`Category`][crate::category::category::Category].
 
 use crate::CategoryError;
 use chrono::{Datelike, Duration, NaiveDate};
 use kronos::{Grain, Grains, NthOf, TimeSequence};
 
+/// A budget for a given [`Category`][crate::category::category::Category].
 #[derive(Debug, PartialEq, Clone)]
 pub struct CategoryBudget {
+    /// A uniform budget for each month.
     pub each_month: Option<f32>,
+    
     pub january: Option<f32>,
     pub february: Option<f32>,
     pub march: Option<f32>,
