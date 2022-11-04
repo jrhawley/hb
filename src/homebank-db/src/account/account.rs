@@ -1,23 +1,23 @@
-//! Chequing, savings, and other types of financial accounts.
+//! Chequing accounts, credits cards, and details for all kinds of accounts.
 
+use super::{AccountError, AccountType};
+use crate::transaction::julian_date_from_u32;
 use chrono::NaiveDate;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
-use crate::transaction::julian_date_from_u32;
-
-use super::{AccountError, AccountType};
-
+/// Chequing accounts, credits cards, and details for all kinds of accounts.
 #[derive(Debug, PartialEq, Clone)]
 pub struct Account {
     /// Unique key for this account.
     key: usize,
 
+    /// Flags on this account.
     flags: usize,
 
     /// Display position.
     pos: usize,
-    
+
     /// What type of account this is.
     atype: AccountType,
 
@@ -43,9 +43,9 @@ pub struct Account {
     notes: String,
 
     /// Index of the group this account belongs to, if any.
-    group_idx: usize,
+    group_idx: Option<usize>,
 
-    // Last reconciled date.
+    // Last reconciled date for [`Transaction`s][crate::transaction::transaction::Transaction] associated with this account.
     rdate: NaiveDate,
 }
 
@@ -63,7 +63,7 @@ impl Account {
             minimum_amount: 0.0,
             maximum_amount: 0.0,
             notes: "".to_string(),
-            group_idx: 0,
+            group_idx: Some(0),
             rdate: NaiveDate::from_ymd(2000, 01, 01),
         }
     }
@@ -80,7 +80,7 @@ impl Account {
         min: f32,
         max: f32,
         notes: &str,
-        group_idx: usize,
+        group_idx: Option<usize>,
         rdate: &NaiveDate,
     ) -> Self {
         Self {
@@ -116,8 +116,8 @@ impl Account {
     }
 
     /// Retrieve the account's group index
-    pub fn group(&self) -> &usize {
-        &self.group_idx
+    pub fn group(&self) -> Option<usize> {
+        self.group_idx
     }
 
     /// Retrieve the name of the account's financial institution
@@ -202,9 +202,9 @@ impl TryFrom<Vec<OwnedAttribute>> for Account {
                 }
                 "grp" => {
                     acct.group_idx = match usize::from_str(&i.value) {
-                        Ok(idx) => idx,
+                        Ok(idx) => Some(idx),
                         Err(_) => return Err(AccountError::InvalidGroup),
-                    };
+                    }
                 }
                 "rdate" => {
                     acct.rdate = match u32::from_str(&i.value) {

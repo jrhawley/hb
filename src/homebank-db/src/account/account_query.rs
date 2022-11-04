@@ -1,46 +1,38 @@
-//! Query the accounts
+//! Options for filtering [`Account`s][crate::account::account::Account] from the [`HomeBankDb`].
 
 use crate::{db::HomeBankDb, query::Query, Account, AccountType};
 use clap::Parser;
 use regex::Regex;
 
+/// Options for filtering the [`Account`s][crate::account::account::Account]
 #[derive(Debug, Parser)]
 #[clap(name = "accounts", visible_alias = "a", about = "Query accounts")]
 pub struct QueryAccounts {
-    #[clap(
-        short = 'T',
-        long = "type",
-        help = "Include accounts of a certain type. Options are 'None', 'Bank', 'Cash', 'Asset', 'CreditCard', 'Liability', 'Chequing', or 'Savings'.",
-        value_name = "type"
-    )]
-    acct_type: Option<Vec<AccountType>>,
+    /// Include accounts of a certain type. Options are 'None', 'Bank', 'Cash', 'Asset', 'CreditCard', 'Liability', 'Chequing', or 'Savings'.
+    #[clap(short = 'T', long = "type", value_name = "type")]
+    pub acct_type: Option<Vec<AccountType>>,
 
-    #[clap(
-        short = 'g',
-        long = "group",
-        help = "Include accounts in group(s) that match the regular expression",
-        value_name = "regex"
-    )]
-    group: Option<Regex>,
+    /// Include accounts in group(s) that match the regular expression.
+    #[clap(short = 'g', long = "group", value_name = "regex")]
+    pub group: Option<Regex>,
 
-    #[clap(
-        short = 'i',
-        long = "institution",
-        help = "Include accounts whose institutions match the regular expression",
-        value_name = "regex"
-    )]
-    institution: Option<Regex>,
+    /// include accounts whose institutions match the regular expression.
+    #[clap(short = 'i', long = "institution", value_name = "regex")]
+    pub institution: Option<Regex>,
 }
 
 impl QueryAccounts {
+    /// Retrieve the filter for [`AccountType`][crate::account::account_type::AccountType].
     fn account_type(&self) -> &Option<Vec<AccountType>> {
         &self.acct_type
     }
 
+    /// Retrieve the filter for [`Account`][crate::account::account::Account] group.
     fn group(&self) -> &Option<Regex> {
         &self.group
     }
 
+    /// Retrieve the filter for [`Account`][crate::account::account::Account] institution.
     fn institution(&self) -> &Option<Regex> {
         &self.institution
     }
@@ -59,13 +51,17 @@ impl Query for QueryAccounts {
                 None => true,
             })
             // filter the account group
-            .filter(
-                |&acct| match (self.group(), db.groups().get(acct.group())) {
-                    (Some(re), Some(grp)) => re.is_match(grp.name()),
-                    (Some(_), None) => false,
-                    (None, _) => true,
-                },
-            )
+            .filter(|&acct| match (self.group(), acct.group()) {
+                (Some(re), Some(grp_idx)) => {
+                    // lookup the group index in the database
+                    match db.groups().get(&grp_idx) {
+                        Some(grp) => re.is_match(grp.name()),
+                        None => false,
+                    }
+                }
+                (Some(_), None) => false,
+                (None, _) => true,
+            })
             // filter the account institution
             .filter(|&acct| match self.institution() {
                 Some(re) => re.is_match(acct.institution()),
