@@ -16,12 +16,8 @@ pub struct HomeBankDbProperties {
     /// Key specifying the [`Category`][crate::category::category::Category] that contains [`Transaction`s][crate::transaction::transaction::Transaction] about your vehicle's (or vehicles') mileage and fuel consumption.
     car_category_key: usize,
 
-    auto_smode: u8,
-    auto_weekday: u8,
-    auto_nbdays: u8,
-
-    // Mode for how automatically scheduled transactions should be added.
-    // sched_mode: ScheduleMode,
+    /// Mode for how automatically scheduled transactions should be added.
+    sched_mode: ScheduleMode,
 }
 
 impl HomeBankDbProperties {
@@ -31,10 +27,7 @@ impl HomeBankDbProperties {
             title: String::from(""),
             currency_key: 1,
             car_category_key: 1,
-            // sched_mode: ScheduleMode::NotCurrentlySet,
-            auto_smode: 1,
-            auto_weekday: 1,
-            auto_nbdays: 0,
+            sched_mode: ScheduleMode::NotCurrentlySet(None, None),
         }
     }
 
@@ -43,17 +36,13 @@ impl HomeBankDbProperties {
         title: &str,
         currency: usize,
         car_category: usize,
-        auto_smode: u8,
-        auto_weekday: u8,
-        auto_nbdays: u8,
+        sched_mode: ScheduleMode,
     ) -> Self {
         Self {
             title: title.to_string(),
             currency_key: currency,
             car_category_key: car_category,
-            auto_smode,
-            auto_weekday,
-            auto_nbdays,
+            sched_mode,
         }
     }
 }
@@ -72,10 +61,12 @@ pub enum HomeBankDbPropertiesError {
     InvalidCurrency,
     #[error("Invalid database vehicle category.")]
     InvalidVehicleCategory,
-    #[error("Invalid database S mode.")]
-    InvalidSMode,
-    #[error("Invalid database week starting day.")]
-    InvalidStartingWeekday,
+    #[error("Invalid default scheduling mode.")]
+    InvalidDefaultSchedulingMode,
+    #[error("Invalid default scheduling mode week day.")]
+    InvalidDefaultSchedulingModeWeekday,
+    #[error("Invalid number of days in advance for default scheduling mode.")]
+    InvalidDefaultSchedulingModeDaysInAdvance,
 }
 
 impl TryFrom<Vec<OwnedAttribute>> for HomeBankDbProperties {
@@ -102,21 +93,59 @@ impl TryFrom<Vec<OwnedAttribute>> for HomeBankDbProperties {
                     }
                 }
                 "auto_smode" => {
-                    props.auto_smode = match u8::from_str(&i.value) {
-                        Ok(idx) => idx,
-                        Err(_) => return Err(HomeBankDbPropertiesError::InvalidSMode),
+                    match (u8::from_str(&i.value), props.sched_mode) {
+                        (Ok(0), ScheduleMode::NotCurrentlySet(None, _)) => {
+                            // setting the default `AddUntil` time to 1 (first day of the month)
+                            props.sched_mode = ScheduleMode::AddUntil(1);
+                        },
+                        (Ok(0), ScheduleMode::NotCurrentlySet(Some(adduntil_val), _)) => {
+                            props.sched_mode = ScheduleMode::AddUntil(adduntil_val);
+                        },
+                        (Ok(1), ScheduleMode::NotCurrentlySet(_, None)) => {
+                            // setting the default `Add` time to 0
+                            props.sched_mode = ScheduleMode::Add(0);
+                        },
+                        (Ok(1), ScheduleMode::NotCurrentlySet(_, Some(add_val))) => {
+                            props.sched_mode = ScheduleMode::Add(add_val);
+                        },
+                        _ => {
+                            // any other value that's stored here should be considered incorrect
+                            return Err(HomeBankDbPropertiesError::InvalidDefaultSchedulingMode)
+                        },
                     }
                 }
                 "auto_weekday" => {
-                    props.auto_weekday = match u8::from_str(&i.value) {
-                        Ok(idx) => idx,
-                        Err(_) => return Err(HomeBankDbPropertiesError::InvalidStartingWeekday),
+                    match (u8::from_str(&i.value), props.sched_mode) {
+                        (Ok(idx), ScheduleMode::NotCurrentlySet(_, add_val)) => {
+                            // store the value temporarily until you potentially run across the `auto_smode`
+                            props.sched_mode = ScheduleMode::NotCurrentlySet(Some(idx), add_val);
+                        },
+                        (Ok(idx), ScheduleMode::AddUntil(_)) => {
+                            // update the value
+                            props.sched_mode = ScheduleMode::AddUntil(idx);
+                        },
+                        (Ok(_), ScheduleMode::Add(add_val)) => {
+                            // don't overwrite the value, since the other mode has already been specified
+                            props.sched_mode = ScheduleMode::Add(add_val);
+                        },
+                        (Err(_), _) => return Err(HomeBankDbPropertiesError::InvalidDefaultSchedulingModeWeekday),
                     }
                 }
                 "auto_nbdays" => {
-                    props.auto_weekday = match u8::from_str(&i.value) {
-                        Ok(idx) => idx,
-                        Err(_) => return Err(HomeBankDbPropertiesError::InvalidStartingWeekday),
+                    match (u8::from_str(&i.value), props.sched_mode) {
+                        (Ok(idx), ScheduleMode::NotCurrentlySet(adduntil_val, _)) => {
+                            // store the value temporarily until you potentially run across the `auto_smode`
+                            props.sched_mode = ScheduleMode::NotCurrentlySet(adduntil_val, Some(idx));
+                        },
+                        (Ok(_), ScheduleMode::AddUntil(adduntil_val)) => {
+                            // don't overwrite the value, since the other mode has already been specified
+                            props.sched_mode = ScheduleMode::AddUntil(adduntil_val);
+                        },
+                        (Ok(idx), ScheduleMode::Add(_)) => {
+                            // update the value
+                            props.sched_mode = ScheduleMode::Add(idx);
+                        },
+                        (Err(_), _) => return Err(HomeBankDbPropertiesError::InvalidDefaultSchedulingModeDaysInAdvance),
                     }
                 }
                 _ => {}
@@ -127,10 +156,13 @@ impl TryFrom<Vec<OwnedAttribute>> for HomeBankDbProperties {
 }
 
 /// Default setting for how scheduled [`Transaction`][crate::transaction::transaction::Transaction] dates should be calculated.
+#[derive(Debug, PartialEq, Eq)]
 pub enum ScheduleMode {
     /// Not currently set.
     /// This is used when creating a new HomeBank database, or when parsing the XML file for the first time.
-    NotCurrentlySet,
+    /// The first element stores the `auto_weekday` value that is used in `AddUntil` variant.
+    /// The second element stores the `auto_nbdays` value that is used in `Add` variant.
+    NotCurrentlySet(Option<u8>, Option<u8>),
 
     /// Add this many days in advance of the current date.
     Add(u8),
@@ -151,7 +183,7 @@ mod tests {
     }
 
     #[track_caller]
-    fn check_try_from_single_str(input: &str, expected: Result<HomeBankDbProperties, HomeBankDbPropertiesError>) {
+    fn check_try_from_single_str(input: &str, expected: &Result<HomeBankDbProperties, HomeBankDbPropertiesError>) {
         // set up the reader from the input string
         let mut reader = EventReader::from_str(input);
 
@@ -165,7 +197,7 @@ mod tests {
         {
             if "properties" == name.local_name.as_str() {
                 let observed = HomeBankDbProperties::try_from(attributes);
-                assert_eq!(expected, observed);
+                assert_eq!(*expected, observed);
             } else {
                 panic!(
                     "Incorrect transaction string passed into check. Expected `ope`, found `{:#?}`",
@@ -185,7 +217,7 @@ mod tests {
             ..Default::default()
         });
 
-        check_try_from_single_str(input, expected);
+        check_try_from_single_str(input, &expected);
     }
     
     #[test]
@@ -196,7 +228,7 @@ mod tests {
             ..Default::default()
         });
 
-        check_try_from_single_str(input, expected);
+        check_try_from_single_str(input, &expected);
     }
     
     #[test]
@@ -207,6 +239,60 @@ mod tests {
             ..Default::default()
         });
 
-        check_try_from_single_str(input, expected);
+        check_try_from_single_str(input, &expected);
+    }
+
+    #[test]
+    fn check_smode_add_0() {
+        // each of these inputs should produce the same result
+        let inputs = vec![
+            r#"<properties auto_smode="1">"#,
+            r#"<properties auto_smode="1" auto_nbdays="0">"#,
+            r#"<properties auto_smode="1" auto_weekday="1">"#,
+            r#"<properties auto_smode="1" auto_weekday="1" auto_nbdays="0">"#,
+        ];
+        let expected = Ok(HomeBankDbProperties {
+            sched_mode: ScheduleMode::Add(0),
+            ..Default::default()
+        });
+
+        for input in inputs {
+            check_try_from_single_str(input, &expected);
+        }
+
+    }
+
+    #[test]
+    fn check_smode_add_2() {
+        // each of these inputs should produce the same result
+        let inputs = vec![
+            r#"<properties auto_smode="1" auto_nbdays="2">"#,
+            r#"<properties auto_smode="1" auto_weekday="1" auto_nbdays="2">"#,
+        ];
+        let expected = Ok(HomeBankDbProperties {
+            sched_mode: ScheduleMode::Add(2),
+            ..Default::default()
+        });
+
+        for input in inputs {
+            check_try_from_single_str(input, &expected);
+        }
+    }
+
+    #[test]
+    fn check_smode_adduntil_1() {
+        // each of these inputs should produce the same result
+        let inputs = vec![
+            r#"<properties auto_smode="0" auto_weekday="1">"#,
+            r#"<properties auto_smode="0" auto_weekday="1" auto_nbdays="3">"#,
+        ];
+        let expected = Ok(HomeBankDbProperties {
+            sched_mode: ScheduleMode::AddUntil(1),
+            ..Default::default()
+        });
+
+        for input in inputs {
+            check_try_from_single_str(input, &expected);
+        }
     }
 }

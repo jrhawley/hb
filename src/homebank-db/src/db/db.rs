@@ -224,12 +224,13 @@ impl TryFrom<&Path> for HomeBankDb {
 
 #[cfg(test)]
 mod tests {
+    use crate::db::db_properties::ScheduleMode;
     use super::*;
 
     #[test]
     fn empty_hdb_props() {
         let observed = HomeBankDbProperties::empty();
-        let expected = HomeBankDbProperties::new("", 1, 1, 1, 1);
+        let expected = HomeBankDbProperties::new("", 1, 1, ScheduleMode::NotCurrentlySet(None, None));
 
         assert_eq!(expected, observed);
     }
