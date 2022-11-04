@@ -10,7 +10,8 @@
             "args": [
                 "doc",
                 "--document-private-items"
-            ]
+            ],
+            "problemMatcher": []
         }
     ]
 }
