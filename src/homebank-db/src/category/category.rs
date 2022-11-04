@@ -8,15 +8,105 @@ use xml::attribute::OwnedAttribute;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Category {
+    /// The unique primary key for the category in the database
     key: usize,
+
+    /// Flags listed on the category.
+    ///
+    /// The following flags are found in the original codebase:
+    /// - `AF_ADDED`
+    /// - `AF_CHANGED`
+    /// - `AF_CLOSED`
+    /// - `AF_NOBUDGET`
+    /// - `AF_NOREPORT`
+    /// - `AF_NOSUMMARY`
+    /// - `AF_OLDBUDGET`
+    /// - `ASGF_DOCAT`
+    /// - `ASGF_DOMOD`
+    /// - `ASGF_DOPAY`
+    /// - `ASGF_EXACT`
+    /// - `ASGF_OVWCAT`
+    /// - `ASGF_OVWMOD`
+    /// - `ASGF_OVWPAY`
+    /// - `ASGF_REGEX`
+    /// - `CF_CUSTOM`
+    /// - `FLG_REG_TITLE`
+    /// - `FLG_REG_VISUAL`
+    /// - `FLG_REG_BALANCE`
+    /// - `FLG_REG_SENSITIVE`
+    /// - `FLG_REG_`
+    /// - `FLT_QSEARCH_MEMO`
+    /// - `FLT_QSEARCH_INFO`
+    /// - `FLT_QSEARCH_PAYEE`
+    /// - `FLT_QSEARCH_CATEGORY`
+    /// - `FLT_QSEARCH_TAGS`
+    /// - `FLT_QSEARCH_AMOUNT`
+    /// - `GF_BUDGET`
+    /// - `GF_CUSTOM`
+    /// - `GF_FORCED`
+    /// - `GF_INCOME`
+    /// - `GF_MIXED`
+    /// - `GF_SUB`
+    /// - `OF_ADDED`
+    /// - `OF_AUTO`
+    /// - `OF_CHANGED`
+    /// - `OF_CHEQ2`
+    /// - `OF_INCOME`
+    /// - `OF_INTXFER`
+    /// - `OF_LIMIT`
+    /// - `OF_REMIND`
+    /// - `OF_SPLIT`
+    /// - `OF_VALID`
+    /// - `OLDF_REMIND`
+    /// - `OLDF_VALID`
+    /// - `TXN_DSPFLG_DUPDST`
+    /// - `TXN_DSPFLG_DUPSRC`
+    /// - `TXN_DSPFLG_OVER`
+    /// - `TXN_DSPFLG_LOWBAL`
+    /// - `UF_TITLE`
+    /// - `UF_SENSITIVE`
+    /// - `UF_VISUAL`
+    /// - `UF_REFRESHALL`
     flags: usize,
+
+    /// The name of the category
     name: String,
+
+    /// The budget set for this category
     budget: CategoryBudget,
+
+    /// To help when grouping items, categories may be organized into subcategories.
+    /// If this is the case, `parent_key` will give the primary key for its parent.
+    ///
+    /// # Examples
+    ///
+    /// A parent `Vehicle` category can be subdivided into `Vehicle:Gasoline` and `Vehicle:Insurance` categories.
+    /// The relationship between the categories would look something like:
+    ///
+    /// ```rust
+    /// Category {
+    ///     key: 0,
+    ///     name: "Vehicle",
+    ///     ...
+    /// }
+    /// Category {
+    ///     key: 1,
+    ///     name: "Gasoline",
+    ///     parent_key: Some(0),
+    ///     ...
+    /// }
+    /// Category {
+    ///     key: 2,
+    ///     name: "Insurance",
+    ///     parent_key: Some(0),
+    ///     ...
+    /// }
+    /// ```
     parent_key: Option<usize>,
 }
 
 impl Category {
-    /// Create an empty `Category`
+    /// Create an empty `Category`.
     pub fn empty() -> Self {
         Self {
             key: 0,
@@ -61,32 +151,45 @@ impl Category {
         }
     }
 
-    /// Retrieve the `Category`'s name
+    /// Retrieve the `Category`'s key, including the parent category, if one exists.
+    pub fn full_name_with_type(&self, db: &HomeBankDb) -> String {
+        if let Some(idx) = self.parent_key {
+            if let Some(parent_cat) = db.categories().get(&idx) {
+                format!("{}:{}", parent_cat.name(), self.name())
+            } else {
+                self.name().to_string()
+            }
+        } else {
+            self.name().to_string()
+        }
+    }
+
+    /// Retrieve the [`Category`][crate::category::category::Category]'s flags.
     pub fn flags(&self) -> usize {
         self.flags
     }
 
-    /// Set the budget amount for a month or each month
+    /// Set the budget amount for a month or each month.
     pub fn set_budget(&mut self, index: usize, amount: f32) -> Result<(), CategoryError> {
         self.budget.set_budget(index, amount)
     }
 
-    /// Retrieve the `Category`'s budget
+    /// Retrieve the `Category`'s budget.
     pub fn budget(&self) -> &CategoryBudget {
         &self.budget
     }
 
-    /// Determine if the `Category` has a budget or not
+    /// Determine if the `Category` has a budget or not.
     pub fn has_budget(&self) -> bool {
         !self.budget.is_empty()
     }
 
-    /// Retrieve the budget amount for a given month
+    /// Retrieve the budget amount for a given month.
     pub fn budget_amount(&self, month: usize) -> Option<f32> {
         self.budget.budget(month)
     }
 
-    /// Retrieve the total budget amount of an interval of time
+    /// Retrieve the total budget amount of an interval of time.
     pub fn budget_amount_over_interval(&self, from: NaiveDate, to: NaiveDate) -> Option<f32> {
         self.budget.budget_over_interval(from, to)
     }
