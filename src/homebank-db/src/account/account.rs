@@ -46,7 +46,7 @@ pub struct Account {
     group_idx: Option<usize>,
 
     // Last reconciled date for [`Transaction`s][crate::transaction::transaction::Transaction] associated with this account.
-    rdate: NaiveDate,
+    reconciled_date: NaiveDate,
 }
 
 impl Account {
@@ -64,7 +64,7 @@ impl Account {
             maximum_amount: 0.0,
             notes: "".to_string(),
             group_idx: Some(0),
-            rdate: NaiveDate::from_ymd(2000, 01, 01),
+            reconciled_date: NaiveDate::from_ymd(2000, 01, 01),
         }
     }
 
@@ -96,7 +96,7 @@ impl Account {
             maximum_amount: max,
             notes: notes.to_string(),
             group_idx,
-            rdate: rdate.clone(),
+            reconciled_date: rdate.clone(),
         }
     }
 
@@ -207,7 +207,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Account {
                     }
                 }
                 "rdate" => {
-                    acct.rdate = match u32::from_str(&i.value) {
+                    acct.reconciled_date = match u32::from_str(&i.value) {
                         Ok(d) => julian_date_from_u32(d),
                         Err(_) => return Err(AccountError::InvalidReconcileDate),
                     }
