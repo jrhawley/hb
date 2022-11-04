@@ -10,15 +10,15 @@ use regex::Regex;
 pub struct QueryAccounts {
     /// Include accounts of a certain type. Options are 'None', 'Bank', 'Cash', 'Asset', 'CreditCard', 'Liability', 'Chequing', or 'Savings'.
     #[clap(short = 'T', long = "type", value_name = "type")]
-    pub acct_type: Option<Vec<AccountType>>,
+    acct_type: Option<Vec<AccountType>>,
 
     /// Include accounts in group(s) that match the regular expression.
     #[clap(short = 'g', long = "group", value_name = "regex")]
-    pub group: Option<Regex>,
+    group: Option<Regex>,
 
     /// include accounts whose institutions match the regular expression.
     #[clap(short = 'i', long = "institution", value_name = "regex")]
-    pub institution: Option<Regex>,
+    institution: Option<Regex>,
 }
 
 impl QueryAccounts {
