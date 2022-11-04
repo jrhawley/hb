@@ -1,25 +1,49 @@
 //! Currencies used within a HomeBank database.
 
+use super::CurrencyError;
+use crate::transaction::julian_date_from_u32;
 use std::str::FromStr;
+use chrono::NaiveDate;
 use xml::attribute::OwnedAttribute;
 
-use super::CurrencyError;
-
+/// Currencies used within a HomeBank database.
 #[derive(Debug, PartialEq, Clone)]
 pub struct Currency {
+    /// The unique key for a currency in the database.
     key: usize,
+
+    /// Flags on the currency.
     flags: usize,
+
+    /// [ISO Currency Code](https://www.iso.org/iso-4217-currency-codes.html) for this currency.
     iso: String,
+
+    /// The common name for this currency.
     name: String,
+
+    /// The monetary symbol used for this currency, like `$` for the dollar or `€` for the Euro.
     symbol: char,
-    // I don't know what this is
-    syprf: usize,
+
+    /// Does the currency symbol prefix the amount?
+    syprf: bool,
+    
+    /// What character separates the ordinal amount from its fractions?
+    /// This is typically `.` or `,`, but may vary by locale.
     decimal_separator: char,
+
+    /// What character provides a visual break between thousands digits?
+    /// This is typically `,` or `.`, but may vary by locale.
     thousands_separator: char,
+
+    /// How many digits should be displayed after the `decimal_separator`?
     decimal_len: usize,
+    
+    /// Conversion rate from this currency to the base currency specified in the [`HomeBankDbProperties`][crate::db::db_properties::HomeBankDbProperties].
+    /// `conversion_rate` = Value in base currency / value in this currency.
     conversion_rate: f32,
-    // I don't know what this is
-    mdate: u8,
+
+    /// The date when this currency's exchange rates were last updated.
+    mdate: NaiveDate,
 }
 
 impl Currency {
@@ -31,12 +55,12 @@ impl Currency {
             iso: "".to_string(),
             name: "".to_string(),
             symbol: '$',
-            syprf: 0,
+            syprf: false,
             decimal_separator: '.',
             thousands_separator: ' ',
             decimal_len: 2,
             conversion_rate: 1.0,
-            mdate: 0,
+            mdate: NaiveDate::from_ymd(2000, 1, 1),
         }
     }
 
@@ -47,25 +71,25 @@ impl Currency {
         iso: &str,
         name: &str,
         symbol: char,
-        syprf: usize,
+        syprf: bool,
         decimal_separator: char,
         thousands_separator: char,
         decimal_len: usize,
         conversion_rate: f32,
-        mdate: u8,
+        mdate: &NaiveDate,
     ) -> Self {
         Self {
             key,
             flags,
             iso: iso.to_string(),
             name: name.to_string(),
-            symbol: symbol,
+            symbol,
             syprf,
             decimal_separator,
             thousands_separator,
             decimal_len,
             conversion_rate,
-            mdate,
+            mdate: mdate.clone(),
         }
     }
 
@@ -110,8 +134,10 @@ impl TryFrom<Vec<OwnedAttribute>> for Currency {
                 }
                 "syprf" => {
                     curr.syprf = match usize::from_str(&i.value) {
-                        Ok(idx) => idx,
-                        Err(_) => return Err(CurrencyError::InvalidSyprf),
+                        Ok(0) => false,
+                        Ok(1) => true,
+                        Ok(_) => return Err(CurrencyError::InvalidSymbolPrefix),
+                        Err(_) => return Err(CurrencyError::InvalidSymbolPrefix),
                     }
                 }
                 "frac" => {
@@ -121,10 +147,10 @@ impl TryFrom<Vec<OwnedAttribute>> for Currency {
                     }
                 }
                 "mdate" => {
-                    curr.mdate = match u8::from_str(&i.value) {
-                        Ok(idx) => idx,
+                    curr.mdate = match u32::from_str(&i.value) {
+                        Ok(d) => julian_date_from_u32(d),
                         Err(_) => return Err(CurrencyError::InvalidMDate),
-                    }
+                    };
                 }
                 "iso" => {
                     curr.iso = i.value.to_string();
