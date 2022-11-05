@@ -1,10 +1,10 @@
-//! Filtering options when querying [`Group`s][crate::group::group::Group] from the database.
+//! Options for filtering [`Group`s][crate::group::group::Group] from the [`HomeBankDb`].
 
 use crate::{Group, HomeBankDb, Query};
 use clap::Parser;
 use regex::Regex;
 
-/// Filtering options when querying [`Group`s][crate::group::group::Group] from the database.
+/// Options for filtering [`Group`s][crate::group::group::Group] from the [`HomeBankDb`].
 #[derive(Debug, Parser)]
 #[clap(name = "groups", visible_alias = "g", about = "Query account groups")]
 pub struct QueryGroups {
