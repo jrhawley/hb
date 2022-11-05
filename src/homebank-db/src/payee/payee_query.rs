@@ -1,7 +1,10 @@
+//! Options for filtering [`Payee`s][crate::payee::payee::Payee] from the [`HomeBankDb`].
+
 use crate::{HomeBankDb, Payee, Query};
 use clap::Parser;
 use regex::Regex;
 
+/// Options for filtering [`Payee`s][crate::payee::payee::Payee] from the [`HomeBankDb`].
 #[derive(Debug, Parser)]
 #[clap(
     name = "payees",
@@ -9,7 +12,8 @@ use regex::Regex;
     about = "Query transaction payees, to and from"
 )]
 pub struct QueryPayees {
-    #[clap(help = "Name of the payee", value_name = "regex")]
+    /// Name of the payee.
+    #[clap(value_name = "regex")]
     name: Option<Regex>,
 }
 
