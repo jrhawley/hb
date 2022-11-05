@@ -1,29 +1,39 @@
 //! Helper functions to handle the processing of dates
 
 use chrono::{Duration, NaiveDate};
+use lazy_static::lazy_static;
 use std::cmp::{max, min};
 
+lazy_static!{
+    /// The minimum supported date (from HomeBank source code).
+    /// Equivalent to 1900-01-01 (and stored in the database XML as 693596).
+    pub static ref HB_MIN_DATE: NaiveDate = NaiveDate::from_ymd(1900, 01, 01);
+
+    /// The maximum supported date (from HomeBank source code).
+    /// Equivalent to 2200-12-31 (and stored in the database XML as 803533).
+    pub static ref HB_MAX_DATE: NaiveDate = NaiveDate::from_ymd(2200, 12, 31);
+
+    /// The Julian-encoded day 0.
+    /// Dates in the [`HomeBankDb`][crate::db::db::HomeBankDb] are stored as [Julian dates](https://en.wikipedia.org/wiki/Julian_calendar), with day 1 being 0001-01-01.
+    /// We start from the previous day to avoid off-by-1 errors in calculations.
+    pub static ref JULIAN_ZERO: NaiveDate = NaiveDate::from_ymd(0000, 12, 31);
+}
+
+/// Clamp a date between the minimum (1900-01-01) and maximum (2200-12-31) dates supported by HomeBank.
 pub(crate) fn clamp_date(d: NaiveDate) -> NaiveDate {
-    // from HomeBank source code
-    // listed as 693596 aka 1900-01-01
-    let hb_min_date: NaiveDate = NaiveDate::from_ymd(1900, 01, 01);
-    // list as 803533 aka 2200-12-31
-    let hb_max_date: NaiveDate = NaiveDate::from_ymd(2200, 12, 31);
-    max(min(d, hb_max_date), hb_min_date)
+    max(min(d, *HB_MAX_DATE), *HB_MIN_DATE)
 }
 
+/// Convert a date from the Julian format (encoded as days since 0000-12-31) into a [`NaiveDate`].
+/// This will also clamp the date as described by [`clamp_date`].
 pub(crate) fn julian_date_from_u32(d: u32) -> NaiveDate {
-    // dates are stored as Julian dates, starting from 0001-01-01
-    // i.e. 0001-01-01 is day 1, so we start from the previous day to avoid off-by-1 errors
-    let julian_zero = NaiveDate::from_ymd(0000, 12, 31);
-    clamp_date(julian_zero + Duration::days(d.into()))
+    clamp_date(*JULIAN_ZERO + Duration::days(d.into()))
 }
 
+/// Convert a date from the Julian format (encoded as days since 0000-12-31) into a [`NaiveDate`].
+/// This date is unbounded and does not necessarily fall between 
 pub(crate) fn unclamped_julian_date_from_u32(d: u32) -> NaiveDate {
-    // dates are stored as Julian dates, starting from 0001-01-01
-    // i.e. 0001-01-01 is day 1, so we start from the previous day to avoid off-by-1 errors
-    let julian_zero = NaiveDate::from_ymd(0000, 12, 31);
-    julian_zero + Duration::days(d.into())
+    *JULIAN_ZERO + Duration::days(d.into())
 }
 
 #[cfg(test)]
