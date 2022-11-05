@@ -56,16 +56,27 @@ impl Default for HomeBankDbProperties {
 /// Errors when parsing the HomeBank database properties tag from the XML.
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum HomeBankDbPropertiesError {
+    /// When the title cannot be properly parsed.
     #[error("Invalid database title.")]
     InvalidTitle,
-    #[error("Invalid database currency.")]
+
+    /// When the base currency key is an invalid key or cannot be found in the database.
+    #[error("Invalid base currency.")]
     InvalidCurrency,
-    #[error("Invalid database vehicle category.")]
+
+    /// When the vehicle category key is an invalid key or cannot be found in the database.
+    #[error("Invalid vehicle category.")]
     InvalidVehicleCategory,
+    
+    /// When the default scheduling mode (`auto_smode`) is not `0` or `1`.
     #[error("Invalid default scheduling mode.")]
     InvalidDefaultSchedulingMode,
+
+    /// When the default scheduling day is not in the valid range [1, 28].
     #[error("Invalid default scheduling mode week day.")]
     InvalidDefaultSchedulingModeWeekday,
+
+    /// When the number of days in advance is invalid.
     #[error("Invalid number of days in advance for default scheduling mode.")]
     InvalidDefaultSchedulingModeDaysInAdvance,
 }
