@@ -1,6 +1,4 @@
-//! The group that an [`Account`][crate::account::account::Account] belongs to.
-//! 
-//! Either `Active` or `Archived`.
+//! User-provided groups that an [`Account`][crate::account::account::Account] belongs to.
 
 pub mod group;
 pub mod group_error;
