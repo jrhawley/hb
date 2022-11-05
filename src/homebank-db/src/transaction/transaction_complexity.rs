@@ -1,8 +1,8 @@
-//! A wrapper to provide a shared interface for [`SimpleTransaction`s][crate::transaction::transaction_simple::SimpleTransaction].and [`SplitTransaction`s][crate::transaction::transaction_split::SplitTransaction].
+//! A wrapper to provide a shared interface for [`SimpleTransaction`s][crate::transaction::transaction_simple::SimpleTransaction] and [`SplitTransaction`s][crate::transaction::transaction_split::SplitTransaction].
 
 use super::{SimpleTransaction, SplitTransaction};
 
-/// A wrapper to provide a shared interface for [`SimpleTransaction`s][crate::transaction::transaction_simple::SimpleTransaction].and [`SplitTransaction`s][crate::transaction::transaction_split::SplitTransaction].
+/// A wrapper to provide a shared interface for [`SimpleTransaction`s][crate::transaction::transaction_simple::SimpleTransaction] and [`SplitTransaction`s][crate::transaction::transaction_split::SplitTransaction].
 #[derive(Debug, PartialEq, Clone)]
 pub enum TransactionComplexity {
     Simple(SimpleTransaction),

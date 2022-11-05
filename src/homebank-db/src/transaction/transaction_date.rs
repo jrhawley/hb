@@ -1,4 +1,4 @@
-//! Helper functions to handle the processing of dates
+//! Helper functions to for processing dates.
 
 use chrono::{Duration, NaiveDate};
 use lazy_static::lazy_static;
@@ -19,19 +19,19 @@ lazy_static!{
     pub static ref JULIAN_ZERO: NaiveDate = NaiveDate::from_ymd(0000, 12, 31);
 }
 
-/// Clamp a date between the minimum (1900-01-01) and maximum (2200-12-31) dates supported by HomeBank.
+/// Clamp a date between the minimum ([`struct@HB_MIN_DATE`]) and maximum ([`struct@HB_MAX_DATE`]) dates supported by HomeBank.
 pub(crate) fn clamp_date(d: NaiveDate) -> NaiveDate {
     max(min(d, *HB_MAX_DATE), *HB_MIN_DATE)
 }
 
-/// Convert a date from the Julian format (encoded as days since 0000-12-31) into a [`NaiveDate`].
+/// Convert a date from the Julian format (encoded as days since [`struct@JULIAN_ZERO`]) into a [`NaiveDate`].
 /// This will also clamp the date as described by [`clamp_date`].
 pub(crate) fn julian_date_from_u32(d: u32) -> NaiveDate {
     clamp_date(*JULIAN_ZERO + Duration::days(d.into()))
 }
 
-/// Convert a date from the Julian format (encoded as days since 0000-12-31) into a [`NaiveDate`].
-/// This date is unbounded and does not necessarily fall between 
+/// Convert a date from the Julian format (encoded as days since [`struct@JULIAN_ZERO`]) into a [`NaiveDate`].
+/// This date is unbounded and does not necessarily fall between [`struct@HB_MIN_DATE`] and [`struct@HB_MAX_DATE`].
 pub(crate) fn unclamped_julian_date_from_u32(d: u32) -> NaiveDate {
     *JULIAN_ZERO + Duration::days(d.into())
 }
