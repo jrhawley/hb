@@ -1,8 +1,10 @@
+//! Options for filtering [`Currencies`][crate::currency::currency::Currency] from the [`HomeBankDb`].
+
+use crate::{Currency, HomeBankDb, Query};
 use clap::Parser;
 use regex::Regex;
 
-use crate::{Currency, HomeBankDb, Query};
-
+/// Options for filtering [`Currencies`][crate::currency::currency::Currency] from the [`HomeBankDb`].
 #[derive(Debug, Parser)]
 #[clap(
     name = "currencies",
@@ -10,7 +12,8 @@ use crate::{Currency, HomeBankDb, Query};
     about = "Query currencies used"
 )]
 pub struct QueryCurrencies {
-    #[clap(help = "Name of the currency", value_name = "regex")]
+    /// Name of the currency.
+    #[clap(value_name = "regex")]
     name: Option<Regex>,
 }
 
