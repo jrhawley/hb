@@ -1,8 +1,9 @@
-//! Handle payment methods and pay modes for transactions.
+//! Payment method for a [`Transaction`][crate::transaction::transaction::Transaction].
 
 use crate::TransactionError;
 use std::str::FromStr;
 
+/// Payment method for a [`Transaction`][crate::transaction::transaction::Transaction].
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum PayMode {
     None,
@@ -51,15 +52,15 @@ impl FromStr for PayMode {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "0" | "none" | "None" => Ok(PayMode::None),
-            "1" | "CreditCard" => Ok(PayMode::CreditCard),
-            "2" | "Cheque" | "Check" => Ok(PayMode::Cheque),
-            "3" | "Cash" => Ok(PayMode::Cash),
-            "4" | "BankTransfer" => Ok(PayMode::BankTransfer),
-            "5" | "DebitCard" => Ok(PayMode::DebitCard),
+            "1" | "CreditCard" | "Credit" | "credit" => Ok(PayMode::CreditCard),
+            "2" | "Cheque" | "Check" | "cheque" | "check" => Ok(PayMode::Cheque),
+            "3" | "Cash" | "cash" => Ok(PayMode::Cash),
+            "4" | "BankTransfer" | "transfer" => Ok(PayMode::BankTransfer),
+            "5" | "DebitCard" | "Debit" | "debit" => Ok(PayMode::DebitCard),
             "6" | "StandingOrder" => Ok(PayMode::StandingOrder),
-            "7" | "ElectronicPayment" => Ok(PayMode::ElectronicPayment),
-            "8" | "Deposit" => Ok(PayMode::Deposit),
-            "9" | "FIFee" => Ok(PayMode::FinancialInstitutionFee),
+            "7" | "ElectronicPayment" | "ETransfer" | "eTransfer" | "E-Transfer" | "e-Transfer" | "e-transfer" | "etransfer" => Ok(PayMode::ElectronicPayment),
+            "8" | "Deposit" | "deposit" => Ok(PayMode::Deposit),
+            "9" | "FIFee" | "Fee" | "fee" => Ok(PayMode::FinancialInstitutionFee),
             "10" | "DirectDebit" => Ok(PayMode::DirectDebit),
             _ => Err(TransactionError::InvalidPayMode),
         }
