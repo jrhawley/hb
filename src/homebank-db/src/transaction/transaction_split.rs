@@ -1,24 +1,31 @@
+//! A [`Transaction`][crate::transaction::transaction::Transaction] that is split across multiple [`Categories`][crate::category::category::Category].
+
 use crate::TransactionError;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
-/// The string separator used to denote split transactions
+/// The string separator used to denote split transactions in the HomeBank XML file.
 const SPLIT_SEPARATOR: &str = "||";
 
+/// A [`Transaction`][crate::transaction::transaction::Transaction] that is split across multiple [`Categories`][crate::category::category::Category].
 #[derive(Debug, PartialEq, Clone)]
 pub struct SplitTransaction {
-    /// How many sub-transactions is it split into
+    /// The number of sub-transactions it is split into.
+    /// This must be equal to `categories.len()`, `amounts.len()`, and `memos.len()`.
     num_splits: usize,
-    /// What are the categories for the sub-transactions
+
+    /// The [`Categories`][crate::category::category::Category] for the sub-transactions.
     categories: Vec<Option<usize>>,
-    /// What are the amounts for the sub-transactions
+
+    /// The amounts for each sub-transaction.
     amounts: Vec<f32>,
-    /// What are the memos for the sub-transactions
+
+    /// The memos for each sub-transactions.
     memos: Vec<Option<String>>,
 }
 
 impl SplitTransaction {
-    /// Create an empty `SplitTransaction`
+    /// Create an empty [`SplitTransaction`].
     pub fn empty() -> Self {
         Self {
             num_splits: 0,
@@ -28,7 +35,8 @@ impl SplitTransaction {
         }
     }
 
-    /// Create an empty `SplitTransaction`
+    /// Create a new [`SplitTransaction`].
+    /// This assumes that `categories`, `amounts`, and `memos` all have length `num_splits`.
     pub fn new(
         num_splits: usize,
         categories: &Vec<Option<usize>>,
@@ -43,58 +51,58 @@ impl SplitTransaction {
         }
     }
 
-    /// Retrieve the number of splits
+    /// Retrieve the number of splits.
     pub fn num_splits(&self) -> usize {
         self.num_splits
     }
 
-    /// Retrieve the mutable number of splits
+    /// Retrieve the mutable number of splits.
     pub fn mut_num_splits(&mut self) -> &mut usize {
         &mut self.num_splits
     }
 
-    /// Retrieve the categories for the splits
+    /// Retrieve the categories for the splits.
     pub fn categories(&self) -> Vec<&Option<usize>> {
         // using an iteration->collection trick to create the `Vec` on the fly
         // without duplicating the data inside that `Vec`
         self.categories.iter().collect()
     }
 
-    /// Retrieve the mutable categories for the splits
+    /// Retrieve the mutable categories for the splits.
     pub fn mut_categories(&mut self) -> &mut Vec<Option<usize>> {
         &mut self.categories
     }
 
-    /// Retrieve the total sum of the amounts
+    /// Retrieve the total sum of the amounts.
     pub fn total(&self) -> f32 {
         self.amounts().iter().fold(0.0, |a, &b| a + b)
     }
 
-    /// Retrieve the amounts for the splits
+    /// Retrieve the amounts for the splits.
     pub fn amounts(&self) -> Vec<&f32> {
         // using an iteration->collection trick to create the `Vec` on the fly
         // without duplicating the data inside that `Vec`
         self.amounts.iter().collect()
     }
 
-    /// Retrieve the mutable amounts for the splits
+    /// Retrieve the mutable amounts for the splits.
     pub fn mut_amounts(&mut self) -> &mut Vec<f32> {
         &mut self.amounts
     }
 
-    /// Retrieve the memos for the splits
+    /// Retrieve the memos for the splits.
     pub fn memos(&self) -> Vec<&Option<String>> {
         // using an iteration->collection trick to create the `Vec` on the fly
         // without duplicating the data inside that `Vec`
         self.memos.iter().collect()
     }
 
-    /// Retrieve the mutable memos for the splits
+    /// Retrieve the mutable memos for the splits.
     pub fn mut_memos(&mut self) -> &mut Vec<Option<String>> {
         &mut self.memos
     }
 
-    /// Subset the `SplitTransaction`
+    /// Subset the [`SplitTransaction`].
     pub fn subset(&self, idx: &[usize]) -> Option<Self> {
         let sub_num = idx.len();
         if sub_num == 0 {
@@ -144,7 +152,7 @@ pub fn parse_split_values(att: OwnedAttribute) -> Vec<String> {
     vals
 }
 
-/// Convert `Vec<String>` into a parsed `Vec<Option<usize>>` to be used as categories
+/// Convert `Vec<String>` into a parsed `Vec<Option<usize>>` to be used as categories.
 pub fn parse_split_cat_vec(v: &Vec<String>) -> Result<Vec<Option<usize>>, TransactionError> {
     v.iter()
         // returning a `Result<>` within the iterator can be collected into a `Result<Vec<...>>`
@@ -156,7 +164,7 @@ pub fn parse_split_cat_vec(v: &Vec<String>) -> Result<Vec<Option<usize>>, Transa
         .collect()
 }
 
-/// Convert `Vec<String>` into a parsed `Vec<f32>` to be used as amounts
+/// Convert `Vec<String>` into a parsed `Vec<f32>` to be used as amounts.
 pub fn parse_split_amount_vec(v: &Vec<String>) -> Result<Vec<f32>, TransactionError> {
     v.iter()
         // returning a `Result<>` within the iterator can be collected into a `Result<Vec<...>>`
@@ -168,7 +176,7 @@ pub fn parse_split_amount_vec(v: &Vec<String>) -> Result<Vec<f32>, TransactionEr
         .collect()
 }
 
-/// Convert `Vec<String>` into a parsed `Vec<Option<String>>` to be used as memos
+/// Convert `Vec<String>` into a parsed `Vec<Option<String>>` to be used as memos.
 pub fn parse_split_memo_vec(v: &Vec<String>) -> Vec<Option<String>> {
     v.iter()
         .map(|s| match s.as_str() {

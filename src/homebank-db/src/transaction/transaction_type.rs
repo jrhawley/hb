@@ -1,18 +1,26 @@
-//! The type of a `Transaction`
+//! The type of a [`Transaction`][crate::transaction::transaction::Transaction].
 
 use super::Transfer;
 use crate::TransactionError;
 use std::str::FromStr;
 
+/// The type of a [`Transaction`][crate::transaction::transaction::Transaction].
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum TransactionType {
+    /// An amount that is withdrawn from an [`Account`][crate::account::account::Account].
+    /// Also known as a "credit" in a [double-entry bookkeeping system](https://en.wikipedia.org/wiki/Double-entry_bookkeeping).
     Expense,
+
+    /// An amount that is given to an [`Account`][crate::account::account::Account].
+    /// Also known as a "debit" in a [double-entry bookkeeping system](https://en.wikipedia.org/wiki/Double-entry_bookkeeping).
     Income,
+
+    /// An `Expense` to one [`Account`][crate::account::account::Account] and an `Income` to another, both of which are stored in the [`HomeBankDb`][crate::db::db::HomeBankDb].
     Transfer(Transfer),
 }
 
 impl TransactionType {
-    /// Determine if the `Transaction` is a transfer
+    /// Determine if the [`Transaction`][crate::transaction::transaction::Transaction] is a [`Transfer`][crate::transaction::transaction_transfer::Transfer].
     pub fn is_transfer(&self) -> bool {
         match self {
             TransactionType::Transfer(_) => true,
@@ -20,8 +28,8 @@ impl TransactionType {
         }
     }
 
-    /// Determine if two `Transaction`s are of a similar type.
-    /// Useful for comparing if two `TransactionType`s are both `Transfer`s or
+    /// Determine if two [`Transaction`s][crate::transaction::transaction::Transaction] are of a similar type.
+    /// Useful for comparing if two [`TransactionType`]s are both [`Transfer`s][crate::transaction::transaction_transfer::Transfer] or
     /// not, without checking the values within the transfer.
     pub fn is_similar_to(&self, other: &Self) -> bool {
         match (self, other) {

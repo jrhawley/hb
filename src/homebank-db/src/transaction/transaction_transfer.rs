@@ -1,15 +1,17 @@
-//! Transactions that transfer amounts between accounts.
+//! [`Transaction`s][crate::transaction::transaction::Transaction] that transfer amounts between [`Account`s][crate::account::account::Account].
 
+/// [`Transaction`s][crate::transaction::transaction::Transaction] that transfer amounts between [`Account`s][crate::account::account::Account].
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Transfer {
-    /// Unique identifier for the transfer
+    /// Unique identifier for the transfer.
     transfer_key: usize,
-    /// What is the corresponding destination account
+
+    /// The key for the corresponding destination [`Account`][crate::account::account::Account].
     destination_account_idx: usize,
 }
 
 impl Transfer {
-    /// Create an empty transfer that doesn't link to any accounts
+    /// Create an empty [`Transfer`] that doesn't link to any [`Account`s][crate::account::account::Account].
     pub fn empty() -> Self {
         Self {
             destination_account_idx: 0,
@@ -17,7 +19,7 @@ impl Transfer {
         }
     }
 
-    /// Create a new `Transfer`
+    /// Create a new [`Transfer`].
     pub fn new(key: usize, acct: usize) -> Self {
         Self {
             transfer_key: key,
@@ -25,22 +27,22 @@ impl Transfer {
         }
     }
 
-    /// Retrieve the destination account index
+    /// Retrieve the destination [`Account`s][crate::account::account::Account] key in the [`HomeBankDb`][crate::db::db::HomeBankDb].
     pub fn destination(&self) -> &usize {
         &self.destination_account_idx
     }
 
-    /// Retrieve the mutable destination account index
+    /// Retrieve the mutable destination [`Account`][crate::account::account::Account] index.
     pub fn mut_destination(&mut self) -> &mut usize {
         &mut self.destination_account_idx
     }
 
-    /// Retrieve the transfer key
+    /// Retrieve the [`Transfer`] key.
     pub fn transfer_key(&self) -> &usize {
         &self.transfer_key
     }
 
-    /// Retrieve the mutable transfer key
+    /// Retrieve the mutable [`Transfer`] key.
     pub fn mut_transfer_key(&mut self) -> &mut usize {
         &mut self.transfer_key
     }

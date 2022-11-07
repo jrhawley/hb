@@ -1,3 +1,5 @@
+//! Options for filtering [`Transaction`s][crate::transaction::transaction::Transaction] from the [`HomeBankDb`].
+
 use super::{TransactionStatus, TransactionType};
 use crate::{HomeBankDb, PayMode, Query, Transaction};
 use chrono::NaiveDate;
@@ -5,6 +7,7 @@ use clap::Parser;
 use regex::Regex;
 use std::str::FromStr;
 
+/// Options for filtering [`Transaction`s][crate::transaction::transaction::Transaction] from the [`HomeBankDb`].
 #[derive(Debug, Parser)]
 #[clap(
     name = "transactions",
@@ -12,108 +15,108 @@ use std::str::FromStr;
     about = "Query transactions"
 )]
 pub struct QueryTransactions {
+    /// Include transactions starting from (and including) this date.
     #[clap(
         short = 'd',
         long = "date-from",
-        help = "Include transactions starting from (and including) this date",
         parse(try_from_str = NaiveDate::from_str),
         value_name = "date"
     )]
     date_from: Option<NaiveDate>,
 
+    /// Include transactions up to (and excluding) this date.
     #[clap(
         short = 'D',
         long = "date-to",
-        help = "Include transactions up to (and excluding) this date",
         parse(try_from_str = NaiveDate::from_str),
         value_name = "date"
     )]
     date_to: Option<NaiveDate>,
 
+    /// Include transactions greater than (and including) this amount.
     #[clap(
         short = 'l',
         long = "amount-lower",
-        help = "Include transactions greater than (and including) this amount",
         value_name = "amount"
     )]
     amount_from: Option<f32>,
 
+    /// Include transactions less than (and excluding) this amount.
     #[clap(
         short = 'u',
         long = "amount-upper",
-        help = "Include transactions less than (and excluding) this amount",
         value_name = "amount"
     )]
     amount_to: Option<f32>,
 
+    /// Include transactions with a certain status.
     #[clap(
         short = 's',
         long = "status",
-        help = "Include transactions with a certain status",
         value_name = "status"
     )]
     status: Option<Vec<TransactionStatus>>,
 
+    /// Include transactions with categories that match the regular expression.
     #[clap(
         short = 'c',
         long = "category",
-        help = "Include transactions with categories that match the regular expression",
         value_name = "regex"
     )]
     category: Option<Regex>,
 
+    /// Include transactions involving payees that match the regular expression.
     #[clap(
         short = 'p',
         long = "payee",
-        help = "Include transactions involving payees that match the regular expression",
         value_name = "regex"
     )]
     payee: Option<Regex>,
 
+    /// Include transactions involving accounts that match the regular expression.
     #[clap(
         short = 'a',
         long = "account",
-        help = "Include transactions involving accounts that match the regular expression",
         value_name = "regex"
     )]
     account: Option<Regex>,
 
+    /// Include transactions with a certain payment method.
     #[clap(
         short = 'M',
         long = "method",
-        help = "Include transactions with a certain payment method",
         value_name = "method"
     )]
     pay_mode: Option<Vec<PayMode>>,
 
+    /// Include transactions whose memos match this regular expression.
     #[clap(
         short = 'm',
         long = "memo",
-        help = "Include transactions whose memos match this regular expression",
         value_name = "regex"
     )]
     memo: Option<Regex>,
 
+    /// Include transactions whose info fields match this regular expression.
     #[clap(
         short = 'i',
         long = "info",
-        help = "Include transactions whose info fields match this regular expression",
         value_name = "regex"
     )]
     info: Option<Regex>,
 
+    /// Include transactions whose tags match this regular expression.
     #[clap(
         short = 't',
         long = "tag",
-        help = "Include transactions whose tags match this regular expression",
         value_name = "regex"
     )]
     tags: Option<Regex>,
 
+    /// Include `Expense`, `Income`, or `Transfer` transactions.
     #[clap(
         short = 'T',
         long = "type",
-        help = "Include 'Expense', 'Income', or 'Transfer' transactions",
         value_name = "type"
     )]
     transaction_type: Option<Vec<TransactionType>>,

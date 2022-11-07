@@ -20,7 +20,7 @@ pub struct Transaction {
     /// Net sum of the transaction (including any split amounts).
     amount: f32,
     
-    /// Which account the transaction applied to.
+    /// Which [`Account`][crate::account::account::Account] the transaction applied to.
     account: usize,
     
     /// Payment method transacted.
@@ -54,7 +54,7 @@ pub struct Transaction {
 }
 
 impl Transaction {
-    /// Create an empty `Transaction`
+    /// Create an empty [`Transaction`].
     pub fn empty() -> Self {
         Self {
             date: NaiveDate::from_ymd(2000, 1, 1),
@@ -72,7 +72,7 @@ impl Transaction {
         }
     }
 
-    /// Create a new `Transaction`
+    /// Create a new [`Transaction`].
     pub fn new(
         date: &NaiveDate,
         amount: f32,
@@ -103,22 +103,22 @@ impl Transaction {
         }
     }
 
-    /// Retrieve the date of the `Transaction`
+    /// Retrieve the date of the [`Transaction`].
     pub fn date(&self) -> &NaiveDate {
         &self.date
     }
 
-    /// Retrieve the total amount for a `Transaction`
+    /// Retrieve the total amount for a [`Transaction`].
     pub fn total(&self) -> &f32 {
         &self.amount
     }
 
-    /// Retrieve the account where the `Transaction` takes place
+    /// Retrieve the [`Account`][crate::account::account::Account] where the [`Transaction`] takes place.
     pub fn account(&self) -> usize {
         self.account
     }
 
-    /// Retrieve the account name
+    /// Retrieve the [`Account`][crate::account::account::Account] name.
     pub fn account_name(&self, db: &HomeBankDb) -> Option<String> {
         if let Some(acct) = db.accounts().get(&self.account()) {
             Some(acct.name().to_string())
@@ -127,17 +127,17 @@ impl Transaction {
         }
     }
 
-    /// Retrieve the status of the `Transaction`
+    /// Retrieve the status of the [`Transaction`].
     pub fn status(&self) -> &TransactionStatus {
         &self.status
     }
 
-    /// Retrieve the payee for the `Transaction`
+    /// Retrieve the [`Payee`][crate::payee::payee::Payee] for the [`Transaction`].
     pub fn payee(&self) -> &Option<usize> {
         &self.payee
     }
 
-    /// Retrieve the payee name.
+    /// Retrieve the [`Payee`'s][crate::payee::payee::Payee] name.
     pub fn payee_name(&self, db: &HomeBankDb) -> Option<String> {
         match self.payee() {
             Some(idx) => {
@@ -151,42 +151,42 @@ impl Transaction {
         }
     }
 
-    /// Retrieve the payment method of the `Transaction`
+    /// Retrieve the payment method of the [`Transaction`].
     pub fn pay_mode(&self) -> &PayMode {
         &self.pay_mode
     }
 
-    /// Retrieve the memo for the `Transaction`
+    /// Retrieve the memo for the [`Transaction`].
     pub fn memo(&self) -> &Option<String> {
         &self.memo
     }
 
-    /// Retrieve the info field for the `Transaction`
+    /// Retrieve the info field for the [`Transaction`].
     pub fn info(&self) -> &Option<String> {
         &self.info
     }
 
-    /// Retrieve the tags for the `Transaction`
+    /// Retrieve the tags for the [`Transaction`].
     pub fn tags(&self) -> &Option<Vec<String>> {
         &self.tags
     }
 
-    /// Retrieve the flags for the `Transaction`
+    /// Retrieve the flags for the [`Transaction`].
     pub fn flags(&self) -> &Option<usize> {
         &self.flags
     }
 
-    /// Retrieve the type for the `Transaction`
+    /// Retrieve the type for the [`Transaction`].
     pub fn ttype(&self) -> &TransactionType {
         &self.transaction_type
     }
 
-    /// Check if the `Transaction` is a transfer or not
+    /// Check if the [`Transaction`] is a [`Transfer`][crate::transaction::transaction_transfer::Transfer] or not.
     pub fn is_transfer(&self) -> bool {
         self.ttype().is_transfer()
     }
 
-    /// Retrieve the transfer key for the `Transaction`
+    /// Retrieve the transfer key for the [`Transaction`].
     pub fn transfer_key(&self) -> Option<&usize> {
         if let TransactionType::Transfer(xfer) = self.ttype() {
             Some(xfer.transfer_key())
@@ -195,7 +195,7 @@ impl Transaction {
         }
     }
 
-    /// Retrieve the destination account key for the transfer
+    /// Retrieve the destination [`Account`][crate::account::account::Account] key for the [`Transfer`][crate::transaction::transaction_transfer::Transfer].
     pub fn transfer_destination(&self) -> Option<&usize> {
         if let TransactionType::Transfer(xfer) = self.ttype() {
             Some(xfer.destination())
@@ -204,22 +204,22 @@ impl Transaction {
         }
     }
 
-    /// Check if the `Transaction` is a split transaction or not
+    /// Check if the [`Transaction`] is a [`SplitTransaction`][crate::transaction::transaction_split::SplitTransaction] or not.
     pub fn is_split(&self) -> bool {
         self.complexity.is_split()
     }
 
-    /// Retrieve the number of splits the `Transaction` is divided into
+    /// Retrieve the number of splits the [`Transaction`] is divided into.
     pub fn num_splits(&self) -> usize {
         self.complexity.num_splits()
     }
 
-    /// Retrieve the categories for a `Transaction`
+    /// Retrieve the [`Categories`][crate::category::category::Category] for a [`Transaction`].
     pub fn categories(&self) -> Vec<&Option<usize>> {
         self.complexity.categories()
     }
 
-    /// Revtrieve the names of the categories for a `Transaction`
+    /// Retrieve the names of the [`Categories`][crate::category::category::Category] for a [`Transaction`].
     pub fn category_names(&self, db: &HomeBankDb) -> Vec<Option<String>> {
         self.categories()
             .iter()
@@ -236,19 +236,19 @@ impl Transaction {
             .collect()
     }
 
-    /// Retrieve the amounts for a `Transaction`
+    /// Retrieve the amounts for a [`Transaction`].
     pub fn amounts(&self) -> Vec<&f32> {
         self.complexity.amounts()
     }
 
-    /// Retrieve the memos for a `Transaction`
+    /// Retrieve the memos for a [`Transaction`].
     pub fn memos(&self) -> Vec<&Option<String>> {
         self.complexity.memos()
     }
 
-    /// Subset the `Transaction`.
-    /// This will return the same thing if it is a `SimpleTransaction`, or a
-    /// `SplitTransaction` that is a subset of the original.
+    /// Subset the [`Transaction`].
+    /// If this is a [`SimpleTransaction`][crate::transaction::transaction_simple::SimpleTransaction], this will return the value.
+    /// If this is a [`SplitTransaction`][crate::transaction::transaction_split::SplitTransaction], this will return a subset of the original.
     pub fn subset(&self, idx: &[usize]) -> Option<Self> {
         if let Some(complexity) = &self.complexity.subset(idx) {
             Some(Self::new(
@@ -557,7 +557,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
     }
 }
 
-/// Sum the total amount from all the `Transaction`s
+/// Sum the total amount from all the [`Transaction`]s.
 pub fn sum_transactions(v: &Vec<Transaction>) -> f32 {
     v.iter().fold(0.0, |sum, tr| sum + tr.total())
 }
