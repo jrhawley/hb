@@ -79,6 +79,13 @@ fn main() -> Result<(), anyhow::Error> {
                 pbar.abandon();
             }
         }
+        Some(SubCommand::Review(query)) => {
+            let review = query.exec(&db);
+
+            for val in review {
+                println!("{:?}", val);
+            }
+        }
         None => {}
     }
 

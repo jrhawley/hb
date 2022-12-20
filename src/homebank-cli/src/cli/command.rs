@@ -2,7 +2,7 @@
 
 use crate::config::default_cfg_file;
 use clap::Parser;
-use homebank_db::{category::QueryBudget, QueryOpts, QueryTransactions};
+use homebank_db::{category::{QueryBudget, QueryReview}, QueryOpts, QueryTransactions};
 use lazy_static::lazy_static;
 use std::path::{Path, PathBuf};
 
@@ -13,15 +13,15 @@ lazy_static! {
 #[derive(Debug, Parser)]
 #[clap(author, about)]
 pub struct CliOpts {
+    /// Path to `hb` (not HomeBank) configuration file
     #[clap(
         short = 'c',
         long = "config",
-        help = "Path to hb configuration file",
         default_value = &DEFAULT_CFG
     )]
     pub path: PathBuf,
 
-    // make optional subcommands
+    /// Optional subcommand
     #[clap(subcommand)]
     pub subcmd: Option<SubCommand>,
 }
@@ -60,18 +60,19 @@ impl Default for CliOpts {
 
 #[derive(Debug, Parser)]
 pub enum SubCommand {
-    #[clap(
-        about = "Perform a query on the HomeBank database",
-        visible_alias = "q"
-    )]
+    /// Perform a query on the HomeBank database.
+    #[clap(visible_alias = "q")]
     Query(QueryOpts),
 
-    #[clap(
-        about = "Calculate a sum of transactions in a query",
-        visible_alias = "s"
-    )]
+    /// Calculate a sum of transactions in a query.
+    #[clap(visible_alias = "s")]
     Sum(QueryTransactions),
 
-    #[clap(about = "Look at your category budgets", visible_alias = "b")]
+    /// Review sums of transactions across each (sub)category.
+    #[clap(visible_alias = "r")]
+    Review(QueryReview),
+
+    /// Look at your category budgets.
+    #[clap(visible_alias = "b")]
     Budget(QueryBudget),
 }
