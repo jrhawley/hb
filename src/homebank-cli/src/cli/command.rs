@@ -68,7 +68,7 @@ pub enum SubCommand {
     #[clap(visible_alias = "s")]
     Sum(QueryTransactions),
 
-    /// Review sums of transactions across each (sub)category.
+    /// Print a tab-separated table of each category and the sum of its transactions.
     #[clap(visible_alias = "r")]
     Review(QueryReview),
 

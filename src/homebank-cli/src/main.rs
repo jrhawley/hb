@@ -82,8 +82,13 @@ fn main() -> Result<(), anyhow::Error> {
         Some(SubCommand::Review(query)) => {
             let review = query.exec(&db);
 
-            for val in review {
-                println!("{:?}", val);
+            // print the values in a tab-separated format
+            for (cat, subcat, sum) in review {
+                if let Some(subcat_name) = subcat {
+                    println!("{cat}\t{subcat_name}\t{sum:.2}");
+                } else {
+                    println!("{cat}\t\t{sum:.2}");
+                }
             }
         }
         None => {}
