@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.0] - 2022-12-19
+
+### Added
+
+- `review` subcommand to sum all transactions across each category.
+
 ## [0.2.0] - 2022-05-05
 
 ### Added

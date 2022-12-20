@@ -12,7 +12,7 @@ thiserror = "1.0.30"
 
 [workspace.package]
 name = "hb"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["James Hawley <developer@jrhawley.ca>"]
 license = "GPL-2.0"
