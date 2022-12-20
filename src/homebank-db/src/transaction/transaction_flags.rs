@@ -28,7 +28,7 @@ pub enum TransactionFlag {
     Added,
 
     /// The [`Transaction`][crate::transaction::transaction::Transaction] has been changed but not saved.
-    /// Equivalent to `AF_CHANGED`.
+    /// Equivalent to `OF_CHANGED`.
     Changed,
 }
 
