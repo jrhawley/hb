@@ -140,21 +140,26 @@ impl Category {
         &self.name
     }
 
-    /// Retrieve the `Category`'s key, including the parent category, if one exists.
-    pub fn full_name(&self, db: &HomeBankDb) -> String {
+    /// Check if the `Category` is a child of another category.
+    pub fn is_child(&self) -> bool {
+        self.parent_key.is_some()
+    }
+
+    /// Retrieve the `Category`'s parent category name, if one exists.
+    pub fn parent_name<'db>(&self, db: &'db HomeBankDb) -> Option<&'db str> {
         if let Some(idx) = self.parent_key {
             if let Some(parent_cat) = db.categories().get(&idx) {
-                format!("{}:{}", parent_cat.name(), self.name())
+                Some(parent_cat.name())
             } else {
-                self.name().to_string()
+                None
             }
         } else {
-            self.name().to_string()
+            None
         }
     }
 
-    /// Retrieve the `Category`'s key, including the parent category, if one exists.
-    pub fn full_name_with_type(&self, db: &HomeBankDb) -> String {
+    /// Retrieve the `Category`'s name, including the parent category, if one exists.
+    pub fn full_name(&self, db: &HomeBankDb) -> String {
         if let Some(idx) = self.parent_key {
             if let Some(parent_cat) = db.categories().get(&idx) {
                 format!("{}:{}", parent_cat.name(), self.name())
