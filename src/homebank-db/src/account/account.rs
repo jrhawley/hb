@@ -1,6 +1,6 @@
 //! Chequing accounts, credits cards, and details for all kinds of accounts.
 
-use super::{AccountError, AccountType};
+use super::{AccountError, AccountType, AccountFlags};
 use crate::transaction::julian_date_from_u32;
 use chrono::NaiveDate;
 use std::str::FromStr;
@@ -13,7 +13,7 @@ pub struct Account {
     key: usize,
 
     /// Flags on this account.
-    flags: usize,
+    flags: AccountFlags,
 
     /// Display position.
     pos: usize,
@@ -53,7 +53,7 @@ impl Account {
     pub fn empty() -> Self {
         Self {
             key: 0,
-            flags: 0,
+            flags: AccountFlags(0),
             pos: 0,
             atype: AccountType::None,
             currency_idx: 0,
@@ -70,7 +70,7 @@ impl Account {
 
     pub fn new(
         key: usize,
-        flags: usize,
+        flags: u16,
         pos: usize,
         atype: AccountType,
         currency_idx: usize,
@@ -85,7 +85,7 @@ impl Account {
     ) -> Self {
         Self {
             key,
-            flags,
+            flags: AccountFlags(flags),
             pos,
             atype,
             currency_idx,
@@ -156,8 +156,8 @@ impl TryFrom<Vec<OwnedAttribute>> for Account {
                     }
                 }
                 "flags" => {
-                    acct.flags = match usize::from_str(&i.value) {
-                        Ok(idx) => idx,
+                    acct.flags = match u16::from_str(&i.value) {
+                        Ok(idx) => AccountFlags(idx),
                         Err(_) => return Err(AccountError::InvalidFlags),
                     }
                 }
