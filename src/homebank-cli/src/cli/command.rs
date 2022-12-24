@@ -11,7 +11,7 @@ lazy_static! {
 }
 
 #[derive(Debug, Parser)]
-#[clap(author, about)]
+#[clap(author, about, version)]
 pub struct CliOpts {
     /// Path to `hb` (not HomeBank) configuration file
     #[clap(
