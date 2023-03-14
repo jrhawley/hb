@@ -12,7 +12,6 @@ pub mod transaction_tags;
 pub mod transaction_transfer;
 pub mod transaction_type;
 
-pub use transaction_struct::{sum_transactions, Transaction};
 pub use transaction_complexity::TransactionComplexity;
 pub(crate) use transaction_date::julian_date_from_u32;
 pub use transaction_error::TransactionError;
@@ -20,6 +19,7 @@ pub use transaction_query::QueryTransactions;
 pub use transaction_simple::SimpleTransaction;
 pub use transaction_split::{parse_split_values, SplitTransaction};
 pub use transaction_status::TransactionStatus;
+pub use transaction_struct::{sum_transactions, Transaction};
 pub(crate) use transaction_tags::split_tags;
 pub use transaction_transfer::Transfer;
 pub use transaction_type::TransactionType;

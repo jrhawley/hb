@@ -22,22 +22,14 @@ pub enum TransactionType {
 impl TransactionType {
     /// Determine if the [`Transaction`][crate::transaction::transaction_struct::Transaction] is a [`Transfer`][crate::transaction::transaction_transfer::Transfer].
     pub fn is_transfer(&self) -> bool {
-        match self {
-            TransactionType::Transfer(_) => true,
-            _ => false,
-        }
+        matches!(self, TransactionType::Transfer(_))
     }
 
     /// Determine if two [`Transaction`s][crate::transaction::transaction_struct::Transaction] are of a similar type.
     /// Useful for comparing if two [`TransactionType`]s are both [`Transfer`s][crate::transaction::transaction_transfer::Transfer] or
     /// not, without checking the values within the transfer.
     pub fn is_similar_to(&self, other: &Self) -> bool {
-        match (self, other) {
-            (TransactionType::Expense, TransactionType::Expense) => true,
-            (TransactionType::Income, TransactionType::Income) => true,
-            (TransactionType::Transfer(_this), TransactionType::Transfer(_other)) => true,
-            _ => false,
-        }
+        matches!((self, other), (TransactionType::Expense, TransactionType::Expense) | (TransactionType::Income, TransactionType::Income) | (TransactionType::Transfer(_), TransactionType::Transfer(_)))
     }
 }
 

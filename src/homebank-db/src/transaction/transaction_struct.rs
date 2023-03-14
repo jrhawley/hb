@@ -88,13 +88,13 @@ impl Transaction {
         complexity: &TransactionComplexity,
     ) -> Self {
         Self {
-            date: date.clone(),
+            date: *date,
             amount,
             account,
-            pay_mode: pay_mode.clone(),
-            status: status.clone(),
-            flags: flags.clone(),
-            payee: payee.clone(),
+            pay_mode: *pay_mode,
+            status: *status,
+            flags: *flags,
+            payee: *payee,
             memo: memo.clone(),
             info: info.clone(),
             tags: tags.clone(),
@@ -120,11 +120,7 @@ impl Transaction {
 
     /// Retrieve the [`Account`][crate::account::account_struct::Account] name.
     pub fn account_name(&self, db: &HomeBankDb) -> Option<String> {
-        if let Some(acct) = db.accounts().get(&self.account()) {
-            Some(acct.name().to_string())
-        } else {
-            None
-        }
+        db.accounts().get(&self.account()).map(|acct| acct.name().to_string())
     }
 
     /// Retrieve the status of the [`Transaction`].
@@ -141,11 +137,7 @@ impl Transaction {
     pub fn payee_name(&self, db: &HomeBankDb) -> Option<String> {
         match self.payee() {
             Some(idx) => {
-                if let Some(payee) = db.payees().get(idx) {
-                    Some(payee.name().to_string())
-                } else {
-                    None
-                }
+                db.payees().get(idx).map(|payee| payee.name().to_string())
             }
             None => None,
         }
@@ -225,11 +217,7 @@ impl Transaction {
             .iter()
             .map(|&cat_idx| match cat_idx {
                 Some(idx) => {
-                    if let Some(category) = db.categories().get(idx) {
-                        Some(category.full_name(db))
-                    } else {
-                        None
-                    }
+                    db.categories().get(idx).map(|category| category.full_name(db))
                 }
                 None => None,
             })
@@ -250,8 +238,7 @@ impl Transaction {
     /// If this is a [`SimpleTransaction`][crate::transaction::transaction_simple::SimpleTransaction], this will return the value.
     /// If this is a [`SplitTransaction`][crate::transaction::transaction_split::SplitTransaction], this will return a subset of the original.
     pub fn subset(&self, idx: &[usize]) -> Option<Self> {
-        if let Some(complexity) = &self.complexity.subset(idx) {
-            Some(Self::new(
+        self.complexity.subset(idx).as_ref().map(|complexity| Self::new(
                 self.date(),
                 complexity.total(),
                 self.account(),
@@ -265,9 +252,6 @@ impl Transaction {
                 self.ttype(),
                 complexity,
             ))
-        } else {
-            None
-        }
     }
 }
 
@@ -558,7 +542,7 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
 }
 
 /// Sum the total amount from all the [`Transaction`]s.
-pub fn sum_transactions(v: &Vec<Transaction>) -> f32 {
+pub fn sum_transactions(v: &[Transaction]) -> f32 {
     v.iter().fold(0.0, |sum, tr| sum + tr.total())
 }
 
@@ -1044,9 +1028,9 @@ mod tests {
             payee: Some(13),
             complexity: TransactionComplexity::Split(SplitTransaction::new(
                 2,
-                &vec![Some(83), Some(100)],
-                &vec![-1119.80, 31.08],
-                &vec![
+                &[Some(83), Some(100)],
+                &[-1119.80, 31.08],
+                &[
                     Some(String::from("January")),
                     Some(String::from("Internet payment (Dec 1 - Dec 30)")),
                 ],
@@ -1071,9 +1055,9 @@ mod tests {
             payee: Some(13),
             complexity: TransactionComplexity::Split(SplitTransaction::new(
                 2,
-                &vec![Some(83), Some(100)],
-                &vec![-1119.80, 31.08],
-                &vec![
+                &[Some(83), Some(100)],
+                &[-1119.80, 31.08],
+                &[
                     Some(String::from("January")),
                     Some(String::from("Internet payment (Dec 1 - Dec 30)")),
                 ],
@@ -1187,9 +1171,9 @@ mod tests {
             payee: Some(13),
             complexity: TransactionComplexity::Split(SplitTransaction::new(
                 2,
-                &vec![Some(83), Some(100)],
-                &vec![-1119.80, 31.08],
-                &vec![
+                &[Some(83), Some(100)],
+                &[-1119.80, 31.08],
+                &[
                     Some(String::from("January")),
                     Some(String::from("Internet payment (Dec 1 - Dec 30)")),
                 ],
@@ -1207,9 +1191,9 @@ mod tests {
             payee: Some(13),
             complexity: TransactionComplexity::Split(SplitTransaction::new(
                 1,
-                &vec![Some(83)],
-                &vec![-1119.80],
-                &vec![Some(String::from("January"))],
+                &[Some(83)],
+                &[-1119.80],
+                &[Some(String::from("January"))],
             )),
             ..Default::default()
         });
@@ -1229,11 +1213,11 @@ mod tests {
             payee: Some(13),
             complexity: TransactionComplexity::Split(SplitTransaction::new(
                 2,
-                &vec![Some(83), Some(100)],
-                &vec![-1119.80, 31.08],
-                &vec![
+                &[Some(83), Some(100)],
+                &[-1119.80, 31.08],
+                &[
                     Some(String::from("January")),
-                    Some(String::from("Internet payment (Dec 1 - Dec 30)")),
+                    Some(String::from("Internet payment (Dec 1 - Dec 30)"))
                 ],
             )),
             ..Default::default()

@@ -12,10 +12,7 @@ pub enum TransactionComplexity {
 impl TransactionComplexity {
     /// Check if the [`Transaction`][crate::transaction::transaction_struct::Transaction] is [`Simple`][crate::transaction::transaction_simple::SimpleTransaction] or [`Split`][crate::transaction::transaction_split::SplitTransaction].
     pub fn is_split(&self) -> bool {
-        match self {
-            Self::Split(_) => true,
-            _ => false,
-        }
+        matches!(self, Self::Split(_))
     }
 
     /// Check if two [`Transaction`s][crate::transaction::transaction_struct::Transaction] are both [`Simple`][crate::transaction::transaction_simple::SimpleTransaction] or both [`Split`][crate::transaction::transaction_split::SplitTransaction].
@@ -75,17 +72,14 @@ impl TransactionComplexity {
     pub fn subset(&self, idx: &[usize]) -> Option<Self> {
         match (self, idx.len()) {
             (Self::Simple(simple), 1) => {
-                if idx == &[0] {
+                if idx == [0] {
                     Some(Self::Simple(simple.clone()))
                 } else {
                     None
                 }
             }
             (Self::Simple(_simple), _) => None,
-            (Self::Split(split), _) => match split.subset(idx) {
-                Some(sub_split) => Some(Self::Split(sub_split)),
-                None => None,
-            },
+            (Self::Split(split), _) => split.subset(idx).map(Self::Split),
         }
     }
 }

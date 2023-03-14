@@ -39,15 +39,15 @@ impl SplitTransaction {
     /// This assumes that `categories`, `amounts`, and `memos` all have length `num_splits`.
     pub fn new(
         num_splits: usize,
-        categories: &Vec<Option<usize>>,
-        amounts: &Vec<f32>,
-        memos: &Vec<Option<String>>,
+        categories: &[Option<usize>],
+        amounts: &[f32],
+        memos: &[Option<String>],
     ) -> Self {
         Self {
             num_splits,
-            categories: categories.clone(),
-            amounts: amounts.clone(),
-            memos: memos.clone(),
+            categories: categories.to_vec(),
+            amounts: amounts.to_vec(),
+            memos: memos.to_vec(),
         }
     }
 
@@ -109,27 +109,24 @@ impl SplitTransaction {
             return None;
         }
 
-        let sub_memos = idx
+        let sub_memos: Vec<Option<String>> = idx
             .iter()
-            .map(|&i| match self.memos()[i] {
-                Some(possible_str) => Some(possible_str.to_string()),
-                None => None,
-            })
+            .map(|&i| self.memos()[i].clone())
             .collect();
-        let sub_categories = idx
+        let sub_categories: Vec<Option<usize>> = idx
             .iter()
-            .map(|&i| match self.categories()[i] {
-                Some(possible_cat) => Some(possible_cat.clone()),
-                None => None,
-            })
+            .map(|&i| *self.categories()[i])
             .collect();
-        let sub_amounts = idx.iter().map(|&i| self.amounts()[i].clone()).collect();
+        let sub_amounts: Vec<f32> = idx
+            .iter()
+            .map(|&i| *self.amounts()[i])
+            .collect();
 
         Some(Self::new(
             sub_num,
-            &sub_categories,
-            &sub_amounts,
-            &sub_memos,
+            &sub_categories[..],
+            &sub_amounts[..],
+            &sub_memos[..],
         ))
     }
 }
@@ -153,7 +150,7 @@ pub fn parse_split_values(att: OwnedAttribute) -> Vec<String> {
 }
 
 /// Convert `Vec<String>` into a parsed `Vec<Option<usize>>` to be used as categories.
-pub fn parse_split_cat_vec(v: &Vec<String>) -> Result<Vec<Option<usize>>, TransactionError> {
+pub fn parse_split_cat_vec(v: &[String]) -> Result<Vec<Option<usize>>, TransactionError> {
     v.iter()
         // returning a `Result<>` within the iterator can be collected into a `Result<Vec<...>>`
         // see https://stackoverflow.com/a/26370894/7416009 for an example and other discussion
@@ -165,7 +162,7 @@ pub fn parse_split_cat_vec(v: &Vec<String>) -> Result<Vec<Option<usize>>, Transa
 }
 
 /// Convert `Vec<String>` into a parsed `Vec<f32>` to be used as amounts.
-pub fn parse_split_amount_vec(v: &Vec<String>) -> Result<Vec<f32>, TransactionError> {
+pub fn parse_split_amount_vec(v: &[String]) -> Result<Vec<f32>, TransactionError> {
     v.iter()
         // returning a `Result<>` within the iterator can be collected into a `Result<Vec<...>>`
         // see https://stackoverflow.com/a/26370894/7416009 for an example and other discussion
@@ -177,7 +174,7 @@ pub fn parse_split_amount_vec(v: &Vec<String>) -> Result<Vec<f32>, TransactionEr
 }
 
 /// Convert `Vec<String>` into a parsed `Vec<Option<String>>` to be used as memos.
-pub fn parse_split_memo_vec(v: &Vec<String>) -> Vec<Option<String>> {
+pub fn parse_split_memo_vec(v: &[String]) -> Vec<Option<String>> {
     v.iter()
         .map(|s| match s.as_str() {
             "" => None,
