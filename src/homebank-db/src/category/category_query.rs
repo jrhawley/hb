@@ -37,10 +37,10 @@ impl Query for QueryCategories {
                 Some(re) => re.is_match(&p.full_name(db)),
                 None => true,
             })
-            .map(|cat| cat.clone())
+            .cloned()
             .collect();
 
-        filt_categories.sort_by(|a, b| a.full_name(&db).cmp(&b.full_name(&db)));
+        filt_categories.sort_by_key(|a| a.full_name(db));
 
         filt_categories
     }

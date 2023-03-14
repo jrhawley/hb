@@ -84,10 +84,7 @@ impl BudgetSummary {
             name: name.to_string(),
             progress,
             allotment,
-            progress_frac: match allotment {
-                Some(val) => Some(progress / val),
-                None => None,
-            },
+            progress_frac: allotment.map(|val| progress / val),
         }
     }
 
@@ -118,10 +115,7 @@ impl BudgetSummary {
 
     /// Retrieve the allotment for the budget, made positive, and rounded to the nearest integer
     pub fn allotment_rounded(&self) -> Option<u64> {
-        match self.allotment {
-            Some(val) => Some(val.abs() as u64),
-            None => None,
-        }
+        self.allotment.map(|val| val.abs() as u64)
     }
 
     /// Helper function to determine if there is a budget or not
@@ -144,10 +138,10 @@ impl Query for QueryBudget {
             })
             // filter out categories that don't have a budget
             .filter(|&cat| cat.has_budget())
-            .map(|cat| cat.clone())
+            .cloned()
             .collect();
 
-        filt_categories.sort_by(|a, b| a.full_name(db).cmp(&b.full_name(db)));
+        filt_categories.sort_by_key(|a| a.full_name(db));
 
         let budget_spent: Vec<BudgetSummary> = filt_categories
             .iter()

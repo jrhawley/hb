@@ -386,7 +386,7 @@ mod tests {
             budget: CategoryBudget::empty(),
         };
 
-        assert_eq!(false, cat.has_budget());
+        assert!(!cat.has_budget());
     }
 
     #[test]
@@ -402,6 +402,6 @@ mod tests {
             },
         };
 
-        assert_eq!(true, cat.has_budget());
+        assert!(cat.has_budget());
     }
 }

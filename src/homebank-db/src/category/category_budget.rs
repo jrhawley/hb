@@ -103,7 +103,7 @@ impl CategoryBudget {
             10 => self.october,
             11 => self.november,
             12 => self.december,
-            _ => return None,
+            _ => None,
         }
     }
 
@@ -126,14 +126,18 @@ impl CategoryBudget {
         let day_before_to = to - Duration::days(1);
         // calculate the last date that should be used as the upper bound of the time interval
         let last_date = first_of_month
-            .future(&day_before_to.and_hms(0, 0, 0))
+            .future(&day_before_to.and_hms_opt(0, 0, 0).unwrap())
             .next()
             .unwrap()
             .start
             .date();
 
         // create a date iterator to step over the first day of each month between the `first_date` and `last_date`
-        let mut time_step = first_of_month.future(&day_before_from.and_hms(0, 0, 0));
+        let mut time_step = first_of_month.future(
+            &day_before_from
+            .and_hms_opt(0, 0, 0)
+            .unwrap()
+        );
         let mut date_iter = time_step.next().unwrap().start.date();
 
         let mut sum = 0.0;
@@ -142,10 +146,7 @@ impl CategoryBudget {
         while date_iter < last_date {
             date_iter = time_step.next().unwrap().start.date();
 
-            sum += match self.budget(date_iter.month() as usize) {
-                Some(val) => val,
-                None => 0.0,
-            };
+            sum += self.budget(date_iter.month() as usize).unwrap_or(0.0);
         }
 
         Some(sum)
@@ -256,7 +257,7 @@ mod tests {
         let non_budget = CategoryBudget::empty();
         let observed = non_budget.is_empty();
 
-        assert_eq!(true, observed);
+        assert!(observed);
     }
 
     #[test]
@@ -267,7 +268,7 @@ mod tests {
         };
         let observed = budget.is_empty();
 
-        assert_eq!(false, observed);
+        assert!(!observed);
     }
 
     #[test]
@@ -278,6 +279,6 @@ mod tests {
         };
         let observed = budget.is_empty();
 
-        assert_eq!(false, observed);
+        assert!(!observed);
     }
 }
