@@ -11,7 +11,6 @@ clap = { version = "3", features = ["derive", "cargo", "regex"] }
 thiserror = "1.0.30"
 
 [workspace.package]
-name = "hb"
 version = "0.3.0"
 edition = "2021"
 authors = ["James Hawley <developer@jrhawley.ca>"]
