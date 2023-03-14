@@ -69,7 +69,7 @@ fn parse_version_string(s: &str) -> Result<Version, HomeBankDbError> {
 
             Ok(Version::new(major, minor, 0))
         }
-        Err(_) => return Err(HomeBankDbError::InvalidVersion),
+        Err(_) => Err(HomeBankDbError::InvalidVersion),
     }
 }
 
