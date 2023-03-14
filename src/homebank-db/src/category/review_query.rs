@@ -1,38 +1,13 @@
 //! Review the sums across each (sub)category in your HomeBank database.
 
 use crate::{transaction::sum_transactions, HomeBankDb, Query, QueryTransactions};
-use chrono::{Datelike, Local, NaiveDate};
+use super::{TODAY_FIRST_OF_MONTH_STR, FIRST_OF_NEXT_MONTH_STR};
+
+use chrono::NaiveDate;
 use clap::Parser;
-use kronos::{Grain, Grains, NthOf, TimeSequence};
-use lazy_static::lazy_static;
 use regex::Regex;
 use std::str::FromStr;
 
-lazy_static! {
-    pub static ref TODAY: NaiveDate = Local::today().naive_local();
-    pub static ref TODAY_FIRST_OF_MONTH: NaiveDate =
-        NaiveDate::from_ymd(TODAY.year(), TODAY.month(), 1);
-    pub static ref TODAY_FIRST_OF_MONTH_STR: String =
-        TODAY_FIRST_OF_MONTH.format("%Y-%m-%d").to_string();
-    pub static ref FIRST_OF_NEXT_MONTH: NaiveDate = {
-        let first_of_month = NthOf(1, Grains(Grain::Day), Grains(Grain::Month));
-        let mut date_iter = first_of_month.future(&TODAY_FIRST_OF_MONTH.and_hms(0, 0, 0));
-
-        // skip the first month
-        date_iter.next();
-
-        // save the next month
-        let first_of_next_month = date_iter
-            .next()
-            .unwrap()
-            .start
-            .date();
-
-        first_of_next_month
-    };
-    pub static ref FIRST_OF_NEXT_MONTH_STR: String =
-        FIRST_OF_NEXT_MONTH.format("%Y-%m-%d").to_string();
-}
 
 /// Query the budget in your HomeBank database.
 #[derive(Debug, Parser)]
