@@ -171,7 +171,7 @@ impl Category {
         }
     }
 
-    /// Retrieve the [`Category`][crate::category::category::Category]'s flags.
+    /// Retrieve the [`Category`][crate::category::category_struct::Category]'s flags.
     pub fn flags(&self) -> usize {
         self.flags
     }

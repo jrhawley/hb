@@ -1,8 +1,8 @@
-//! Errors when parsing [`Category`][crate::category::category::Category] information and HomeBank XML files.
+//! Errors when parsing [`Category`][crate::category::category_struct::Category] information and HomeBank XML files.
 
 use thiserror::Error;
 
-/// Errors when parsing [`Category`][crate::category::category::Category] information and HomeBank XML files.
+/// Errors when parsing [`Category`][crate::category::category_struct::Category] information and HomeBank XML files.
 #[derive(Debug, Error, PartialEq)]
 pub enum CategoryError {
     /// When the key for a category is not a number or not found in the database.

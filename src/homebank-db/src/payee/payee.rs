@@ -13,7 +13,7 @@ pub struct Payee {
     /// User-provided name of the payee.
     name: String,
 
-    /// Default [`Category`][crate::category::category::Category] that [`Transaction`s][crate::transaction::transaction::Transaction] involving this payee should belong to.
+    /// Default [`Category`][crate::category::category_struct::Category] that [`Transaction`s][crate::transaction::transaction::Transaction] involving this payee should belong to.
     default_category_key: Option<usize>,
 
     /// Default [`PayMode`][crate::paymode::paymode::PayMode] that [`Transaction`s][crate::transaction::transaction::Transaction] involving this payee should belong to.
@@ -51,7 +51,7 @@ impl Payee {
         &self.name
     }
 
-    /// Retrieve the payee's default [`Category`][crate::category::category::Category].
+    /// Retrieve the payee's default [`Category`][crate::category::category_struct::Category].
     pub fn category(&self) -> Option<usize> {
         self.default_category_key
     }

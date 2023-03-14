@@ -1,9 +1,9 @@
-//! A simple [`Transaction`][crate::transaction::transaction::Transaction] that only belongs to a single [`Category`][crate::category::category::Category].
+//! A simple [`Transaction`][crate::transaction::transaction::Transaction] that only belongs to a single [`Category`][crate::category::category_struct::Category].
 
-/// A simple [`Transaction`][crate::transaction::transaction::Transaction] that only belongs to a single [`Category`][crate::category::category::Category].
+/// A simple [`Transaction`][crate::transaction::transaction::Transaction] that only belongs to a single [`Category`][crate::category::category_struct::Category].
 #[derive(Debug, PartialEq, Clone)]
 pub struct SimpleTransaction {
-    /// The [`Category`][crate::category::category::Category] this [`Transaction`][crate::transaction::transaction::Transaction] falls under.
+    /// The [`Category`][crate::category::category_struct::Category] this [`Transaction`][crate::transaction::transaction::Transaction] falls under.
     category: Option<usize>,
 
     /// The amount of the parent [`Transaction`][crate::transaction::transaction::Transaction].
@@ -36,12 +36,12 @@ impl SimpleTransaction {
         }
     }
 
-    /// Retrieve the [`Category`][crate::category::category::Category] for the [`Transaction`][crate::transaction::transaction::Transaction].
+    /// Retrieve the [`Category`][crate::category::category_struct::Category] for the [`Transaction`][crate::transaction::transaction::Transaction].
     pub fn category(&self) -> &Option<usize> {
         &self.category
     }
 
-    /// Retrieve the mutable [`Category`][crate::category::category::Category] for the [`Transaction`][crate::transaction::transaction::Transaction].
+    /// Retrieve the mutable [`Category`][crate::category::category_struct::Category] for the [`Transaction`][crate::transaction::transaction::Transaction].
     pub fn mut_category(&mut self) -> &mut Option<usize> {
         &mut self.category
     }

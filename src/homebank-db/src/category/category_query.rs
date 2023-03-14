@@ -1,11 +1,11 @@
-//! Options for filtering [`Categories`][crate::category::category::Category] from the [`HomeBankDb`].
+//! Options for filtering [`Categories`][crate::category::category_struct::Category] from the [`HomeBankDb`].
 
 use crate::{db::HomeBankDb, query::Query};
 use super::Category;
 use clap::Parser;
 use regex::Regex;
 
-/// Options for filtering [`Categories`][crate::category::category::Category] from the [`HomeBankDb`].
+/// Options for filtering [`Categories`][crate::category::category_struct::Category] from the [`HomeBankDb`].
 #[derive(Debug, Parser)]
 #[clap(
     name = "categories",
@@ -13,7 +13,7 @@ use regex::Regex;
     about = "Query transaction categories"
 )]
 pub struct QueryCategories {
-    /// Name of the [`Category`][crate::category::category::Category]
+    /// Name of the [`Category`][crate::category::category_struct::Category]
     #[clap(value_name = "regex")]
     name: Option<Regex>,
 }

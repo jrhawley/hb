@@ -13,7 +13,7 @@ pub struct HomeBankDbProperties {
     /// Key specifying the base [`Currency`][crate::currency::currency::Currency] that all conversion rates are calculated against.
     currency_key: usize,
 
-    /// Key specifying the [`Category`][crate::category::category::Category] that contains [`Transaction`s][crate::transaction::transaction::Transaction] about your vehicle's (or vehicles') mileage and fuel consumption.
+    /// Key specifying the [`Category`][crate::category::category_struct::Category] that contains [`Transaction`s][crate::transaction::transaction::Transaction] about your vehicle's (or vehicles') mileage and fuel consumption.
     car_category_key: usize,
 
     /// Mode for how automatically scheduled transactions should be added.

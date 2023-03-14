@@ -49,7 +49,7 @@ pub struct Transaction {
     transaction_type: TransactionType,
     
     /// Is the transaction [`Simple`][crate::transaction::transaction_simple::SimpleTransaction] or [`Split`][crate::transaction::transaction_simple::SimpleTransaction]?
-    /// This aso contains the [`Category`][crate::category::category::Category] information for this transaction. 
+    /// This aso contains the [`Category`][crate::category::category_struct::Category] information for this transaction. 
     complexity: TransactionComplexity,
 }
 
@@ -214,12 +214,12 @@ impl Transaction {
         self.complexity.num_splits()
     }
 
-    /// Retrieve the [`Categories`][crate::category::category::Category] for a [`Transaction`].
+    /// Retrieve the [`Categories`][crate::category::category_struct::Category] for a [`Transaction`].
     pub fn categories(&self) -> Vec<&Option<usize>> {
         self.complexity.categories()
     }
 
-    /// Retrieve the names of the [`Categories`][crate::category::category::Category] for a [`Transaction`].
+    /// Retrieve the names of the [`Categories`][crate::category::category_struct::Category] for a [`Transaction`].
     pub fn category_names(&self, db: &HomeBankDb) -> Vec<Option<String>> {
         self.categories()
             .iter()
