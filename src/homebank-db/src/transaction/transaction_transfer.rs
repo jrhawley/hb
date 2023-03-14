@@ -27,7 +27,7 @@ impl Transfer {
         }
     }
 
-    /// Retrieve the destination [`Account`s][crate::account::account_struct::Account] key in the [`HomeBankDb`][crate::db::db::HomeBankDb].
+    /// Retrieve the destination [`Account`s][crate::account::account_struct::Account] key in the [`HomeBankDb`][crate::db::db_struct::HomeBankDb].
     pub fn destination(&self) -> &usize {
         &self.destination_account_idx
     }

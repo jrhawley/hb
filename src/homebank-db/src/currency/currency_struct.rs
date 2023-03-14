@@ -38,7 +38,7 @@ pub struct Currency {
     /// How many digits should be displayed after the `decimal_separator`?
     decimal_len: usize,
     
-    /// Conversion rate from this currency to the base currency specified in the [`HomeBankDbProperties`][crate::db::db_properties::HomeBankDbProperties].
+    /// Conversion rate from this currency to the base currency specified in the [`HomeBankDbProperties`][crate::db::db_struct_properties::HomeBankDbProperties].
     /// `conversion_rate` = `value in base currency` / `value in this currency`.
     conversion_rate: f32,
 

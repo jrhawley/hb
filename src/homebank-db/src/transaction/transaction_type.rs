@@ -15,7 +15,7 @@ pub enum TransactionType {
     /// Also known as a "debit" in a [double-entry bookkeeping system](https://en.wikipedia.org/wiki/Double-entry_bookkeeping).
     Income,
 
-    /// An `Expense` to one [`Account`][crate::account::account_struct::Account] and an `Income` to another, both of which are stored in the [`HomeBankDb`][crate::db::db::HomeBankDb].
+    /// An `Expense` to one [`Account`][crate::account::account_struct::Account] and an `Income` to another, both of which are stored in the [`HomeBankDb`][crate::db::db_struct::HomeBankDb].
     Transfer(Transfer),
 }
 

@@ -14,7 +14,7 @@ lazy_static!{
     pub static ref HB_MAX_DATE: NaiveDate = NaiveDate::from_ymd_opt(2200, 12, 31).unwrap();
 
     /// The Julian-encoded day 0.
-    /// Dates in the [`HomeBankDb`][crate::db::db::HomeBankDb] are stored as [Julian dates](https://en.wikipedia.org/wiki/Julian_calendar), with day 1 being 0001-01-01.
+    /// Dates in the [`HomeBankDb`][crate::db::db_struct::HomeBankDb] are stored as [Julian dates](https://en.wikipedia.org/wiki/Julian_calendar), with day 1 being 0001-01-01.
     /// We start from the previous day to avoid off-by-1 errors in calculations.
     pub static ref JULIAN_ZERO: NaiveDate = NaiveDate::from_ymd_opt(0000, 12, 31).unwrap();
 }
