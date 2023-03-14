@@ -10,6 +10,7 @@ use dirs_next::config_dir;
 use serde::Deserialize;
 use std::path::{Path, PathBuf};
 
+/// The `hb` configuration.
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Config {
     // path to the HomeBank transactions file
