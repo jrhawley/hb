@@ -1,10 +1,10 @@
-//! User-provided groups that an [`Account`][crate::account::account::Account] belongs to.
+//! User-provided groups that an [`Account`][crate::account::account_struct::Account] belongs to.
 
 use super::GroupError;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
-/// User-provided groups that an [`Account`][crate::account::account::Account] belongs to.
+/// User-provided groups that an [`Account`][crate::account::account_struct::Account] belongs to.
 #[derive(Debug, PartialEq, Clone)]
 pub struct Group {
     key: usize,

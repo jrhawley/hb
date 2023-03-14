@@ -1,4 +1,4 @@
-//! User-provided groups that an [`Account`][crate::account::account::Account] belongs to.
+//! User-provided groups that an [`Account`][crate::account::account_struct::Account] belongs to.
 
 pub mod group;
 pub mod group_error;

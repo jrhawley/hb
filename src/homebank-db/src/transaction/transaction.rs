@@ -1,4 +1,4 @@
-//! Individual transactions applied to one or more [`Account`s][crate::account::account::Account].
+//! Individual transactions applied to one or more [`Account`s][crate::account::account_struct::Account].
 
 use super::{
     julian_date_from_u32, parse_split_values, split_tags,
@@ -11,7 +11,7 @@ use chrono::NaiveDate;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
-/// Individual transactions applied to one or more [`Account`s][crate::account::account::Account].
+/// Individual transactions applied to one or more [`Account`s][crate::account::account_struct::Account].
 #[derive(Debug, PartialEq, Clone)]
 pub struct Transaction {
     /// Date on which the transaction took place.
@@ -20,7 +20,7 @@ pub struct Transaction {
     /// Net sum of the transaction (including any split amounts).
     amount: f32,
     
-    /// Which [`Account`][crate::account::account::Account] the transaction applied to.
+    /// Which [`Account`][crate::account::account_struct::Account] the transaction applied to.
     account: usize,
     
     /// Payment method transacted.
@@ -113,12 +113,12 @@ impl Transaction {
         &self.amount
     }
 
-    /// Retrieve the [`Account`][crate::account::account::Account] where the [`Transaction`] takes place.
+    /// Retrieve the [`Account`][crate::account::account_struct::Account] where the [`Transaction`] takes place.
     pub fn account(&self) -> usize {
         self.account
     }
 
-    /// Retrieve the [`Account`][crate::account::account::Account] name.
+    /// Retrieve the [`Account`][crate::account::account_struct::Account] name.
     pub fn account_name(&self, db: &HomeBankDb) -> Option<String> {
         if let Some(acct) = db.accounts().get(&self.account()) {
             Some(acct.name().to_string())
@@ -195,7 +195,7 @@ impl Transaction {
         }
     }
 
-    /// Retrieve the destination [`Account`][crate::account::account::Account] key for the [`Transfer`][crate::transaction::transaction_transfer::Transfer].
+    /// Retrieve the destination [`Account`][crate::account::account_struct::Account] key for the [`Transfer`][crate::transaction::transaction_transfer::Transfer].
     pub fn transfer_destination(&self) -> Option<&usize> {
         if let TransactionType::Transfer(xfer) = self.ttype() {
             Some(xfer.destination())

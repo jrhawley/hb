@@ -20,7 +20,7 @@ pub struct HomeBankDb {
     /// Every [`Group`][crate::group::group::Group] of accounts in this database.
     groups: HashMap<usize, Group>,
 
-    /// Every [`Account`][crate::account::account::Account] in this database.
+    /// Every [`Account`][crate::account::account_struct::Account] in this database.
     accounts: HashMap<usize, Account>,
 
     /// Every [`Payee`][crate::payee::payee::Payee] in this database.

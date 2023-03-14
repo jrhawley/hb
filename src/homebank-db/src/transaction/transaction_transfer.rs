@@ -1,17 +1,17 @@
-//! [`Transaction`s][crate::transaction::transaction::Transaction] that transfer amounts between [`Account`s][crate::account::account::Account].
+//! [`Transaction`s][crate::transaction::transaction::Transaction] that transfer amounts between [`Account`s][crate::account::account_struct::Account].
 
-/// [`Transaction`s][crate::transaction::transaction::Transaction] that transfer amounts between [`Account`s][crate::account::account::Account].
+/// [`Transaction`s][crate::transaction::transaction::Transaction] that transfer amounts between [`Account`s][crate::account::account_struct::Account].
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Transfer {
     /// Unique identifier for the transfer.
     transfer_key: usize,
 
-    /// The key for the corresponding destination [`Account`][crate::account::account::Account].
+    /// The key for the corresponding destination [`Account`][crate::account::account_struct::Account].
     destination_account_idx: usize,
 }
 
 impl Transfer {
-    /// Create an empty [`Transfer`] that doesn't link to any [`Account`s][crate::account::account::Account].
+    /// Create an empty [`Transfer`] that doesn't link to any [`Account`s][crate::account::account_struct::Account].
     pub fn empty() -> Self {
         Self {
             destination_account_idx: 0,
@@ -27,12 +27,12 @@ impl Transfer {
         }
     }
 
-    /// Retrieve the destination [`Account`s][crate::account::account::Account] key in the [`HomeBankDb`][crate::db::db::HomeBankDb].
+    /// Retrieve the destination [`Account`s][crate::account::account_struct::Account] key in the [`HomeBankDb`][crate::db::db::HomeBankDb].
     pub fn destination(&self) -> &usize {
         &self.destination_account_idx
     }
 
-    /// Retrieve the mutable destination [`Account`][crate::account::account::Account] index.
+    /// Retrieve the mutable destination [`Account`][crate::account::account_struct::Account] index.
     pub fn mut_destination(&mut self) -> &mut usize {
         &mut self.destination_account_idx
     }

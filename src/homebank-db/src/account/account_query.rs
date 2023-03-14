@@ -1,10 +1,10 @@
-//! Options for filtering [`Account`s][crate::account::account::Account] from the [`HomeBankDb`].
+//! Options for filtering [`Account`s][crate::account::account_struct::Account] from the [`HomeBankDb`].
 
 use crate::{db::HomeBankDb, query::Query, Account, AccountType};
 use clap::Parser;
 use regex::Regex;
 
-/// Options for filtering the [`Account`s][crate::account::account::Account]
+/// Options for filtering the [`Account`s][crate::account::account_struct::Account]
 #[derive(Debug, Parser)]
 #[clap(name = "accounts", visible_alias = "a", about = "Query accounts")]
 pub struct QueryAccounts {
@@ -27,12 +27,12 @@ impl QueryAccounts {
         &self.acct_type
     }
 
-    /// Retrieve the filter for [`Account`][crate::account::account::Account] group.
+    /// Retrieve the filter for [`Account`][crate::account::account_struct::Account] group.
     fn group(&self) -> &Option<Regex> {
         &self.group
     }
 
-    /// Retrieve the filter for [`Account`][crate::account::account::Account] institution.
+    /// Retrieve the filter for [`Account`][crate::account::account_struct::Account] institution.
     fn institution(&self) -> &Option<Regex> {
         &self.institution
     }

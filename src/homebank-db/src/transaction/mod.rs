@@ -1,4 +1,4 @@
-//! Individual transactions applied to one or more [`Account`s][crate::account::account::Account].
+//! Individual transactions applied to one or more [`Account`s][crate::account::account_struct::Account].
 
 pub mod transaction;
 pub mod transaction_complexity;

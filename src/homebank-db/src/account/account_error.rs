@@ -1,8 +1,8 @@
-//! Errors when parsing [`Account`][crate::account::account::Account] information and HomeBank XML files.
+//! Errors when parsing [`Account`][crate::account::account_struct::Account] information and HomeBank XML files.
 
 use thiserror::Error;
 
-/// Errors when parsing [`Account`][crate::account::account::Account] information and HomeBank XML files.
+/// Errors when parsing [`Account`][crate::account::account_struct::Account] information and HomeBank XML files.
 #[derive(Debug, Error, PartialEq)]
 pub enum AccountError {
     /// When an invalid key is provided.
@@ -17,7 +17,7 @@ pub enum AccountError {
     #[error("Invalid account position.")]
     InvalidPosition,
 
-    /// When the [`Account`][crate::account::account::Account] type doesn't map to an [`AccountType`][crate::account::account_type::AccountType].
+    /// When the [`Account`][crate::account::account_struct::Account] type doesn't map to an [`AccountType`][crate::account::account_type::AccountType].
     #[error("Invalid account type.")]
     InvalidType,
 

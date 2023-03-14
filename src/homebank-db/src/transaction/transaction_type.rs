@@ -7,15 +7,15 @@ use std::str::FromStr;
 /// The type of a [`Transaction`][crate::transaction::transaction::Transaction].
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum TransactionType {
-    /// An amount that is withdrawn from an [`Account`][crate::account::account::Account].
+    /// An amount that is withdrawn from an [`Account`][crate::account::account_struct::Account].
     /// Also known as a "credit" in a [double-entry bookkeeping system](https://en.wikipedia.org/wiki/Double-entry_bookkeeping).
     Expense,
 
-    /// An amount that is given to an [`Account`][crate::account::account::Account].
+    /// An amount that is given to an [`Account`][crate::account::account_struct::Account].
     /// Also known as a "debit" in a [double-entry bookkeeping system](https://en.wikipedia.org/wiki/Double-entry_bookkeeping).
     Income,
 
-    /// An `Expense` to one [`Account`][crate::account::account::Account] and an `Income` to another, both of which are stored in the [`HomeBankDb`][crate::db::db::HomeBankDb].
+    /// An `Expense` to one [`Account`][crate::account::account_struct::Account] and an `Income` to another, both of which are stored in the [`HomeBankDb`][crate::db::db::HomeBankDb].
     Transfer(Transfer),
 }
 
