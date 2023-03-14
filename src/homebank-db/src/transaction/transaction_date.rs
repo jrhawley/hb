@@ -7,16 +7,16 @@ use std::cmp::{max, min};
 lazy_static!{
     /// The minimum supported date (from HomeBank source code).
     /// Equivalent to 1900-01-01 (and stored in the database XML as 693596).
-    pub static ref HB_MIN_DATE: NaiveDate = NaiveDate::from_ymd(1900, 01, 01);
+    pub static ref HB_MIN_DATE: NaiveDate = NaiveDate::from_ymd_opt(1900, 1, 1).unwrap();
 
     /// The maximum supported date (from HomeBank source code).
     /// Equivalent to 2200-12-31 (and stored in the database XML as 803533).
-    pub static ref HB_MAX_DATE: NaiveDate = NaiveDate::from_ymd(2200, 12, 31);
+    pub static ref HB_MAX_DATE: NaiveDate = NaiveDate::from_ymd_opt(2200, 12, 31).unwrap();
 
     /// The Julian-encoded day 0.
     /// Dates in the [`HomeBankDb`][crate::db::db::HomeBankDb] are stored as [Julian dates](https://en.wikipedia.org/wiki/Julian_calendar), with day 1 being 0001-01-01.
     /// We start from the previous day to avoid off-by-1 errors in calculations.
-    pub static ref JULIAN_ZERO: NaiveDate = NaiveDate::from_ymd(0000, 12, 31);
+    pub static ref JULIAN_ZERO: NaiveDate = NaiveDate::from_ymd_opt(0000, 12, 31).unwrap();
 }
 
 /// Clamp a date between the minimum ([`struct@HB_MIN_DATE`]) and maximum ([`struct@HB_MAX_DATE`]) dates supported by HomeBank.
@@ -56,7 +56,7 @@ mod tests {
     #[test]
     fn convert_min_date() {
         let input = 693596;
-        let expected = NaiveDate::from_ymd(1900, 01, 01);
+        let expected = NaiveDate::from_ymd_opt(1900, 1, 1).unwrap();
 
         check_date_conversion(input, expected);
     }
@@ -64,7 +64,7 @@ mod tests {
     #[test]
     fn convert_max_date() {
         let input = 803533;
-        let expected = NaiveDate::from_ymd(2200, 12, 31);
+        let expected = NaiveDate::from_ymd_opt(2200, 12, 31).unwrap();
 
         check_date_conversion(input, expected);
     }
@@ -72,7 +72,7 @@ mod tests {
     #[test]
     fn convert_unix_epoch_beginning() {
         let input = 719163;
-        let expected = NaiveDate::from_ymd(1970, 01, 01);
+        let expected = NaiveDate::from_ymd_opt(1970, 1, 1).unwrap();
 
         check_date_conversion(input, expected);
     }
@@ -87,7 +87,7 @@ mod tests {
     #[test]
     fn convert_date_prior_to_min() {
         let input = 693500;
-        let expected = NaiveDate::from_ymd(1900, 01, 01);
+        let expected = NaiveDate::from_ymd_opt(1900, 1, 1).unwrap();
 
         check_clamp_date(input, expected);
     }
@@ -95,7 +95,7 @@ mod tests {
     #[test]
     fn convert_date_equal_to_min() {
         let input = 693596;
-        let expected = NaiveDate::from_ymd(1900, 01, 01);
+        let expected = NaiveDate::from_ymd_opt(1900, 1, 1).unwrap();
 
         check_clamp_date(input, expected);
     }
@@ -103,7 +103,7 @@ mod tests {
     #[test]
     fn convert_date_between_bounds() {
         let input = 693597;
-        let expected = NaiveDate::from_ymd(1900, 01, 02);
+        let expected = NaiveDate::from_ymd_opt(1900, 1, 2).unwrap();
 
         check_clamp_date(input, expected);
     }
@@ -111,7 +111,7 @@ mod tests {
     #[test]
     fn convert_date_equal_to_upper() {
         let input = 803533;
-        let expected = NaiveDate::from_ymd(2200, 12, 31);
+        let expected = NaiveDate::from_ymd_opt(2200, 12, 31).unwrap();
 
         check_clamp_date(input, expected);
     }
@@ -119,7 +119,7 @@ mod tests {
     #[test]
     fn convert_date_grater_than_upper() {
         let input = 803534;
-        let expected = NaiveDate::from_ymd(2200, 12, 31);
+        let expected = NaiveDate::from_ymd_opt(2200, 12, 31).unwrap();
 
         check_clamp_date(input, expected);
     }
@@ -134,7 +134,7 @@ mod tests {
     #[test]
     fn convert_date_prior_to_min_unclamped() {
         let input = 693500;
-        let expected = NaiveDate::from_ymd(1899, 09, 27);
+        let expected = NaiveDate::from_ymd_opt(1899, 9, 27).unwrap();
 
         check_unclamped_date(input, expected);
     }
@@ -142,7 +142,7 @@ mod tests {
     #[test]
     fn convert_date_equal_to_min_unclamped() {
         let input = 693596;
-        let expected = NaiveDate::from_ymd(1900, 01, 01);
+        let expected = NaiveDate::from_ymd_opt(1900, 1, 1).unwrap();
 
         check_unclamped_date(input, expected);
     }
@@ -150,7 +150,7 @@ mod tests {
     #[test]
     fn convert_date_between_bounds_unclamped() {
         let input = 693597;
-        let expected = NaiveDate::from_ymd(1900, 01, 02);
+        let expected = NaiveDate::from_ymd_opt(1900, 1, 2).unwrap();
 
         check_unclamped_date(input, expected);
     }
@@ -158,7 +158,7 @@ mod tests {
     #[test]
     fn convert_date_equal_to_upper_unclamped() {
         let input = 803533;
-        let expected = NaiveDate::from_ymd(2200, 12, 31);
+        let expected = NaiveDate::from_ymd_opt(2200, 12, 31).unwrap();
 
         check_unclamped_date(input, expected);
     }
@@ -166,7 +166,7 @@ mod tests {
     #[test]
     fn convert_date_grater_than_upper_unclamped() {
         let input = 803534;
-        let expected = NaiveDate::from_ymd(2201, 01, 01);
+        let expected = NaiveDate::from_ymd_opt(2201, 1, 1).unwrap();
 
         check_unclamped_date(input, expected);
     }

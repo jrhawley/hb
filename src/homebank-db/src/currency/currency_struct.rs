@@ -60,7 +60,7 @@ impl Currency {
             thousands_separator: ' ',
             decimal_len: 2,
             conversion_rate: 1.0,
-            mdate: NaiveDate::from_ymd(2000, 1, 1),
+            mdate: NaiveDate::from_ymd_opt(2000, 1, 1).unwrap(),
         }
     }
 

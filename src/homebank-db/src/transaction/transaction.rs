@@ -57,7 +57,7 @@ impl Transaction {
     /// Create an empty [`Transaction`].
     pub fn empty() -> Self {
         Self {
-            date: NaiveDate::from_ymd(2000, 1, 1),
+            date: NaiveDate::from_ymd_opt(2000, 1, 1).unwrap(),
             amount: 0.0,
             account: 0,
             pay_mode: PayMode::default(),
@@ -645,7 +645,7 @@ mod tests {
         let expected = Ok(Transaction {
             account: 1,
             amount: 1.0,
-            date: NaiveDate::from_ymd(2020, 03, 11),
+            date: NaiveDate::from_ymd_opt(2020, 3, 11).unwrap(),
             flags: None,
             info: None,
             memo: None,
@@ -825,7 +825,7 @@ mod tests {
     fn parse_good_date() {
         let input = r#"<ope date="737495">"#;
         let expected = Ok(Transaction {
-            date: NaiveDate::from_ymd(2020, 03, 11),
+            date: NaiveDate::from_ymd_opt(2020, 3, 11).unwrap(),
             ..Default::default()
         });
 
@@ -1035,7 +1035,7 @@ mod tests {
     fn parse_simple_split() {
         let input = r#"<ope date="736696" amount="-1088.72" account="5" paymode="8" st="2" flags="256" payee="13" scat="83||100" samt="-1119.8||31.079999999999998" smem="January||Internet payment (Dec 1 - Dec 30)"/>"#;
         let expected = Ok(Transaction {
-            date: NaiveDate::from_ymd(2018, 01, 02),
+            date: NaiveDate::from_ymd_opt(2018, 1, 2).unwrap(),
             amount: -1088.72,
             account: 5,
             pay_mode: PayMode::Deposit,
@@ -1062,7 +1062,7 @@ mod tests {
     fn parse_simple_split_reordered() {
         let input = r#"<ope date="736696" amount="-1088.72" account="5" paymode="8" st="2" flags="256" payee="13" samt="-1119.8||31.079999999999998" scat="83||100" smem="January||Internet payment (Dec 1 - Dec 30)"/>"#;
         let expected = Ok(Transaction {
-            date: NaiveDate::from_ymd(2018, 01, 02),
+            date: NaiveDate::from_ymd_opt(2018, 1, 2).unwrap(),
             amount: -1088.72,
             account: 5,
             pay_mode: PayMode::Deposit,
@@ -1098,7 +1098,7 @@ mod tests {
     fn parse_simple_transfer() {
         let input = r#"<ope date="736696" amount="-300" account="1" paymode="4" st="2" payee="1" kxfer="10" dst_account="2"/>"#;
         let expected = Ok(Transaction {
-            date: NaiveDate::from_ymd(2018, 01, 02),
+            date: NaiveDate::from_ymd_opt(2018, 1, 2).unwrap(),
             amount: -300.0,
             account: 1,
             pay_mode: PayMode::BankTransfer,
@@ -1178,7 +1178,7 @@ mod tests {
     #[test]
     fn subset_split() {
         let tr = Transaction {
-            date: NaiveDate::from_ymd(2018, 01, 02),
+            date: NaiveDate::from_ymd_opt(2018, 1, 2).unwrap(),
             amount: -1088.72,
             account: 5,
             pay_mode: PayMode::Deposit,
@@ -1198,7 +1198,7 @@ mod tests {
         };
         let idx = vec![0];
         let expected = Some(Transaction {
-            date: NaiveDate::from_ymd(2018, 01, 02),
+            date: NaiveDate::from_ymd_opt(2018, 1, 2).unwrap(),
             amount: -1119.80,
             account: 5,
             pay_mode: PayMode::Deposit,
@@ -1220,7 +1220,7 @@ mod tests {
     #[test]
     fn subset_split_empty_index() {
         let tr = Transaction {
-            date: NaiveDate::from_ymd(2018, 01, 02),
+            date: NaiveDate::from_ymd_opt(2018, 1, 2).unwrap(),
             amount: -1088.72,
             account: 5,
             pay_mode: PayMode::Deposit,
