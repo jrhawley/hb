@@ -64,7 +64,6 @@ impl Account {
             maximum_amount: 0.0,
             notes: "".to_string(),
             group_idx: Some(0),
-            reconciled_date: NaiveDate::from_ymd(2000, 01, 01),
         }
     }
 
@@ -97,6 +96,7 @@ impl Account {
             notes: notes.to_string(),
             group_idx,
             reconciled_date: rdate.clone(),
+            reconciled_date: NaiveDate::from_ymd_opt(2000, 1, 1).unwrap(),
         }
     }
 
