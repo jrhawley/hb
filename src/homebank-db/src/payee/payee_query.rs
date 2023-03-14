@@ -36,7 +36,7 @@ impl Query for QueryPayees {
                 Some(re) => re.is_match(p.name()),
                 None => true,
             })
-            .map(|payee| payee.clone())
+            .cloned()
             .collect();
 
         filt_payees

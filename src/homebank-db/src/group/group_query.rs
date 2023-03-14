@@ -30,7 +30,7 @@ impl Query for QueryGroups {
                 Some(re) => re.is_match(grp.name()),
                 None => true,
             })
-            .map(|grp| grp.clone())
+            .cloned()
             .collect();
 
         filt_groups
