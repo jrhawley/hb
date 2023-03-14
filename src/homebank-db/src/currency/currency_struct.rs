@@ -64,35 +64,6 @@ impl Currency {
         }
     }
 
-    /// Create a new properties object
-    pub fn new(
-        key: usize,
-        flags: usize,
-        iso: &str,
-        name: &str,
-        symbol: char,
-        syprf: bool,
-        decimal_separator: char,
-        thousands_separator: char,
-        decimal_len: usize,
-        conversion_rate: f32,
-        mdate: &NaiveDate,
-    ) -> Self {
-        Self {
-            key,
-            flags,
-            iso: iso.to_string(),
-            name: name.to_string(),
-            symbol,
-            syprf,
-            decimal_separator,
-            thousands_separator,
-            decimal_len,
-            conversion_rate,
-            mdate: mdate.clone(),
-        }
-    }
-
     /// Retrieve the `Currency` key
     pub(crate) fn key(&self) -> usize {
         self.key
