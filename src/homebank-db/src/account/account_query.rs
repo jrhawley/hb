@@ -67,7 +67,7 @@ impl Query for QueryAccounts {
                 Some(re) => re.is_match(acct.institution()),
                 None => true,
             })
-            .map(|acct| acct.clone())
+            .cloned()
             .collect();
 
         filt_accounts
