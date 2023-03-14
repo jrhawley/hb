@@ -19,7 +19,7 @@ impl HomeBankDbSchema {
     pub fn empty() -> Self {
         Self {
             version: Version::new(0, 0, 1),
-            date: julian_date_from_u32(050504),
+            date: julian_date_from_u32(50504),
         }
     }
 }
