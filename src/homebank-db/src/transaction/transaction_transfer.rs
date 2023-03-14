@@ -1,6 +1,6 @@
-//! [`Transaction`s][crate::transaction::transaction::Transaction] that transfer amounts between [`Account`s][crate::account::account_struct::Account].
+//! [`Transaction`s][crate::transaction::transaction_struct::Transaction] that transfer amounts between [`Account`s][crate::account::account_struct::Account].
 
-/// [`Transaction`s][crate::transaction::transaction::Transaction] that transfer amounts between [`Account`s][crate::account::account_struct::Account].
+/// [`Transaction`s][crate::transaction::transaction_struct::Transaction] that transfer amounts between [`Account`s][crate::account::account_struct::Account].
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Transfer {
     /// Unique identifier for the transfer.

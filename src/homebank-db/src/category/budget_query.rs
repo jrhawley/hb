@@ -62,12 +62,12 @@ impl QueryBudget {
     }
 }
 
-/// The sum of all [`Transaction`s][crate::transaction::transaction::Transaction], as well as budget information, for a given [`Category`].
+/// The sum of all [`Transaction`s][crate::transaction::transaction_struct::Transaction], as well as budget information, for a given [`Category`].
 pub struct BudgetSummary {
     /// The [`Category`] name
     name: String,
     
-    /// The total sum of [`Transaction`s][crate::transaction::transaction::Transaction] over the time span provided.
+    /// The total sum of [`Transaction`s][crate::transaction::transaction_struct::Transaction] over the time span provided.
     progress: f32,
 
     /// How much room is allotted for this [`Category`] over the time span provided.

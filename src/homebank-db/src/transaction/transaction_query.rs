@@ -1,4 +1,4 @@
-//! Options for filtering [`Transaction`s][crate::transaction::transaction::Transaction] from the [`HomeBankDb`].
+//! Options for filtering [`Transaction`s][crate::transaction::transaction_struct::Transaction] from the [`HomeBankDb`].
 
 use super::{TransactionStatus, TransactionType};
 use crate::{HomeBankDb, PayMode, Query, Transaction};
@@ -7,7 +7,7 @@ use clap::Parser;
 use regex::Regex;
 use std::str::FromStr;
 
-/// Options for filtering [`Transaction`s][crate::transaction::transaction::Transaction] from the [`HomeBankDb`].
+/// Options for filtering [`Transaction`s][crate::transaction::transaction_struct::Transaction] from the [`HomeBankDb`].
 #[derive(Debug, Parser)]
 #[clap(
     name = "transactions",

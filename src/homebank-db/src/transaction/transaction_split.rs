@@ -1,4 +1,4 @@
-//! A [`Transaction`][crate::transaction::transaction::Transaction] that is split across multiple [`Categories`][crate::category::category_struct::Category].
+//! A [`Transaction`][crate::transaction::transaction_struct::Transaction] that is split across multiple [`Categories`][crate::category::category_struct::Category].
 
 use crate::TransactionError;
 use std::str::FromStr;
@@ -7,7 +7,7 @@ use xml::attribute::OwnedAttribute;
 /// The string separator used to denote split transactions in the HomeBank XML file.
 const SPLIT_SEPARATOR: &str = "||";
 
-/// A [`Transaction`][crate::transaction::transaction::Transaction] that is split across multiple [`Categories`][crate::category::category_struct::Category].
+/// A [`Transaction`][crate::transaction::transaction_struct::Transaction] that is split across multiple [`Categories`][crate::category::category_struct::Category].
 #[derive(Debug, PartialEq, Clone)]
 pub struct SplitTransaction {
     /// The number of sub-transactions it is split into.

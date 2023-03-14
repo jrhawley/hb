@@ -1,8 +1,8 @@
-//! Errors when parsing to [`Transaction`s][crate::transaction::transaction::Transaction] from the HomeBank XML file.
+//! Errors when parsing to [`Transaction`s][crate::transaction::transaction_struct::Transaction] from the HomeBank XML file.
 
 use thiserror::Error;
 
-/// Errors when parsing to [`Transaction`s][crate::transaction::transaction::Transaction] from the HomeBank XML file.
+/// Errors when parsing to [`Transaction`s][crate::transaction::transaction_struct::Transaction] from the HomeBank XML file.
 #[derive(Debug, Error, PartialEq)]
 pub enum TransactionError {
     /// When the account key is invalid or not found within the database.

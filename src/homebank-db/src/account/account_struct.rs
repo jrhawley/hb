@@ -45,7 +45,7 @@ pub struct Account {
     /// Index of the group this account belongs to, if any.
     group_idx: Option<usize>,
 
-    /// Last reconciled date for [`Transaction`s][crate::transaction::transaction::Transaction] associated with this account.
+    /// Last reconciled date for [`Transaction`s][crate::transaction::transaction_struct::Transaction] associated with this account.
     reconciled_date: NaiveDate,
 }
 

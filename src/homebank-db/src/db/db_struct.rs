@@ -30,7 +30,7 @@ pub struct HomeBankDb {
     categories: HashMap<usize, Category>,
 
     // pub favourites: Vec<Favourite>,
-    /// Every [`Transaction`][crate::transaction::transaction::Transaction] in this database.
+    /// Every [`Transaction`][crate::transaction::transaction_struct::Transaction] in this database.
     transactions: Vec<Transaction>,
 }
 

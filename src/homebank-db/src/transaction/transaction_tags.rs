@@ -1,9 +1,9 @@
-//! Helper functions to handle the processing of [`Transaction`][crate::transaction::transaction::Transaction] tags.
+//! Helper functions to handle the processing of [`Transaction`][crate::transaction::transaction_struct::Transaction] tags.
 
 /// The character separating each tag in the HomeBank XML file.
 const TAG_SEPARATOR: char = ' ';
 
-/// Get the list of tags for a [`Transaction`][crate::transaction::transaction::Transaction] and parse them.
+/// Get the list of tags for a [`Transaction`][crate::transaction::transaction_struct::Transaction] and parse them.
 pub(crate) fn split_tags(s: &str) -> Vec<String> {
     s.split(TAG_SEPARATOR)
         .map(|s| s.to_string())

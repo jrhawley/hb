@@ -1,9 +1,9 @@
-//! Status of a [`Transaction`][crate::transaction::transaction::Transaction].
+//! Status of a [`Transaction`][crate::transaction::transaction_struct::Transaction].
 
 use super::TransactionError;
 use std::str::FromStr;
 
-/// Status of a [`Transaction`][crate::transaction::transaction::Transaction].
+/// Status of a [`Transaction`][crate::transaction::transaction_struct::Transaction].
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum TransactionStatus {
     None,

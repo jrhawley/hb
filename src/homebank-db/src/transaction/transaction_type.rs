@@ -1,10 +1,10 @@
-//! The type of a [`Transaction`][crate::transaction::transaction::Transaction].
+//! The type of a [`Transaction`][crate::transaction::transaction_struct::Transaction].
 
 use super::Transfer;
 use crate::TransactionError;
 use std::str::FromStr;
 
-/// The type of a [`Transaction`][crate::transaction::transaction::Transaction].
+/// The type of a [`Transaction`][crate::transaction::transaction_struct::Transaction].
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum TransactionType {
     /// An amount that is withdrawn from an [`Account`][crate::account::account_struct::Account].
@@ -20,7 +20,7 @@ pub enum TransactionType {
 }
 
 impl TransactionType {
-    /// Determine if the [`Transaction`][crate::transaction::transaction::Transaction] is a [`Transfer`][crate::transaction::transaction_transfer::Transfer].
+    /// Determine if the [`Transaction`][crate::transaction::transaction_struct::Transaction] is a [`Transfer`][crate::transaction::transaction_transfer::Transfer].
     pub fn is_transfer(&self) -> bool {
         match self {
             TransactionType::Transfer(_) => true,
@@ -28,7 +28,7 @@ impl TransactionType {
         }
     }
 
-    /// Determine if two [`Transaction`s][crate::transaction::transaction::Transaction] are of a similar type.
+    /// Determine if two [`Transaction`s][crate::transaction::transaction_struct::Transaction] are of a similar type.
     /// Useful for comparing if two [`TransactionType`]s are both [`Transfer`s][crate::transaction::transaction_transfer::Transfer] or
     /// not, without checking the values within the transfer.
     pub fn is_similar_to(&self, other: &Self) -> bool {

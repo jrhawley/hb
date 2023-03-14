@@ -1,10 +1,10 @@
-//! The donor or recipient of a [`Transaction`][crate::transaction::transaction::Transaction].
+//! The donor or recipient of a [`Transaction`][crate::transaction::transaction_struct::Transaction].
 
 use super::PayeeError;
 use std::str::FromStr;
 use xml::attribute::OwnedAttribute;
 
-/// The donor or recipient of a [`Transaction`][crate::transaction::transaction::Transaction].
+/// The donor or recipient of a [`Transaction`][crate::transaction::transaction_struct::Transaction].
 #[derive(Debug, PartialEq, Clone)]
 pub struct Payee {
     /// Unique key for the payee in the database.
@@ -13,10 +13,10 @@ pub struct Payee {
     /// User-provided name of the payee.
     name: String,
 
-    /// Default [`Category`][crate::category::category_struct::Category] that [`Transaction`s][crate::transaction::transaction::Transaction] involving this payee should belong to.
+    /// Default [`Category`][crate::category::category_struct::Category] that [`Transaction`s][crate::transaction::transaction_struct::Transaction] involving this payee should belong to.
     default_category_key: Option<usize>,
 
-    /// Default [`PayMode`][crate::paymode::paymode_struct::PayMode] that [`Transaction`s][crate::transaction::transaction::Transaction] involving this payee should belong to.
+    /// Default [`PayMode`][crate::paymode::paymode_struct::PayMode] that [`Transaction`s][crate::transaction::transaction_struct::Transaction] involving this payee should belong to.
     default_paymode_key: Option<usize>,
 }
 

@@ -1,4 +1,4 @@
-//! Categories for each [`Transaction`][crate::transaction::transaction::Transaction].
+//! Categories for each [`Transaction`][crate::transaction::transaction_struct::Transaction].
 
 pub mod budget_query;
 pub mod category_struct;

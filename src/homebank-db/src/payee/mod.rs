@@ -1,4 +1,4 @@
-//! The donor or recipient of a [`Transaction`][crate::transaction::transaction::Transaction].
+//! The donor or recipient of a [`Transaction`][crate::transaction::transaction_struct::Transaction].
 
 pub mod payee_error;
 pub mod payee_query;

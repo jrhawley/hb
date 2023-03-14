@@ -1,9 +1,9 @@
-//! Payment method for a [`Transaction`][crate::transaction::transaction::Transaction].
+//! Payment method for a [`Transaction`][crate::transaction::transaction_struct::Transaction].
 
 use crate::TransactionError;
 use std::str::FromStr;
 
-/// Payment method for a [`Transaction`][crate::transaction::transaction::Transaction].
+/// Payment method for a [`Transaction`][crate::transaction::transaction_struct::Transaction].
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum PayMode {
     None,
