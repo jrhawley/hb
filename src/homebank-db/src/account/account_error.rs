@@ -45,7 +45,7 @@ pub enum AccountError {
     #[error("Invalid account notes.")]
     InvalidNotes,
 
-    /// When the currency index does not match a [`Group`][crate::group::group::Group] in the database.
+    /// When the currency index does not match a [`Group`][crate::group::group_struct::Group] in the database.
     #[error("Invalid account group index.")]
     InvalidGroup,
 

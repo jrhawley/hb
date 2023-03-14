@@ -17,7 +17,7 @@ pub struct HomeBankDb {
     /// Every [`Currency`][crate::currency::currency_struct::Currency] used in this database.
     currencies: HashMap<usize, Currency>,
 
-    /// Every [`Group`][crate::group::group::Group] of accounts in this database.
+    /// Every [`Group`][crate::group::group_struct::Group] of accounts in this database.
     groups: HashMap<usize, Group>,
 
     /// Every [`Account`][crate::account::account_struct::Account] in this database.
