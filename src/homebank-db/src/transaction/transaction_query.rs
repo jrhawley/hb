@@ -140,10 +140,10 @@ impl QueryTransactions {
         transaction_type: &Option<Vec<TransactionType>>,
     ) -> Self {
         Self {
-            date_from: date_from.clone(),
-            date_to: date_to.clone(),
-            amount_from: amount_from.clone(),
-            amount_to: amount_to.clone(),
+            date_from: *date_from,
+            date_to: *date_to,
+            amount_from: *amount_from,
+            amount_to: *amount_to,
             status: status.clone(),
             category: category.clone(),
             payee: payee.clone(),
