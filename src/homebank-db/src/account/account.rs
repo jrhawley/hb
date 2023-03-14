@@ -64,38 +64,6 @@ impl Account {
             maximum_amount: 0.0,
             notes: "".to_string(),
             group_idx: Some(0),
-        }
-    }
-
-    pub fn new(
-        key: usize,
-        flags: usize,
-        pos: usize,
-        atype: AccountType,
-        currency_idx: usize,
-        name: &str,
-        bank_name: &str,
-        init: f32,
-        min: f32,
-        max: f32,
-        notes: &str,
-        group_idx: Option<usize>,
-        rdate: &NaiveDate,
-    ) -> Self {
-        Self {
-            key,
-            flags,
-            pos,
-            atype,
-            currency_idx,
-            name: name.to_string(),
-            bank_name: bank_name.to_string(),
-            initial_amount: init,
-            minimum_amount: min,
-            maximum_amount: max,
-            notes: notes.to_string(),
-            group_idx,
-            reconciled_date: rdate.clone(),
             reconciled_date: NaiveDate::from_ymd_opt(2000, 1, 1).unwrap(),
         }
     }
