@@ -21,7 +21,7 @@ pub enum AccountError {
     #[error("Invalid account type.")]
     InvalidType,
 
-    /// When the currency index does not match a [`Currency`][crate::currency::currency::Currency] in the database.
+    /// When the currency index does not match a [`Currency`][crate::currency::currency_struct::Currency] in the database.
     #[error("Invalid account currency.")]
     InvalidCurrency,
 

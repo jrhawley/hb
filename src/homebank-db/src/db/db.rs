@@ -14,7 +14,7 @@ pub struct HomeBankDb {
     /// Other properties of the database.
     properties: HomeBankDbProperties,
 
-    /// Every [`Currency`][crate::currency::currency::Currency] used in this database.
+    /// Every [`Currency`][crate::currency::currency_struct::Currency] used in this database.
     currencies: HashMap<usize, Currency>,
 
     /// Every [`Group`][crate::group::group::Group] of accounts in this database.

@@ -1,10 +1,10 @@
-//! Options for filtering [`Currencies`][crate::currency::currency::Currency] from the [`HomeBankDb`].
+//! Options for filtering [`Currencies`][crate::currency::currency_struct::Currency] from the [`HomeBankDb`].
 
 use crate::{Currency, HomeBankDb, Query};
 use clap::Parser;
 use regex::Regex;
 
-/// Options for filtering [`Currencies`][crate::currency::currency::Currency] from the [`HomeBankDb`].
+/// Options for filtering [`Currencies`][crate::currency::currency_struct::Currency] from the [`HomeBankDb`].
 #[derive(Debug, Parser)]
 #[clap(
     name = "currencies",
@@ -36,7 +36,7 @@ impl Query for QueryCurrencies {
                 Some(re) => re.is_match(p.name()),
                 None => true,
             })
-            .map(|curr| curr.clone())
+            .cloned()
             .collect();
 
         filt_payees

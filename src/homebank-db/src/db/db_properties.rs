@@ -10,7 +10,7 @@ pub struct HomeBankDbProperties {
     /// Title for the database.
     title: String,
 
-    /// Key specifying the base [`Currency`][crate::currency::currency::Currency] that all conversion rates are calculated against.
+    /// Key specifying the base [`Currency`][crate::currency::currency_struct::Currency] that all conversion rates are calculated against.
     currency_key: usize,
 
     /// Key specifying the [`Category`][crate::category::category_struct::Category] that contains [`Transaction`s][crate::transaction::transaction::Transaction] about your vehicle's (or vehicles') mileage and fuel consumption.
