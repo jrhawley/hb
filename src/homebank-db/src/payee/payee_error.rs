@@ -1,8 +1,8 @@
-//! Errors when parsing [`Payee`s][crate::payee::payee::Payee] from the [`HomeBankDb`][crate::db::db_struct::HomeBankDb].
+//! Errors when parsing [`Payee`s][crate::payee::payee_struct::Payee] from the [`HomeBankDb`][crate::db::db_struct::HomeBankDb].
 
 use thiserror::Error;
 
-/// Errors when parsing [`Payee`s][crate::payee::payee::Payee] from the [`HomeBankDb`][crate::db::db_struct::HomeBankDb].
+/// Errors when parsing [`Payee`s][crate::payee::payee_struct::Payee] from the [`HomeBankDb`][crate::db::db_struct::HomeBankDb].
 #[derive(Debug, Error)]
 pub enum PayeeError {
     /// When the key for the payee is invalid.

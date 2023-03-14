@@ -132,12 +132,12 @@ impl Transaction {
         &self.status
     }
 
-    /// Retrieve the [`Payee`][crate::payee::payee::Payee] for the [`Transaction`].
+    /// Retrieve the [`Payee`][crate::payee::payee_struct::Payee] for the [`Transaction`].
     pub fn payee(&self) -> &Option<usize> {
         &self.payee
     }
 
-    /// Retrieve the [`Payee`'s][crate::payee::payee::Payee] name.
+    /// Retrieve the [`Payee`'s][crate::payee::payee_struct::Payee] name.
     pub fn payee_name(&self, db: &HomeBankDb) -> Option<String> {
         match self.payee() {
             Some(idx) => {

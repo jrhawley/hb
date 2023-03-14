@@ -23,7 +23,7 @@ pub struct HomeBankDb {
     /// Every [`Account`][crate::account::account_struct::Account] in this database.
     accounts: HashMap<usize, Account>,
 
-    /// Every [`Payee`][crate::payee::payee::Payee] in this database.
+    /// Every [`Payee`][crate::payee::payee_struct::Payee] in this database.
     payees: HashMap<usize, Payee>,
 
     /// Every [`Category`][crate::category::category_struct::Category] in this database.
