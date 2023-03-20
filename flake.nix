@@ -33,9 +33,27 @@
       ];
 
       pkgs = import nixpkgs { inherit system overlays; };
-    in
-    {
-      devShells.default = pkgs.mkShell {
+      name = "hb";
+    in rec {
+      packages.${name} = pkgs.rustPlatform.buildRustPackage rec {
+        pname = "hb";
+        version = "0.3.0";
+        src = ./.;
+        cargoSha256 = "sha256-Qu4RAwJqqVFTAtwPTnOS+QpzAb97QwactUkHHqsFHrA=";
+      };
+
+      # `nix build`
+      defaultPackage = packages.${name};
+
+      # `nix run`
+      apps.${name} = flake-utils.lib.mkApp {
+        inherit name;
+        drv = packages.${name};
+      };
+      defaultApp = apps.${name};
+
+      # `nix develop`
+      devShell = pkgs.mkShell {
         packages = with pkgs; [
           rustToolchain
           openssl
@@ -47,10 +65,7 @@
           cargo-watch
           rust-analyzer
         ];
-
-        shellHook = ''
-          ${pkgs.rustToolchain}/bin/cargo --version
-        '';
-      };
+      };      
+      devShells.default = devShell;
     });
 }
