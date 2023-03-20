@@ -85,8 +85,8 @@ mod tests {
     #[test]
     #[cfg(target_os = "linux")]
     fn non_tilde_is_unchanged() {
-        let input = Path::new("/usr/bin/cat");
-        let expected = Some(PathBuf::from("/usr/bin/cat"));
+        let input = Path::new("/etc/passwd");
+        let expected = Some(PathBuf::from("/etc/passwd"));
 
         check_expand_tilde(input, expected);
     }

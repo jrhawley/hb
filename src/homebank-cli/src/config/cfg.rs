@@ -174,9 +174,9 @@ mod tests {
     #[test]
     #[cfg(target_os = "linux")]
     fn new_absolute_paths_stay_absolute() {
-        let input = Path::new("/usr/bin/cat");
+        let input = Path::new("/etc/passwd");
         let expected = Config {
-            path: PathBuf::from("/usr/bin/cat"),
+            path: PathBuf::from("/etc/passwd"),
         };
 
         check_new(input, expected);
@@ -228,7 +228,7 @@ mod tests {
     fn try_from_existing_config_absolute_existing_xhb() {
         let input = CliOpts::new(Path::new("tests/absolute_existing_linux.toml"), None);
         let expected = Config {
-            path: PathBuf::from("/usr/bin/cat"),
+            path: PathBuf::from("/etc/passwd"),
         };
 
         check_try_from_cli(input, expected);
@@ -240,7 +240,7 @@ mod tests {
     fn try_from_existing_config_relative_existing_xhb() {
         let input = CliOpts::new(Path::new("tests/relative_existing_linux.toml"), None);
         let expected = Config {
-            path: PathBuf::from("/usr/bin/cat"),
+            path: PathBuf::from("/etc/passwd"),
         };
 
         check_try_from_cli(input, expected);
@@ -252,7 +252,7 @@ mod tests {
     fn try_from_existing_config_absolute_missing_xhb() {
         let input = CliOpts::new(Path::new("tests/absolute_missing_linux.toml"), None);
         let expected = Config {
-            path: PathBuf::from("/usr/bin/cat"),
+            path: PathBuf::from("/etc/passwd"),
         };
 
         check_try_from_cli(input, expected);
@@ -277,8 +277,8 @@ mod tests {
     #[test]
     #[cfg(target_os = "linux")]
     fn try_from_str_with_path() {
-        let input = "path = '/usr/bin/cat'";
-        let expected = Config::new(Path::new("/usr/bin/cat"));
+        let input = "path = '/etc/passwd'";
+        let expected = Config::new(Path::new("/etc/passwd"));
 
         check_try_from_toml(&input, expected);
     }
