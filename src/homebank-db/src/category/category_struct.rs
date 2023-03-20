@@ -78,14 +78,14 @@ pub struct Category {
 
     /// To help when grouping items, categories may be organized into subcategories.
     /// If this is the case, `parent_key` will give the primary key for its parent.
-    /// This will be `Some(_)` if this category is a subcategory for some other category. 
+    /// This will be `Some(_)` if this category is a subcategory for some other category.
     ///
     /// # Examples
     ///
     /// A parent `Vehicle` category can be subdivided into `Vehicle:Gasoline` and `Vehicle:Insurance` categories.
     /// The relationship between the categories would look something like:
     ///
-    /// ```rust
+    /// ```rust,no_run
     /// Category {
     ///     key: 0,
     ///     name: "Vehicle",
