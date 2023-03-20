@@ -85,7 +85,7 @@ pub struct Category {
     /// A parent `Vehicle` category can be subdivided into `Vehicle:Gasoline` and `Vehicle:Insurance` categories.
     /// The relationship between the categories would look something like:
     ///
-    /// ```rust,no_run
+    /// ```rust,compile_fail
     /// Category {
     ///     key: 0,
     ///     name: "Vehicle",
