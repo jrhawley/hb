@@ -36,7 +36,7 @@
       name = "hb";
     in rec {
       packages.${name} = pkgs.rustPlatform.buildRustPackage rec {
-        pname = "hb";
+        pname = "${name}";
         version = "0.3.0";
         src = ./.;
         cargoSha256 = "sha256-kbpOJZaOJF0EVSKqOm72yTsAkd/Xlf2OkYc0eRfR+ts=";
@@ -50,7 +50,7 @@
         inherit name;
         drv = packages.${name};
       };
-      defaultApp = apps.${name};
+      apps.default = apps.${name};
 
       # `nix develop`
       devShell = pkgs.mkShell {
