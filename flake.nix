@@ -39,7 +39,7 @@
         pname = "hb";
         version = "0.3.0";
         src = ./.;
-        cargoSha256 = "sha256-Qu4RAwJqqVFTAtwPTnOS+QpzAb97QwactUkHHqsFHrA=";
+        cargoSha256 = "sha256-kbpOJZaOJF0EVSKqOm72yTsAkd/Xlf2OkYc0eRfR+ts=";
       };
 
       # `nix build`
