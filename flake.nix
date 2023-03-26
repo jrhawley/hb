@@ -34,38 +34,54 @@
 
       pkgs = import nixpkgs { inherit system overlays; };
       name = "hb";
-    in rec {
-      packages.${name} = pkgs.rustPlatform.buildRustPackage rec {
-        pname = "${name}";
-        version = "0.3.0";
-        src = ./.;
-        cargoSha256 = "sha256-kbpOJZaOJF0EVSKqOm72yTsAkd/Xlf2OkYc0eRfR+ts=";
-      };
+      version = "0.3.0";
+      deps = with pkgs; [
+        rustToolchain
+        openssl
+        pkg-config
+        cargo-deny
+        cargo-edit
+        cargo-make
+        cargo-nextest
+        cargo-watch
+        rust-analyzer
+      ];
 
+      drv = pkgs.rustPlatform.buildRustPackage {
+        pname = "${name}";
+        version = "${version}";
+        src = builtins.path {
+          path = ./.;
+          name = "${name}";
+        };
+        cargoLock = {
+          lockFile = ./Cargo.lock;
+        };
+      };
+      app = flake-utils.lib.mkApp {
+        inherit name drv;
+      };
+      shell = pkgs.mkShell {
+        packages = deps;
+      };
+    in {
       # `nix build`
-      defaultPackage = packages.${name};
+      packages = {
+        "${name}" = drv;
+        default = drv;
+      };
 
       # `nix run`
-      apps.${name} = flake-utils.lib.mkApp {
-        inherit name;
-        drv = packages.${name};
+      apps = {
+        "${name}" = app;
+        default = app;
       };
-      apps.default = apps.${name};
 
       # `nix develop`
-      devShell = pkgs.mkShell {
-        packages = with pkgs; [
-          rustToolchain
-          openssl
-          pkg-config
-          cargo-deny
-          cargo-edit
-          cargo-make
-          cargo-nextest
-          cargo-watch
-          rust-analyzer
-        ];
+      devShells = {
+       "${name}" = shell;
+        default = shell;
       };      
-      devShells.default = devShell;
     });
 }
+
