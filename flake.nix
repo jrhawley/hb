@@ -2,37 +2,30 @@
   description = "hb development environment";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/release-22.11";
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     flake-utils.url = "github:numtide/flake-utils";
-    rust-overlay.url = "github:oxalica/rust-overlay";
+    nixpkgs.url = "github:NixOS/nixpkgs/release-22.11";
   };
 
   outputs =
     { self
     , nixpkgs
     , flake-utils
-    , rust-overlay
+    , fenix
     }:
 
     flake-utils.lib.eachDefaultSystem (system:
     let
-      overlays = [
-        (import rust-overlay)
-        (self: super: {
-          rustToolchain =
-            let
-              rust = super.rust-bin;
-            in
-            if builtins.pathExists ./rust-toolchain.toml then
-              rust.fromRustupToolchainFile ./rust-toolchain.toml
-            else if builtins.pathExists ./rust-toolchain then
-              rust.fromRustupToolchainFile ./rust-toolchain
-            else
-              rust.stable.latest.default;
-        })
-      ];
+      pkgs = import nixpkgs { inherit system; };
+      rustToolchain = fenix.packages.${system}.stable.toolchain;
+      rustPlatform = (pkgs.makeRustPlatform {
+        cargo = rustToolchain;
+        rustc = rustToolchain;
+      });
 
-      pkgs = import nixpkgs { inherit system overlays; };
       name = "hb";
       version = "0.3.0";
       deps = with pkgs; [
@@ -46,8 +39,13 @@
         cargo-watch
         rust-analyzer
       ];
+      dev-deps = with pkgs; [
+        cachix
+        jq
+        p7zip
+      ];
 
-      drv = pkgs.rustPlatform.buildRustPackage {
+      drv = rustPlatform.buildRustPackage {
         pname = "${name}";
         version = "${version}";
         src = builtins.path {
@@ -62,7 +60,7 @@
         inherit name drv;
       };
       shell = pkgs.mkShell {
-        packages = deps;
+        packages = deps ++ dev-deps;
       };
     in {
       # `nix build`
