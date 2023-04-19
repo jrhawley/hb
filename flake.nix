@@ -32,17 +32,18 @@
         rustToolchain
         openssl
         pkg-config
+      ];
+      dev-deps = with pkgs; [
+        cachix
+        cargo-audit
         cargo-deny
         cargo-edit
         cargo-make
         cargo-nextest
         cargo-watch
-        rust-analyzer
-      ];
-      dev-deps = with pkgs; [
-        cachix
         jq
         p7zip
+        rust-analyzer
       ];
 
       drv = rustPlatform.buildRustPackage {
