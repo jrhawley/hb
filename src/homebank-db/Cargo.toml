@@ -8,7 +8,7 @@ license = { workspace = true }
 description = "Query and operate on your HomeBank database."
 
 [dependencies]
-chrono = "0.4.19"
+chrono = { version = "0.4", default-features = false }
 clap = { workspace = true }
 kronos = "0.1.5"
 lazy_static = "1.4.0"
