@@ -275,8 +275,8 @@ impl QueryTransactions {
 
     /// Filer by account name
     pub fn filter_account(&self, tr: &Transaction, db: &HomeBankDb) -> bool {
-        match (self.payee(), tr.account_name(db)) {
-            // if there is a regex and there is a category name
+        match (self.account(), tr.account_name(db)) {
+            // if there is a regex and there is a account name
             (Some(re), Some(tr_account_name)) => re.is_match(&tr_account_name),
             // if there is a regex but no category
             (Some(_), None) => false,
