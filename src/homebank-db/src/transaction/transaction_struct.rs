@@ -354,6 +354,32 @@ impl TryFrom<Vec<OwnedAttribute>> for Transaction {
                         Err(_) => return Err(TransactionError::InvalidPayee),
                     }
                 }
+                "info" => {
+                    match (i.value.as_str(), is_simple) {
+                        ("", Some(false)) => {
+                            // no info, only need to store this globally
+                            tr.info = None;
+                        }
+                        ("", _) => {
+                            // store the no memo
+                            tr.info = None;
+                            // also need to store this for the `SimpleTransaction`
+                            // even if the simple/split transaction hasn't been determined yet
+                            *simple.mut_info() = None;
+                        }
+                        (s, Some(false)) => {
+                            // store the global memo
+                            tr.info = Some(s.to_string());
+                        }
+                        (s, _) => {
+                            // there is a info
+                            tr.info = Some(s.to_string());
+                            // also store this for the `SimpleTransaction`
+                            // even if the simple/split transaction hasn't been determined yet
+                            *simple.mut_info() = Some(s.to_string());
+                        }
+                    }
+                }
                 "wording" => {
                     match (i.value.as_str(), is_simple) {
                         ("", Some(false)) => {

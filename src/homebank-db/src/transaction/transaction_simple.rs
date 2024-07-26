@@ -11,6 +11,11 @@ pub struct SimpleTransaction {
     /// than using pointers and introducing lifetimes everywhere.
     amount: f32,
 
+    /// The info of the parent [`Transaction`][crate::transaction::transaction_struct::Transaction].
+    /// This will duplicate data, but this impacts the code base much less
+    /// than using pointers and introducing lifetimes everywhere.
+    info: Option<String>,
+
     /// The memo of the parent [`Transaction`][crate::transaction::transaction_struct::Transaction].
     /// This will duplicate data, but this impacts the code base much less
     /// than using pointers and introducing lifetimes everywhere.
@@ -23,15 +28,17 @@ impl SimpleTransaction {
         Self {
             category: None,
             amount: 0.0,
+            info: None,
             memo: None,
         }
     }
 
     /// Create an new [`SimpleTransaction`]
-    pub fn new(category: Option<usize>, amount: f32, memo: Option<String>) -> Self {
+    pub fn new(category: Option<usize>, amount: f32, info: Option<String>, memo: Option<String>) -> Self {
         Self {
             category,
             amount,
+            info,
             memo,
         }
     }
@@ -54,6 +61,16 @@ impl SimpleTransaction {
     /// Retrieve the mutable amount of the [`Transaction`][crate::transaction::transaction_struct::Transaction].
     pub fn mut_amount(&mut self) -> &mut f32 {
         &mut self.amount
+    }
+
+    /// Retrieve the info for the [`Transaction`][crate::transaction::transaction_struct::Transaction].
+    pub fn info(&self) -> &Option<String> {
+        &self.info
+    }
+
+    /// Retrieve the mutable info for the [`Transaction`][crate::transaction::transaction_struct::Transaction].
+    pub fn mut_info(&mut self) -> &mut Option<String> {
+        &mut self.info
     }
 
     /// Retrieve the memo for the [`Transaction`][crate::transaction::transaction_struct::Transaction].
