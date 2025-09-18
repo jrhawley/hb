@@ -2,6 +2,9 @@
 
 A CLI/TUI for [Homebank](http://homebank.free.fr/).
 
+> [!Note]
+> Development of `hb` has moved to [this new location](https://gitlab.com/jrhawley/hb/) and this repository on GitHub is archived.
+
 ## Installation
 
 On Windows, Linux, or macOS, install with [Cargo](https://doc.rust-lang.org/cargo/).
@@ -47,3 +50,4 @@ A configuration file will automatically be loaded from your user's application s
 | macOS            | `$HOME/Library/Application Support/quill/config.toml`     |
 | Linux            | `$HOME/.config/quill/config.toml`                         |
 | Windows          | `C:\\Users\\<User>\\AppData\\Roaming\\quill\\config.toml` |
+
